@@ -11,15 +11,12 @@
 #include "application.h"
 #include "renderer.h"
 #include "fade.h"
+#include "input.h"
+
 #include "object2D.h"
 #include "object3D.h"
 
 #include "camera.h"
-#include "score.h"
-#include "player_3D.h"
-#include "enemy_curve.h"
-#include "enemy_boss.h"
-#include "bg_3D.h"
 
 #include <assert.h>
 #include <time.h>
@@ -28,7 +25,6 @@
 //’è”‚Ì’è‹`
 //***************************
 const int CGame::INTERVAL_STRAIGHT = 120;		//’¼ü“G‚Ì¶¬ŠÔŠu
-const int CGame::FADE_INTERVAL_PARTCHANGE = 60;	//ƒtƒF[ƒh‚Ü‚Å‚ÌŠÔŠu(ƒp[ƒgØ‚è‘Ö‚¦)
 const int CGame::FADE_INTERVAL_GAMEOVER = 60;	//ƒtƒF[ƒh‚Ü‚Å‚ÌŠÔŠu(ƒQ[ƒ€ƒI[ƒo[)
 const int CGame::FADE_INTERVAL_GAMECLEAR = 180;	//ƒtƒF[ƒh‚Ü‚Å‚ÌŠÔŠu(ƒQ[ƒ€ƒNƒŠƒA)
 
@@ -36,17 +32,6 @@ const int CGame::FADE_INTERVAL_GAMECLEAR = 180;	//ƒtƒF[ƒh‚Ü‚Å‚ÌŠÔŠu(ƒQ[ƒ€ƒNƒŠƒ
 //Ã“Iƒƒ“ƒo•Ï”
 //***************************
 CCamera* CGame::m_pCamera = nullptr;					//ƒJƒƒ‰
-CScore* CGame::m_pScore = nullptr;						//ƒXƒRƒA
-CPlayer3D* CGame::m_pPlayer3D = nullptr;				//ƒvƒŒƒCƒ„[(3D)
-CEnemy3D* CGame::m_apEnemy3D[CEnemy3D::MAX_ENEMY] = {};	//“G(3D)
-CBg3D* CGame::m_pBg3D = nullptr;						//”wŒi(3D)
-
-/*
-	ƒQ[ƒ€ƒp[ƒg‚Ì”»•Ê
-	false ---> ’Êíƒp[ƒg
-	true ---> ƒ{ƒXƒp[ƒg
-*/
-bool CGame::m_bGamePart = false;
 
 //================================================
 //ƒJƒƒ‰î•ñ‚ğæ“¾
@@ -54,116 +39,6 @@ bool CGame::m_bGamePart = false;
 CCamera* CGame::GetCamera()
 {
 	return m_pCamera;
-}
-
-//================================================
-//ƒXƒRƒAî•ñ‚ğæ“¾
-//================================================
-CScore* CGame::GetScore()
-{
-	return m_pScore;
-}
-
-//================================================
-//ƒvƒŒƒCƒ„[(3D)î•ñ‚ğæ“¾
-//================================================
-CPlayer3D* CGame::GetPlayer3D()
-{
-	return m_pPlayer3D;
-}
-
-//================================================
-//“G(3D)î•ñ‚ğæ“¾
-//================================================
-CEnemy3D* CGame::GetEnemy3D(const int nIdx)
-{
-	return m_apEnemy3D[nIdx];
-}
-
-//================================================
-//”wŒi(3D)î•ñ‚ğæ“¾
-//================================================
-CBg3D* CGame::GetBg3D()
-{
-	return m_pBg3D;
-}
-
-//================================================
-//ƒQ[ƒ€ƒp[ƒg‚ÌØ‚è‘Ö‚¦
-//================================================
-void CGame::ChangeGamePart()
-{
-	/* ’Êí“G‚ğ‰ğ•ú */
-
-	for (int i = 0; i < CEnemy3D::MAX_ENEMY; i++)
-	{
-		if (m_apEnemy3D[i] == nullptr)
-		{//NULLƒ`ƒFƒbƒN
-			continue;
-		}
-
-		/* nullptr‚Å‚Í‚È‚¢ê‡ */
-
-		m_apEnemy3D[i] = nullptr;	//nullptr‚É‚·‚é
-	}
-
-	for (int i = 0; i < CObject::MAX_OBJECT; i++)
-	{
-		CObject* pObject = CObject::GetObjects(i);	//ƒIƒuƒWƒFƒNƒgî•ñ‚Ìæ“¾
-
-		if (pObject == nullptr)
-		{//NULLƒ`ƒFƒbƒN
-			continue;
-		}
-
-		/* nullptr‚Å‚Í–³‚¢ê‡ */
-
-		CObject::OBJ_TYPE type = pObject->GetObjType();	//ƒIƒuƒWƒFƒNƒg‚Ìí—Ş‚Ìæ“¾
-
-		if (type != CObject::OBJ_TYPE::ENEMY)
-		{//“G‚Å‚Í–³‚¢ê‡
-			continue;
-		}
-
-		/* “G‚ÌƒIƒuƒWƒFƒNƒg‚¾‚Á‚½ê‡ */
-
-		//nullptr‚É‚·‚é
-		CObject::SetObject(i, nullptr);
-	}
-
-	m_pCamera->Init();	//ƒJƒƒ‰‚Ì‰Šú‰»
-
-	m_pBg3D->Init();	//”wŒi(3D)‚Ì‰Šú‰»
-
-	m_pPlayer3D->SetPos(D3DXVECTOR3(0.0f, 0.0f, 0.0f));	//‰ŠúˆÊ’u‚É–ß‚·
-
-	//***** ƒ{ƒX‚Ì¶¬ *****//
-
-	if (m_apEnemy3D[0] != nullptr)
-	{//NULLƒ`ƒFƒbƒN
-		assert(false);
-	}
-
-	/* ’Êí“G‚ª‘S‚Ä‰ğ•ú‚Å‚«‚Ä‚¢‚½ê‡ */
-
-	//ˆÊ’u‚ğİ’è
-	D3DXVECTOR3 pos = D3DXVECTOR3(CEnemyBoss::START_POS_X, CEnemyBoss::START_POS_Y, 0.0f);
-
-	//ƒ{ƒX‚ğ¶¬‚·‚é
-	m_apEnemy3D[0] = CEnemy3D::Create(CEnemy3D::ENM_TYPE::BOSS, pos);
-
-	m_bGamePart = true;	//ƒ{ƒXƒp[ƒg‚ÉØ‚è‘Ö‚¦
-
-	//–¾“]
-	CApplication::GetFade()->Set(CFade::STATE::FADE_IN);
-}
-
-//================================================
-//ƒQ[ƒ€ƒp[ƒg‚Ìæ“¾
-//================================================
-bool CGame::GetGamePart()
-{
-	return m_bGamePart;
 }
 
 //================================================
@@ -190,8 +65,6 @@ HRESULT CGame::Init()
 {
 	srand((unsigned)time(NULL));	//ƒ‰ƒ“ƒ_ƒ€íq‚Ì‰Šú‰»
 
-	m_bGamePart = false;	//’Êíƒp[ƒg
-
 	//ƒƒ“ƒo•Ï”‚Ì‰Šú‰»
 	m_nCntStraight = 0;
 	m_nCntIntervalFade = 0;
@@ -204,12 +77,6 @@ HRESULT CGame::Init()
 		m_pCamera = new CCamera;	//ƒJƒƒ‰
 		m_pCamera->Init();			//‰Šú‰»
 	}
-
-	m_pScore = CScore::Create();	//ƒXƒRƒA
-
-	m_pBg3D = CBg3D::Create();	//”wŒi(3D)
-
-	m_pPlayer3D = CPlayer3D::Create();	//ƒvƒŒƒCƒ„[(3D)
 
 	//–¾“]
 	CApplication::GetFade()->Set(CFade::STATE::FADE_IN);
@@ -235,40 +102,6 @@ void CGame::Uninit()
 		delete m_pCamera;		//ƒƒ‚ƒŠ‚Ì‰ğ•ú
 		m_pCamera = nullptr;	//nullptr‚É‚·‚é
 	}
-
-	/* ƒXƒRƒA */
-
-	if (m_pScore != nullptr)
-	{//NULLƒ`ƒFƒbƒN
-		m_pScore = nullptr;	//nullptr‚É‚·‚é
-	}
-
-	/* ”wŒi(3D) */
-
-	if (m_pScore != nullptr)
-	{//NULLƒ`ƒFƒbƒN
-		m_pBg3D = nullptr;	//nullptr‚É‚·‚é
-	}
-
-	/* ƒvƒŒƒCƒ„[(3D) */
-	if (m_pScore != nullptr)
-	{//NULLƒ`ƒFƒbƒN
-		m_pPlayer3D = nullptr;	//nullptr‚É‚·‚é
-	}
-
-	/* “G(3D) */
-
-	for (int i = 0; i < CEnemy3D::MAX_ENEMY; i++)
-	{
-		if (m_apEnemy3D[i] == nullptr)
-		{//NULLƒ`ƒFƒbƒN
-			continue;
-		}
-
-		/* nullptr‚Å‚Í‚È‚¢ê‡ */
-
-		m_apEnemy3D[i] = nullptr;	//nullptr‚É‚·‚é
-	}
 }
 
 //================================================
@@ -283,8 +116,8 @@ void CGame::Update()
 		m_pCamera->Update();	//ƒJƒƒ‰
 	}
 
-	if (m_pPlayer3D->GetObjType() != CObject::OBJ_TYPE::PLAYER)
-	{//ƒvƒŒƒCƒ„[‚ª€–S‚µ‚½‚ç
+	if (CApplication::GetInput()->GetKey()->Trigger(CInput::DECISION))
+	{//EnterƒL[‰Ÿ‰º
 		m_nCntIntervalFade++;	//ƒJƒEƒ“ƒgƒAƒbƒv
 
 		if (!m_bFadeOut && (m_nCntIntervalFade % FADE_INTERVAL_GAMEOVER == 0))
@@ -301,16 +134,6 @@ void CGame::Update()
 			Change(MODE::RESULT);	//ƒ‚[ƒh‚Ìİ’è
 		}
 	}
-
-	if (m_bGamePart)
-	{//ƒ{ƒXƒp[ƒg‚Ìê‡
-		UpdateBossPart();	//ƒ{ƒXƒp[ƒg‚ÌXV
-		return;
-	}
-
-	/* ’Êíƒp[ƒg‚Ìê‡ */
-
-	UpdateNormalPart();	//’Êíƒp[ƒg‚ÌXV
 }
 
 //================================================
@@ -322,160 +145,4 @@ void CGame::Draw()
 	m_pCamera->Set();
 
 	CObject::DrawAll();	//ƒIƒuƒWƒFƒNƒg
-}
-
-//================================================
-//’¼ü“G‚Ì¶¬
-//================================================
-void CGame::CreateEnemyStraight(const float fPosY)
-{
-	//ƒJƒƒ‰î•ñ‚Ìæ“¾
-	D3DXMATRIX mtxCamera = m_pCamera->GetMatrixView();
-
-	//ƒJƒƒ‰‚Ì‹“_‚ÌˆÊ’u‚ğæ“¾
-	D3DXVECTOR3 posV = m_pCamera->GetPosV();
-
-	//ˆÊ’u‚ğ”½‰f
-	D3DXMatrixTranslation(&mtxCamera, posV.x, posV.y, posV.z);
-
-	//ƒJƒƒ‰‚Ì‰æŠp‚Ì‰E‚ÌŒÀŠE‚ğİ’è
-	float fRimitRight = (mtxCamera._41 + (CRenderer::SCREEN_WIDTH * 0.5f));
-
-	//æ“ª‚ª¶¬‚³‚ê‚éˆÊ’u‚ğİ’è
-	float fPosFirst = (fRimitRight + 100.0f);
-
-	int nNumCreate = 5;	//ˆê“x‚É¶¬‚·‚é”
-
-	for (int i = 0,nCnt = 0; i < CEnemy3D::MAX_ENEMY; i++)
-	{
-		if (nCnt == nNumCreate)
-		{//İ’è”•ª‘S‚Ä¶¬‚µ‚½‚ç
-			break;
-		}
-
-		/* İ’è”•ª‘S‚Ä¶¬‚µ‚Ä‚¢‚È‚¢ê‡ */
-
-		if (m_apEnemy3D[i] != nullptr)
-		{//NULLƒ`ƒFƒbƒN
-			continue;
-		}
-
-		/* nullptr‚Ìê‡ */
-
-		//ˆÊ’u‚ğİ’è
-		D3DXVECTOR3 pos = D3DXVECTOR3(fPosFirst + (i * 100.0f), fPosY, 0.0f);
-
-		//¶¬
-		m_apEnemy3D[i] = CEnemy3D::Create(CEnemy3D::ENM_TYPE::STRAIGHT, pos);
-
-		nCnt++;	//¶¬‚µ‚½‚çƒJƒEƒ“ƒg
-	}
-}
-
-//================================================
-//’Êíƒp[ƒg‚ÌXV
-//================================================
-void CGame::UpdateNormalPart()
-{
-	if (m_bGamePart)
-	{//ƒ{ƒXƒp[ƒg‚Ìê‡
-		return;
-	}
-
-	/* ’Êíƒp[ƒg‚Ìê‡ */
-
-	if (m_pCamera->GetPosV().x >= 500.0f)
-	{//ƒJƒƒ‰‚ªˆê’è‹——£‚Ü‚Åi‚ñ‚¾‚ç
-		m_nCntIntervalFade++;	//ƒJƒEƒ“ƒgƒAƒbƒv
-
-		if (!m_bFadeOut && (m_nCntIntervalFade >= FADE_INTERVAL_PARTCHANGE))
-		{//ˆÃ“]‚µ‚Ä‚¢‚È‚¢ & ƒJƒEƒ“ƒg‚ªˆê’è”‚ğ’´‚¦‚½
-			//ˆÃ“]
-			CApplication::GetFade()->Set(CFade::STATE::FADE_OUT);
-
-			//ˆÃ“]‚µ‚½
-			m_bFadeOut = true;
-		}
-		
-		if (m_bFadeOut && (CApplication::GetFade()->GetState() == CFade::STATE::NONE))
-		{//ˆÃ“]‚µ‚½ & Œ»İƒtƒF[ƒh‚µ‚Ä‚¢‚È‚¢
-			//ƒQ[ƒ€ƒp[ƒgØ‚è‘Ö‚¦
-			ChangeGamePart();
-
-			//ƒJƒEƒ“ƒg‚ğ‰Šú‰»(ƒ{ƒXƒp[ƒg‚Å‚Íg—p‚µ‚È‚¢)
-			m_nCntStraight = 0;
-
-			//–¾“]‚µ‚½
-			m_bFadeOut = false;
-			return;
-		}
-	}
-
-	if (m_pCamera->GetPosV().x < 450.0f)
-	{//ƒJƒƒ‰‚ªˆê’è‹——£‚Ìè‘O‚É—ˆ‚é‚Ü‚Å
-		m_nCntStraight++;	//ƒJƒEƒ“ƒgƒAƒbƒv
-
-		if (m_nCntStraight % INTERVAL_STRAIGHT != 0)
-		{//ˆê’èŠÔŠu‚Ü‚ÅƒJƒEƒ“ƒg‚µ‚Ä‚¢‚È‚¢
-			return;
-		}
-		
-		/* ˆê’èŠÔŠu‚Ü‚ÅƒJƒEƒ“ƒg‚µ‚½ê‡ */
-
-		float aPosY[5] =
-		{//ƒ‰ƒ“ƒ_ƒ€‚Å¶¬‚µ‚½‚¢‚‚³(ã‚©‚ç)
-			200.0f,
-			100.0f,
-			0.0f,
-			-100.0f,
-			-200.0f
-		};
-
-		int nRandam = rand() % 5;	//ƒ‰ƒ“ƒ_ƒ€
-
-		//’¼ü“G‚Ì¶¬
-		CreateEnemyStraight(aPosY[nRandam]);
-	}
-}
-
-//================================================
-//ƒ{ƒXƒp[ƒg‚ÌXV
-//================================================
-void CGame::UpdateBossPart()
-{
-	if (!m_bGamePart)
-	{//’Êíƒp[ƒg‚Ìê‡
-		return;
-	}
-
-	/* ƒ{ƒXƒp[ƒg‚Ìê‡ */
-
-	//ƒ{ƒX‚ÌŒ^‚ÉƒLƒƒƒXƒg
-	CEnemyBoss* pBoss = (CEnemyBoss*)m_apEnemy3D[0];
-
-	//ƒ{ƒX‚Ì‘Ì—Í‚ªs‚«‚½‚©‚Ç‚¤‚©
-	bool bBossAlive = (pBoss->GetLife() <= 0);
-
-	if (!bBossAlive)
-	{//ƒ{ƒX‚ª€‚ñ‚Å‚È‚¢ê‡
-		return;
-	}
-
-	/* ƒ{ƒX‚ª€‚ñ‚¾ê‡ */
-
-	m_nCntIntervalFade++;	//ƒJƒEƒ“ƒgƒAƒbƒv
-
-	if (!m_bFadeOut && (m_nCntIntervalFade % FADE_INTERVAL_GAMECLEAR == 0))
-	{//ˆÃ“]‚µ‚Ä‚¢‚È‚¢ & ƒJƒEƒ“ƒg‚ªˆê’è”‚ğ’´‚¦‚½
-		//ˆÃ“]
-		CApplication::GetFade()->Set(CFade::STATE::FADE_OUT);
-
-		//ˆÃ“]‚µ‚½
-		m_bFadeOut = true;
-	}
-
-	if (m_bFadeOut && (CApplication::GetFade()->GetState() == CFade::STATE::NONE))
-	{//ˆÃ“]‚µ‚½ & Œ»İƒtƒF[ƒh‚µ‚Ä‚¢‚È‚¢
-		Change(MODE::RESULT);	//ƒ‚[ƒh‚Ìİ’è
-	}
 }

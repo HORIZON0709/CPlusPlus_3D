@@ -8,7 +8,6 @@
 //インクルード
 //***************************
 #include "title.h"
-
 #include "application.h"
 #include "renderer.h"
 #include "input.h"
