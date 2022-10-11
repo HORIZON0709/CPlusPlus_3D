@@ -18,6 +18,7 @@
 //前方宣言
 //***************************
 class CCamera;
+class CPolygon3D;
 
 //***************************
 //ゲームクラスの定義
@@ -42,10 +43,9 @@ public: /* オーバーライド関数 */
 	void Update() override;	//更新
 	void Draw() override;	//描画
 
-private: /* メンバ関数 */
-	
 private: /* 静的メンバ変数 */
-	static CCamera* m_pCamera;							//カメラ
+	static CCamera* m_pCamera;			//カメラ
+	static CPolygon3D* m_pPolygon3D;	//3Dポリゴン
 	
 private: /* メンバ変数 */
 	int m_nCntStraight;		//直線敵の生成間隔カウント用

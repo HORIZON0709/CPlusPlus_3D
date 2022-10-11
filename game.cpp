@@ -17,6 +17,7 @@
 #include "object3D.h"
 
 #include "camera.h"
+#include "polygon3D.h"
 
 #include <assert.h>
 #include <time.h>
@@ -31,7 +32,8 @@ const int CGame::FADE_INTERVAL_GAMECLEAR = 180;	//ƒtƒF[ƒh‚Ü‚Å‚ÌŠÔŠu(ƒQ[ƒ€ƒNƒŠƒ
 //***************************
 //Ã“Iƒƒ“ƒo•Ï”
 //***************************
-CCamera* CGame::m_pCamera = nullptr;					//ƒJƒƒ‰
+CCamera* CGame::m_pCamera = nullptr;		//ƒJƒƒ‰
+CPolygon3D* CGame::m_pPolygon3D = nullptr;	//3Dƒ|ƒŠƒSƒ“
 
 //================================================
 //ƒJƒƒ‰î•ñ‚ğæ“¾
@@ -70,12 +72,20 @@ HRESULT CGame::Init()
 	m_nCntIntervalFade = 0;
 	m_bFadeOut = false;
 
-	/* ¶¬ */
+	//***** ¶¬ *****//
+
+	/* ƒJƒƒ‰ */
 
 	if (m_pCamera == nullptr)
 	{//NULLƒ`ƒFƒbƒN
 		m_pCamera = new CCamera;	//ƒJƒƒ‰
 		m_pCamera->Init();			//‰Šú‰»
+	}
+
+	/* 3Dƒ|ƒŠƒSƒ“ */
+	if (m_pPolygon3D == nullptr)
+	{//NULLƒ`ƒFƒbƒN
+		m_pPolygon3D = CPolygon3D::Create();	//¶¬
 	}
 
 	//–¾“]
@@ -102,6 +112,10 @@ void CGame::Uninit()
 		delete m_pCamera;		//ƒƒ‚ƒŠ‚Ì‰ğ•ú
 		m_pCamera = nullptr;	//nullptr‚É‚·‚é
 	}
+
+	/* 3Dƒ|ƒŠƒSƒ“ */
+
+	m_pPolygon3D = nullptr;	//nullptr‚É‚·‚é
 }
 
 //================================================

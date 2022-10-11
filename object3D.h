@@ -60,12 +60,12 @@ public: /* Pos */
 public: /* Size */
 	/*
 		サイズを設定
-		const D3DXVECTOR2 &size ---> 任意のサイズ
+		const D3DXVECTOR3 &size ---> 任意のサイズ
 	*/
-	void SetSize(const D3DXVECTOR2 &size);
+	void SetSize(const D3DXVECTOR3 &size);
 
 	//サイズを取得
-	D3DXVECTOR2 GetSize();
+	D3DXVECTOR3 GetSize();
 
 public: /* Move */
 	/*
@@ -124,7 +124,7 @@ private: /* メンバ変数 */
 	D3DXVECTOR3 m_pos;	//位置
 	D3DXVECTOR3 m_rot;	//向き
 	D3DXVECTOR3 m_move;	//移動量
-	D3DXVECTOR2 m_size;	//サイズ
+	D3DXVECTOR3 m_size;	//サイズ
 };
 
 #endif

@@ -14,7 +14,7 @@
 //***************************
 //定数の定義
 //***************************
-const float CCamera::MOVE_SPEED = 5.0f;		//移動速度
+const float CCamera::MOVE_SPEED = 3.0f;		//移動速度
 
 //================================================
 //コンストラクタ
@@ -42,7 +42,7 @@ CCamera::~CCamera()
 void CCamera::Init()
 {
 	//メンバ変数の初期設定
-	m_posV = D3DXVECTOR3(0.0f, 0.0f, -150.0f);
+	m_posV = D3DXVECTOR3(0.0f, 100.0f, -300.0f);
 	m_posR = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_vecU = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
 	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -74,7 +74,7 @@ void CCamera::Update()
 
 #endif
 
-	if ((m_move.x == 0.0f) && (m_move.y == 0.0f))
+	if ((m_move.x == 0.0f) && (m_move.y == 0.0f) && (m_move.z == 0.0f))
 	{//移動していなかったら
 		return;
 	}
@@ -84,10 +84,12 @@ void CCamera::Update()
 	//移動量に応じて位置を更新(視点)
 	m_posV.x += m_move.x * MOVE_SPEED;	//X軸
 	m_posV.y += m_move.y * MOVE_SPEED;	//Y軸
+	m_posV.z += m_move.z * MOVE_SPEED;	//Z軸
 
 	//移動量に応じて位置を更新(注視点)
 	m_posR.x += m_move.x * MOVE_SPEED;	//X軸
 	m_posR.y += m_move.y * MOVE_SPEED;	//Y軸
+	m_posR.z += m_move.z * MOVE_SPEED;	//Z軸
 
 	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	//移動量をリセット
 }
@@ -153,21 +155,21 @@ void CCamera::Move()
 	//キーボード情報の取得
 	CInputKeyboard* pKeyboard = CApplication::GetInputKeyboard();
 
-	/* 前後左右 */
+	/* 前後・左右・上下 */
 
 	if (pKeyboard->GetPress(DIK_LEFT))
 	{//←キー
-		/* 移動方向に応じて */
+		/* 移動方向に応じて移動量を加算 */
 
 		if (pKeyboard->GetPress(DIK_UP))
 		{//左上
 			m_move.x = -1.0f;	//X軸
-			m_move.y = +1.0f;	//Y軸
+			m_move.z = +1.0f;	//Z軸
 		}
 		else if (pKeyboard->GetPress(DIK_DOWN))
 		{//左下
 			m_move.x = -1.0f;	//X軸
-			m_move.y = -1.0f;	//Y軸
+			m_move.z = -1.0f;	//Z軸
 		}
 		else
 		{//左
@@ -181,12 +183,12 @@ void CCamera::Move()
 		if (pKeyboard->GetPress(DIK_UP))
 		{//右上
 			m_move.x = +1.0f;	//X軸
-			m_move.y = +1.0f;	//Y軸
+			m_move.z = +1.0f;	//Z軸
 		}
 		else if (pKeyboard->GetPress(DIK_DOWN))
 		{//右下
 			m_move.x = +1.0f;	//X軸
-			m_move.y = -1.0f;	//Y軸
+			m_move.z = -1.0f;	//Z軸
 		}
 		else
 		{//右
@@ -195,10 +197,18 @@ void CCamera::Move()
 	}
 	else if (pKeyboard->GetPress(DIK_UP))
 	{//↑キー(上)
-		m_move.y = +1.0f;	//Y軸
+		m_move.z = +1.0f;	//Z軸
 	}
 	else if (pKeyboard->GetPress(DIK_DOWN))
 	{//↓キー(下)
+		m_move.z = -1.0f;	//Z軸
+	}
+	else if (pKeyboard->GetPress(DIK_O))
+	{//Oキー
+		m_move.y = +1.0f;	//Y軸
+	}
+	else if (pKeyboard->GetPress(DIK_L))
+	{//Lキー
 		m_move.y = -1.0f;	//Y軸
 	}
 }
