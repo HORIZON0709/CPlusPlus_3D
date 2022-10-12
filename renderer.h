@@ -13,6 +13,11 @@
 #include <d3dx9.h>
 
 //***************************
+//前方宣言
+//***************************
+class CDebugProc;
+
+//***************************
 //レンダリングクラスの定義
 //***************************
 class CRenderer
@@ -30,8 +35,6 @@ public: /* メンバ関数 */
 	void Uninit();							//終了
 	void Update();							//更新
 	void Draw();							//描画
-private:
-	void DrawFPS();	//FPSの描画
 public: /* Get系 */
 	LPDIRECT3DDEVICE9 GetDevice();	//デバイスの取得
 	/*
@@ -42,7 +45,7 @@ public: /* Get系 */
 private: /* メンバ変数 */
 	LPDIRECT3D9 m_pD3D;				//Direct3Dオブジェクト
 	LPDIRECT3DDEVICE9 m_pD3DDevice;	//Deviceオブジェクト
-	LPD3DXFONT m_pFont;				//フォント
+	CDebugProc* m_pDebugProc;		//デバッグ表示
 };
 
 #endif

@@ -14,7 +14,7 @@
 //***************************
 #include "application.h"
 #include "renderer.h"
-#include "object2D.h"
+#include "debug_proc.h"
 
 #include <Windows.h>
 #include <tchar.h> //_T
@@ -159,6 +159,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
 
 #ifdef _DEBUG
 				dwFrameCount++;
+
+				//•¶Žš—ñ‚Ì“o˜^
+				CDebugProc::Print("FPS : %d",s_nCountFPS);
 #endif //_DEBUG
 			}
 		}

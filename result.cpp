@@ -51,7 +51,7 @@ HRESULT CResult::Init()
 	m_pBg = CBg::Create();
 
 	//テクスチャの設定
-	m_pBg->SetTexture(CTexture::bg002);
+	m_pBg->SetTexture(CTexture::NONE);
 
 	//テクスチャ座標の設定
 	m_pBg->SetTexUV(1, 0);

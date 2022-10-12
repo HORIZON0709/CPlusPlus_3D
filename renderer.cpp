@@ -17,14 +17,14 @@
 #include "main.h"
 #include "application.h"
 #include "mode.h"
-#include "object.h"
 #include "fade.h"
+#include "debug_proc.h"
 
 #include <tchar.h> //_T
 #include <assert.h>
 
 //***************************
-//インクルード
+//定数の定義
 //***************************
 const int CRenderer::SCREEN_WIDTH = 1280;	//スクリーンの幅
 const int CRenderer::SCREEN_HEIGHT = 720;	//スクリーンの高さ
@@ -34,7 +34,7 @@ const int CRenderer::SCREEN_HEIGHT = 720;	//スクリーンの高さ
 //================================================
 CRenderer::CRenderer() : 
 #ifdef _DEBUG
-	m_pFont(nullptr),
+	m_pDebugProc(nullptr),
 #endif //_DEBUG
 	m_pD3D(nullptr),
 	m_pD3DDevice(nullptr)
@@ -51,7 +51,7 @@ CRenderer::~CRenderer()
 	assert(m_pD3DDevice == nullptr);
 
 #ifdef _DEBUG
-	assert(m_pFont == nullptr);
+	assert(m_pDebugProc == nullptr);
 #endif //_DEBUG
 }
 
@@ -121,9 +121,8 @@ HRESULT CRenderer::Init(HWND hWnd, BOOL bWindow)
 	m_pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_CURRENT);
 
 #ifdef _DEBUG
-	//デバッグ情報表示用フォントの生成
-	D3DXCreateFont(m_pD3DDevice, 18, 0, 0, 0, FALSE, SHIFTJIS_CHARSET,
-		OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH, _T("Terminal"), &m_pFont);
+	//デバッグ表示の初期化
+	m_pDebugProc->Init();
 #endif
 
 	return S_OK;
@@ -135,11 +134,11 @@ HRESULT CRenderer::Init(HWND hWnd, BOOL bWindow)
 void CRenderer::Uninit()
 {
 #ifdef _DEBUG
-	//デバッグ情報表示用フォントの破棄
-	if (m_pFont != nullptr)
+	//デバッグ表示の破棄
+	if (m_pDebugProc != nullptr)
 	{
-		m_pFont->Release();
-		m_pFont = nullptr;
+		m_pDebugProc->Uninit();
+		m_pDebugProc = nullptr;
 	}
 #endif //_DEBUG
 
@@ -187,8 +186,8 @@ void CRenderer::Draw()
 		CApplication::GetFade()->Draw();
 
 #ifdef _DEBUG
-		//FPS表示
-		DrawFPS();
+		//デバッグ表示
+		m_pDebugProc->Draw();
 #endif //_DEBUG
 
 		//Direct3Dによる描画の終了
@@ -198,22 +197,6 @@ void CRenderer::Draw()
 	//バックバッファとフロントバッファの入れ替え
 	m_pD3DDevice->Present(NULL, NULL, NULL, NULL);
 }
-
-#ifdef _DEBUG
-//================================================
-//FPSの描画
-//================================================
-void CRenderer::DrawFPS()
-{
-	RECT rect = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
-	TCHAR str[256];
-
-	wsprintf(str, _T("FPS : %d\n"), GetFPS());
-
-	//テキスト描画
-	m_pFont->DrawText(NULL, str, -1, &rect, DT_LEFT, D3DCOLOR_ARGB(0xff, 0xff, 0xff, 0xff));
-}
-#endif //_DEBUG
 
 //================================================
 //デバイスの取得
