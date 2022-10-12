@@ -45,14 +45,14 @@ public: /* 静的メンバ関数 */
 		オブジェクト情報の取得
 		const int &nIdx ---> インデックス数
 	*/
-	static CObject* GetObjects(const int &nIdx);
+	static CObject* GetObjects(int nIdx);
 
 	/*
 		オブジェクト情報の設定
 		const int &nIdx ---> インデックス数
 		void* pObject ---> 任意の型のオブジェクト
 	*/
-	static void SetObject(const int &nIdx, void* pObject);
+	static void SetObject(int nIdx, void* pObject);
 
 public: /* コンストラクタ・デストラクタ */
 	CObject();
@@ -84,10 +84,17 @@ private: /* 静的メンバ変数 */
 	static CObject* m_apObject[MAX_OBJECT];	//ポインタ
 	//static CObject* m_apObject[MAX_NUM_PRIORITY][MAX_OBJECT];	//ポインタ(優先順位付き)
 
-	static int m_nNumAll;					//最大数
+	static CObject* m_pTop;		//先頭のオブジェクトのポインタ
+	static CObject* m_pCurrent;	//現在(一番後ろ)のオブジェクトのポインタ
+
+	static int m_nNumAll;	//最大数
 	
 private: /* メンバ変数 */
-	int m_nID;					//格納先の番号
+	CObject* m_pPrev;	//前のオブジェクトへのポインタ
+	CObject* m_pNext;	//次のオブジェクトへのポインタ
+
+	int m_nID;	//格納先の番号
+
 	CObject::OBJ_TYPE objType;	//種類
 };
 

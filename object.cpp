@@ -14,7 +14,10 @@
 //静的メンバ変数
 //***************************
 CObject* CObject::m_apObject[MAX_OBJECT] = {};	//ポインタ
-int CObject::m_nNumAll = 0;						//最大数
+CObject* CObject::m_pTop = nullptr;		//先頭のオブジェクトのポインタ
+CObject* CObject::m_pCurrent = nullptr;	//現在のオブジェクトのポインタ
+
+int CObject::m_nNumAll = 0;	//最大数
 
 //================================================
 //全ての解放
@@ -73,7 +76,7 @@ void CObject::DrawAll()
 //================================================
 //オブジェクト情報の取得
 //================================================
-CObject* CObject::GetObjects(const int &nIdx)
+CObject* CObject::GetObjects(int nIdx)
 {
 	return m_apObject[nIdx];
 }
@@ -81,7 +84,7 @@ CObject* CObject::GetObjects(const int &nIdx)
 //================================================
 //オブジェクト情報の設定
 //================================================
-void CObject::SetObject(const int &nIdx, void* pObject)
+void CObject::SetObject(int nIdx, void* pObject)
 {
 	m_apObject[nIdx] = (CObject*)pObject;
 }
@@ -91,6 +94,19 @@ void CObject::SetObject(const int &nIdx, void* pObject)
 //================================================
 CObject::CObject()
 {
+	if (m_pTop == nullptr)
+	{//オブジェクトが一つも無い場合
+		//自身を先頭として代入
+		m_pTop = this;
+		return;
+	}
+
+	/* オブジェクトが1つ以上ある場合 */
+
+	m_pCurrent->m_pNext = this;
+	m_pTop->m_pPrev = m_pNext;
+	m_pCurrent = this;
+
 	for (int i = 0; i < MAX_OBJECT; i++)
 	{
 		if (m_apObject[i] != nullptr)

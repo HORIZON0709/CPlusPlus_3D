@@ -13,12 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="ソース ファイル\Application">
-      <UniqueIdentifier>{8037abe4-03db-47e9-99f2-f1ae8b9bc1f4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\Object">
-      <UniqueIdentifier>{4cb4db49-39db-4370-bccd-c7b22ff1e880}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\Mode">
       <UniqueIdentifier>{a032e43a-6dd7-4dbd-af92-125b70cf7087}</UniqueIdentifier>
     </Filter>
@@ -55,11 +49,20 @@
     <Filter Include="ヘッダー ファイル\Model">
       <UniqueIdentifier>{b9b7ce67-6162-4fe9-92c2-bcc5a3b7a1f1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\Object">
+      <UniqueIdentifier>{4cb4db49-39db-4370-bccd-c7b22ff1e880}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Main">
+      <UniqueIdentifier>{1b5a883e-dbd1-46b1-a432-6292c583a26b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Application">
+      <UniqueIdentifier>{8037abe4-03db-47e9-99f2-f1ae8b9bc1f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Main">
+      <UniqueIdentifier>{2e62d93c-8498-448f-8863-d2bcfb2fa4b6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="mode.cpp">
       <Filter>ソース ファイル\Mode</Filter>
     </ClCompile>
@@ -117,14 +120,14 @@
     <ClCompile Include="player.cpp">
       <Filter>ソース ファイル\Model</Filter>
     </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>ソース ファイル\Main</Filter>
+    </ClCompile>
     <ClCompile Include="debug_proc.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>ソース ファイル\Main</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="main.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="mode.h">
       <Filter>ヘッダー ファイル\Mode</Filter>
     </ClInclude>
@@ -182,8 +185,11 @@
     <ClInclude Include="player.h">
       <Filter>ヘッダー ファイル\Model</Filter>
     </ClInclude>
+    <ClInclude Include="main.h">
+      <Filter>ヘッダー ファイル\Main</Filter>
+    </ClInclude>
     <ClInclude Include="debug_proc.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>ヘッダー ファイル\Main</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
