@@ -13,6 +13,13 @@
 
 #include <assert.h>
 
+//***************************
+//定数の定義
+//***************************
+const int CObjectX::MAX_WORD = 256;		//最大文字数
+
+const char* CObjectX::FILE_NAME = "data/MODEL/model.txt";	//読み込むファイル名
+
 //================================================
 //生成
 //================================================
@@ -46,7 +53,8 @@ CObjectX::CObjectX() :
 	m_pMesh(nullptr),
 	m_pBuffMat(nullptr),
 	m_numMat(0),
-	m_nIdxUse(0)
+	m_pFileName("\0"),
+	m_nIdx(0)
 {
 	//メンバ変数のクリア
 	memset(m_mtxWorld, 0, sizeof(m_mtxWorld));
@@ -64,56 +72,79 @@ CObjectX::~CObjectX()
 //================================================
 HRESULT CObjectX::Init()
 {
-	//デバイスの取得
-	LPDIRECT3DDEVICE9 pDevice = CApplication::GetRenderer()->GetDevice();
-
 	//メンバ変数の初期設定
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	m_size = D3DXVECTOR2(0.0f, 0.0f);
-	m_col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-	m_texture = CTexture::NONE;
+	m_rotDest = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_vtxMax = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_vtxMin = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_pMesh = nullptr;
+	m_pBuffMat = nullptr;
+	m_numMat = 0;
+	m_pFileName = "\0";
+	m_nIdx = 0;
+	
+	//読み込み
+	Load();
 
-	//頂点バッファの生成
-	pDevice->CreateVertexBuffer(sizeof(VERTEX_2D) * 4,
-								D3DUSAGE_WRITEONLY,
-								FVF_VERTEX_2D,
-								D3DPOOL_MANAGED,
-								&m_pVtxBuff,
-								NULL);
+	//頂点数の取得
+	int nNumVtx = m_pMesh->GetNumVertices();
 
-	VERTEX_2D *pVtx;	//頂点情報へのポインタ
+	//頂点フォーマットのサイズを取得
+	DWORD sizeFVF = D3DXGetFVFVertexSize(m_pMesh->GetFVF());
 
-	//頂点バッファをロックし、頂点情報へのポインタを取得
-	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
+	BYTE *pVtxBuff;	//頂点バッファへのポインタ
 
-	//頂点情報を設定
-	pVtx[0].pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	pVtx[1].pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	pVtx[2].pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	pVtx[3].pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	//頂点バッファのロック
+	m_pMesh->LockVertexBuffer(D3DLOCK_READONLY, (void**)&pVtxBuff);
 
-	//rhwの設定
-	pVtx[0].rhw = 1.0f;
-	pVtx[1].rhw = 1.0f;
-	pVtx[2].rhw = 1.0f;
-	pVtx[3].rhw = 1.0f;
+	for (int j = 0; j < nNumVtx; j++)
+	{
+		//頂点座標の代入
+		D3DXVECTOR3 vtx = *(D3DXVECTOR3*)pVtxBuff;
 
-	//頂点カラーの設定
-	pVtx[0].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-	pVtx[1].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-	pVtx[2].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-	pVtx[3].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+		/* 頂点座標を比較し、モデルの最大値・最小値を取得 */
 
-	//テクスチャ座標の設定
-	pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);
-	pVtx[1].tex = D3DXVECTOR2(1.0f, 0.0f);
-	pVtx[2].tex = D3DXVECTOR2(0.0f, 1.0f);
-	pVtx[3].tex = D3DXVECTOR2(1.0f, 1.0f);
+		//***** 最大 *****//
 
-	//頂点バッファをアンロックする
-	m_pVtxBuff->Unlock();
+		if (vtx.x > m_vtxMax.x)
+		{//X
+			m_vtxMax.x = vtx.x;
+		}
+
+		if (vtx.y > m_vtxMax.y)
+		{//Y
+			m_vtxMax.y = vtx.y;
+		}
+
+		if (vtx.z > m_vtxMax.z)
+		{//Z
+			m_vtxMax.z = vtx.z;
+		}
+
+		//***** 最小 *****//
+
+		if (vtx.x < m_vtxMin.x)
+		{//X
+			m_vtxMin.x = vtx.x;
+		}
+
+		if (vtx.y < m_vtxMin.y)
+		{//Y
+			m_vtxMin.y = vtx.y;
+		}
+
+		if (vtx.z < m_vtxMin.z)
+		{//Z
+			m_vtxMin.z = vtx.z;
+		}
+
+		//頂点フォーマットのサイズ分ポインタを進める
+		pVtxBuff += sizeFVF;
+	}
+
+	//頂点バッファのアンロック
+	m_pMesh->UnlockVertexBuffer();
 
 	return S_OK;
 }
@@ -123,18 +154,16 @@ HRESULT CObjectX::Init()
 //================================================
 void CObjectX::Uninit()
 {
-	//頂点バッファの破棄
-	if (m_pVtxBuff != nullptr)
+	//メッシュの解放
+	if (m_pMesh != nullptr)
 	{
-		m_pVtxBuff->Release();
-		m_pVtxBuff = nullptr;
+		m_pMesh = nullptr;
 	}
 
-	//テクスチャの破棄
-	if (m_pTexture != nullptr)
+	//マテリアルの解放
+	if (m_pBuffMat != nullptr)
 	{
-		m_pTexture->Release();
-		m_pTexture = nullptr;
+		m_pBuffMat = nullptr;
 	}
 }
 
@@ -150,24 +179,44 @@ void CObjectX::Update()
 //================================================
 void CObjectX::Draw()
 {
+	D3DXMATRIX mtxRot, mtxTrans;	//計算用マトリックス
+	D3DMATERIAL9 matDef;			//現在のマテリアル保存用
+	D3DXMATERIAL* pMat;				//マテリアルデータへのポインタ
+
 	//デバイスの取得
 	LPDIRECT3DDEVICE9 pDevice = CApplication::GetRenderer()->GetDevice();
 
-	//頂点バッファをデータストリームに設定
-	pDevice->SetStreamSource(0, m_pVtxBuff, 0, sizeof(VERTEX_2D));
+	//ワールドマトリックスの初期化
+	D3DXMatrixIdentity(&m_mtxWorld);
 
-	//頂点フォーマットの設定
-	pDevice->SetFVF(FVF_VERTEX_2D);
+	//向きを反映
+	D3DXMatrixRotationYawPitchRoll(&mtxRot, m_rot.y, m_rot.x, m_rot.z);
+	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);
 
-	CTexture* pTexture = CApplication::GetTexture();	//テクスチャを取得
+	//位置を反映
+	D3DXMatrixTranslation(&mtxTrans, m_pos.x, m_pos.y, m_pos.z);
+	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);
 
-	//テクスチャの設定
-	pDevice->SetTexture(0, pTexture->GetTexture(m_texture));
+	//ワールドマトリックスの設定
+	pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
 
-	//ポリゴンの描画
-	pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP,	//プリミティブの種類
-							0,					//描画する最初の頂点インデックス
-							2);					//描画するプリミティブ数
+	//現在のマテリアルを保持
+	pDevice->GetMaterial(&matDef);
+
+	//マテリアルデータへのポインタを保持
+	pMat = (D3DXMATERIAL*)m_pBuffMat->GetBufferPointer();
+
+	for (int j = 0; j < (int)m_numMat; j++)
+	{
+		//マテリアルの設定
+		pDevice->SetMaterial(&pMat[j].MatD3D);
+
+		//モデルパーツの描画
+		m_pMesh->DrawSubset(j);
+	}
+
+	//保持していたマテリアルを戻す
+	pDevice->SetMaterial(&matDef);
 }
 
 //================================================
@@ -176,23 +225,6 @@ void CObjectX::Draw()
 void CObjectX::SetPos(const D3DXVECTOR3 &pos)
 {
 	m_pos = pos;	//位置を設定
-
-	VERTEX_2D *pVtx;	//頂点情報へのポインタ
-
-	//頂点バッファをロックし、頂点情報へのポインタを取得
-	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
-
-	float fWidthHalf = (m_size.x * 0.5f);	//横幅の半分
-	float fHeightHalf = (m_size.y * 0.5f);	//縦幅の半分
-
-	//頂点情報を設定
-	pVtx[0].pos = m_pos + D3DXVECTOR3(-fWidthHalf, -fHeightHalf, 0.0f);
-	pVtx[1].pos = m_pos + D3DXVECTOR3(+fWidthHalf, -fHeightHalf, 0.0f);
-	pVtx[2].pos = m_pos + D3DXVECTOR3(-fWidthHalf, +fHeightHalf, 0.0f);
-	pVtx[3].pos = m_pos + D3DXVECTOR3(+fWidthHalf, +fHeightHalf, 0.0f);
-
-	//頂点バッファをアンロックする
-	m_pVtxBuff->Unlock();
 }
 
 //================================================
@@ -204,110 +236,124 @@ D3DXVECTOR3 CObjectX::GetPos()
 }
 
 //================================================
-//サイズの設定
+//読み込み
 //================================================
-void CObjectX::SetSize(const D3DXVECTOR2 &size)
+void CObjectX::Load()
 {
-	m_size = size;	//サイズの設定
+	//デバイスの取得
+	LPDIRECT3DDEVICE9 pDevice = CApplication::GetRenderer()->GetDevice();
 
-	VERTEX_2D *pVtx;	//頂点情報へのポインタ
+	//ファイルを開く
+	FILE *pFile = fopen(FILE_NAME, "r");
+	
+	if (pFile == nullptr)
+	{//ファイルが開けなかった場合
+		assert(false);
+	}
 
-	//頂点バッファをロックし、頂点情報へのポインタを取得
-	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
+	/* ファイルが開けた場合 */
 
-	float fWidthHalf = (m_size.x * 0.5f);	//横幅の半分
-	float fHeightHalf = (m_size.y * 0.5f);	//縦幅の半分
+	char aText[MAX_WORD];	//テキスト格納用
 
-	//頂点情報を設定
-	pVtx[0].pos = m_pos + D3DXVECTOR3(-fWidthHalf, -fHeightHalf, 0.0f);
-	pVtx[1].pos = m_pos + D3DXVECTOR3(+fWidthHalf, -fHeightHalf, 0.0f);
-	pVtx[2].pos = m_pos + D3DXVECTOR3(-fWidthHalf, +fHeightHalf, 0.0f);
-	pVtx[3].pos = m_pos + D3DXVECTOR3(+fWidthHalf, +fHeightHalf, 0.0f);
+	while (strncmp(&aText[0], "SCRIPT", 6) != 0)
+	{//テキストの最初の行を読み込むまで繰り返す
+		fgets(aText, MAX_WORD, pFile);		//1行丸ごと読み込む
+	}
 
-	//頂点バッファをアンロックする
-	m_pVtxBuff->Unlock();
+	while (strcmp(&aText[0], "END_SCRIPT") != 0)
+	{//テキストの最終行を読み込むまで繰り返す
+		//文字を読み込む
+		fscanf(pFile, "%s", &aText[0]);
+
+		if (strncmp(&aText[0], "#-", 2) == 0)
+		{//ブロックコメント
+			continue;
+		}
+		else if (strncmp(&aText[0], "#", 1) == 0)
+		{//コメント
+			//1行全て読み込む
+			fgets(aText, MAX_WORD, pFile);
+			continue;
+		}
+
+		if (strcmp(&aText[0], "MODEL_FILENAME") == 0)
+		{//ファイル名
+			//「＝」を読み込む
+			fscanf(pFile, "%s", &aText[0]);
+
+			//Xファイルのパスを読み込む
+			fscanf(pFile, "%s", m_pFileName);
+		}
+		else if (strcmp(&aText[0], "MODELSET") == 0)
+		{//モデルのセット
+			//設定
+			Set(pFile, &aText[0]);
+		}
+	}
+
+	//Xファイルの読み込み
+	D3DXLoadMeshFromX(
+		m_pFileName,
+		D3DXMESH_SYSTEMMEM,
+		pDevice,
+		NULL,
+		&m_pBuffMat,
+		NULL,
+		&m_numMat,
+		&m_pMesh);
+
+	//ファイルを閉じる
+	fclose(pFile);
 }
 
 //================================================
-//サイズの取得
+//設定
 //================================================
-D3DXVECTOR2 CObjectX::GetSize()
+void CObjectX::Set(FILE *pFile, char aText[])
 {
-	return m_size;
-}
+	while (strcmp(&aText[0], "END_MODELSET") != 0)
+	{//モデルのセットが終わるまで繰り返す
+		//文字を読み込む
+		fscanf(pFile, "%s", &aText[0]);
 
-//================================================
-//移動量の設定
-//================================================
-void CObjectX::SetMove(const D3DXVECTOR3 &move)
-{
-	m_move = move;
-}
+		if (strncmp(&aText[0], "#-", 2) == 0)
+		{//ブロックコメント
+			continue;
+		}
+		else if (strncmp(&aText[0], "#", 1) == 0)
+		{//コメント
+			//1行全て読み込む
+			fgets(aText, MAX_WORD, pFile);
+			continue;
+		}
 
-//================================================
-//移動量の取得
-//================================================
-D3DXVECTOR3 CObjectX::GetMove()
-{
-	return m_move;
-}
+		if (strcmp(&aText[0], "INDEX") == 0)
+		{//インデックス数
+			//「＝」を読み込む
+			fscanf(pFile, "%s", &aText[0]);
 
-//================================================
-//色の設定
-//================================================
-void CObjectX::SetCol(const D3DXCOLOR &col)
-{
-	m_col = col;	//色を設定
+			//インデックス数を読み込む
+			fscanf(pFile, "%d", &m_nIdx);
+		}
+		else if (strcmp(&aText[0], "POS") == 0)
+		{//位置
+			//「＝」を読み込む
+			fscanf(pFile, "%s", &aText[0]);
 
-	VERTEX_2D *pVtx;	//頂点情報へのポインタ
+			//位置を読み込む
+			fscanf(pFile, "%f", &m_pos.x);	//X軸
+			fscanf(pFile, "%f", &m_pos.y);	//Y軸
+			fscanf(pFile, "%f", &m_pos.z);	//Z軸
+		}
+		else if (strcmp(&aText[0], "ROT") == 0)
+		{//向き
+			//「＝」を読み込む
+			fscanf(pFile, "%s", &aText[0]);
 
-	//頂点バッファをロックし、頂点情報へのポインタを取得
-	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
-
-	//頂点情報を設定
-	pVtx[0].col = m_col;
-	pVtx[1].col = m_col;
-	pVtx[2].col = m_col;
-	pVtx[3].col = m_col;
-
-	//頂点バッファをアンロックする
-	m_pVtxBuff->Unlock();
-}
-
-//================================================
-//色の設定
-//================================================
-D3DXCOLOR CObjectX::GetCol()
-{
-	return m_col;
-}
-
-//================================================
-//テクスチャの設定
-//================================================
-void CObjectX::SetTexture(CTexture::TEXTURE texture)
-{
-	m_texture = texture;
-}
-
-//================================================
-//テクスチャ座標の設定(アニメーションに対応)
-//================================================
-void CObjectX::SetTexUV(const int nDivNum, const int nPtnAnim)
-{
-	VERTEX_2D *pVtx;	//頂点情報へのポインタ
-
-	//頂点バッファをロックし、頂点情報へのポインタを取得
-	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
-
- 	float fDivide = (1.0f / nDivNum);	//乗算用にfloatに変換
-
-	//テクスチャ座標の設定
-	pVtx[0].tex = D3DXVECTOR2(fDivide * nPtnAnim,		0.0f);
-	pVtx[1].tex = D3DXVECTOR2(fDivide * (nPtnAnim + 1), 0.0f);
- 	pVtx[2].tex = D3DXVECTOR2(fDivide * nPtnAnim,		1.0f);
-	pVtx[3].tex = D3DXVECTOR2(fDivide * (nPtnAnim + 1), 1.0f);
-
-	//頂点バッファをアンロックする
-	m_pVtxBuff->Unlock();
+			//向きを読み込む
+			fscanf(pFile, "%f", &m_rot.x);	//X軸
+			fscanf(pFile, "%f", &m_rot.y);	//Y軸
+			fscanf(pFile, "%f", &m_rot.z);	//Z軸
+		}
+	}
 }

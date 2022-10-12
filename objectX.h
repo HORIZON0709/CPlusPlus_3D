@@ -12,11 +12,17 @@
 //***************************
 #include "object.h"
 
+#include <stdio.h>
+
 //***************************
 //オブジェクトクラスの定義
 //***************************
 class CObjectX : public CObject
 {/* CObjectの派生クラス */
+private: /* 定数の定義 */
+	static const int MAX_WORD;		//最大文字数
+	static const char* FILE_NAME;	//読み込むファイル名
+
 public: /* 静的メンバ関数 */
 	static CObjectX* Create();	//生成
 
@@ -46,7 +52,17 @@ public: /* Collision */
 		OBJ_TYPE myType ---> 自身のタイプ
 		OBJ_TYPE targetType ---> 判定を取る対象のタイプ
 	*/
-	bool Collision(OBJ_TYPE myType, OBJ_TYPE targetType);
+	//bool Collision(OBJ_TYPE myType, OBJ_TYPE targetType);
+
+private: /* メンバ関数 */
+	void Load();	//読み込み
+
+	/*
+		設定
+		FILE *pFile ---> ファイルポインタ
+		char aText[] ---> テキスト格納用
+	*/
+	void Set(FILE *pFile, char aText[]);
 
 private: /* メンバ変数 */
 	D3DXVECTOR3 m_pos;		//位置
@@ -61,7 +77,9 @@ private: /* メンバ変数 */
 
 	DWORD m_numMat;	//マテリアル情報の数
 
-	int m_nIdxUse;	//使用するモデルのインデックス数
+	char* m_pFileName;	//ファイル名
+
+	int m_nIdx;	//インデックス数
 };
 
 #endif
