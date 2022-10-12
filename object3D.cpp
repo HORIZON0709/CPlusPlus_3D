@@ -187,6 +187,9 @@ void CObject3D::Draw()
 							0,					//描画する最初の頂点インデックス
 							2);					//描画するプリミティブ数
 
+	//ライトを付ける
+	pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
+	
 	//テクスチャの設定
 	pDevice->SetTexture(0, nullptr);
 }

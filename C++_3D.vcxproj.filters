@@ -49,6 +49,12 @@
     <Filter Include="ヘッダー ファイル\3D">
       <UniqueIdentifier>{c8c21799-7292-4dd7-a7c9-5d6544d4a3a4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\Model">
+      <UniqueIdentifier>{617a0309-ae1a-43de-a8f2-92602b2b9deb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Model">
+      <UniqueIdentifier>{b9b7ce67-6162-4fe9-92c2-bcc5a3b7a1f1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -108,6 +114,9 @@
     <ClCompile Include="objectX.cpp">
       <Filter>ソース ファイル\Object</Filter>
     </ClCompile>
+    <ClCompile Include="player.cpp">
+      <Filter>ソース ファイル\Model</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -166,6 +175,9 @@
     </ClInclude>
     <ClInclude Include="objectX.h">
       <Filter>ヘッダー ファイル\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="player.h">
+      <Filter>ヘッダー ファイル\Model</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

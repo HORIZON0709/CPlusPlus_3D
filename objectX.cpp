@@ -18,7 +18,7 @@
 //***************************
 const int CObjectX::MAX_WORD = 256;		//最大文字数
 
-const char* CObjectX::FILE_NAME = "data/MODEL/model.txt";	//読み込むファイル名
+const char* CObjectX::FILE_NAME = "data/TEXT/model.txt";	//読み込むファイル名
 
 //================================================
 //生成
@@ -281,8 +281,13 @@ void CObjectX::Load()
 			//「＝」を読み込む
 			fscanf(pFile, "%s", &aText[0]);
 
+			char aFileName[MAX_WORD];	//ファイル名読み込み用
+
 			//Xファイルのパスを読み込む
-			fscanf(pFile, "%s", m_pFileName);
+			fscanf(pFile, "%s", &aFileName[0]);
+
+			//読み込んだファイル名を代入
+			m_pFileName = &aFileName[0];
 		}
 		else if (strcmp(&aText[0], "MODELSET") == 0)
 		{//モデルのセット

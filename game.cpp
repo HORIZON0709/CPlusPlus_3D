@@ -17,7 +17,9 @@
 #include "object3D.h"
 
 #include "camera.h"
+#include "light.h"
 #include "polygon3D.h"
+#include "player.h"
 
 #include <assert.h>
 #include <time.h>
@@ -33,7 +35,9 @@ const int CGame::FADE_INTERVAL_GAMECLEAR = 180;	//ƒtƒF[ƒh‚Ü‚Å‚ÌŠÔŠu(ƒQ[ƒ€ƒNƒŠƒ
 //Ã“Iƒƒ“ƒo•Ï”
 //***************************
 CCamera* CGame::m_pCamera = nullptr;		//ƒJƒƒ‰
+CLight* CGame::m_pLight = nullptr;			//ƒ‰ƒCƒg
 CPolygon3D* CGame::m_pPolygon3D = nullptr;	//3Dƒ|ƒŠƒSƒ“
+CPlayer* CGame::m_pPlayer = nullptr;		//ƒvƒŒƒCƒ„[
 
 //================================================
 //ƒJƒƒ‰î•ñ‚ðŽæ“¾
@@ -47,7 +51,6 @@ CCamera* CGame::GetCamera()
 //ƒRƒ“ƒXƒgƒ‰ƒNƒ^
 //================================================
 CGame::CGame() : CMode(MODE::GAME),
-m_nCntStraight(0),
 m_nCntIntervalFade(0),
 m_bFadeOut(false)
 {
@@ -68,7 +71,6 @@ HRESULT CGame::Init()
 	srand((unsigned)time(NULL));	//ƒ‰ƒ“ƒ_ƒ€ŽíŽq‚Ì‰Šú‰»
 
 	//ƒƒ“ƒo•Ï”‚Ì‰Šú‰»
-	m_nCntStraight = 0;
 	m_nCntIntervalFade = 0;
 	m_bFadeOut = false;
 
@@ -78,14 +80,30 @@ HRESULT CGame::Init()
 
 	if (m_pCamera == nullptr)
 	{//NULLƒ`ƒFƒbƒN
-		m_pCamera = new CCamera;	//ƒJƒƒ‰
+		m_pCamera = new CCamera;	//“®“IŠm•Û
 		m_pCamera->Init();			//‰Šú‰»
 	}
 
+	/* ƒ‰ƒCƒg */
+
+	if (m_pLight == nullptr)
+	{//NULLƒ`ƒFƒbƒN
+		m_pLight = new CLight;	//“®“IŠm•Û
+		m_pLight->Init();		//‰Šú‰»
+	}
+
 	/* 3Dƒ|ƒŠƒSƒ“ */
+
 	if (m_pPolygon3D == nullptr)
 	{//NULLƒ`ƒFƒbƒN
 		m_pPolygon3D = CPolygon3D::Create();	//¶¬
+	}
+
+	/* ƒvƒŒƒCƒ„[ */
+
+	if (m_pPlayer == nullptr)
+	{//NULLƒ`ƒFƒbƒN
+		m_pPlayer = CPlayer::Create();	//¶¬
 	}
 
 	//–¾“]
@@ -103,6 +121,7 @@ void CGame::Uninit()
 
 	CObject2D::ReleaseAll();	//‘S‚Ä‚Ì‰ð•ú(2D)
 	CObject3D::ReleaseAll();	//‘S‚Ä‚Ì‰ð•ú(3D)
+	CObjectX::ReleaseAll();		//‘S‚Ä‚Ì‰ð•ú(X)
 
 	/* ƒJƒƒ‰ */
 
@@ -113,9 +132,22 @@ void CGame::Uninit()
 		m_pCamera = nullptr;	//nullptr‚É‚·‚é
 	}
 
+	/* ƒ‰ƒCƒg */
+
+	if (m_pLight != nullptr)
+	{//NULLƒ`ƒFƒbƒN
+		m_pLight->Uninit();	//I—¹
+		delete m_pLight;	//ƒƒ‚ƒŠ‚Ì‰ð•ú
+		m_pLight = nullptr;	//nullptr‚É‚·‚é
+	}
+
 	/* 3Dƒ|ƒŠƒSƒ“ */
 
 	m_pPolygon3D = nullptr;	//nullptr‚É‚·‚é
+
+	/* ƒvƒŒƒCƒ„[ */
+
+	m_pPlayer = nullptr;	//nullptr‚É‚·‚é
 }
 
 //================================================
@@ -128,6 +160,11 @@ void CGame::Update()
 	if (m_pCamera != nullptr)
 	{//NULLƒ`ƒFƒbƒN
 		m_pCamera->Update();	//ƒJƒƒ‰
+	}
+
+	if (m_pLight != nullptr)
+	{//NULLƒ`ƒFƒbƒN
+		m_pLight->Update();	//ƒ‰ƒCƒg
 	}
 
 	if (CApplication::GetInput()->GetKey()->Trigger(CInput::DECISION))

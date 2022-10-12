@@ -18,7 +18,9 @@
 //前方宣言
 //***************************
 class CCamera;
+class CLight;
 class CPolygon3D;
+class CPlayer;
 
 //***************************
 //ゲームクラスの定義
@@ -45,10 +47,11 @@ public: /* オーバーライド関数 */
 
 private: /* 静的メンバ変数 */
 	static CCamera* m_pCamera;			//カメラ
+	static CLight* m_pLight;			//ライト
 	static CPolygon3D* m_pPolygon3D;	//3Dポリゴン
+	static CPlayer* m_pPlayer;			//プレイヤー
 	
 private: /* メンバ変数 */
-	int m_nCntStraight;		//直線敵の生成間隔カウント用
 	int m_nCntIntervalFade;	//フェードするまでの間隔カウント用
 
 	bool m_bFadeOut;	//暗転したかどうか

@@ -1,78 +1,65 @@
 //================================================
 //
-//制作実践基礎[polygon3D.cpp]
+//制作実践基礎[player.cpp]
 //Author:Kishimoto Eiji
 //
 //================================================
 //***************************
 //インクルード
 //***************************
-#include "polygon3D.h"
+#include "player.h"
 #include "application.h"
 #include "renderer.h"
 
 #include <assert.h>
 
-//***************************
-//定数の定義
-//***************************
-const float CPolygon3D::POLYGON_WIDTH = 300.0f;		//横幅
-const float CPolygon3D::POLYGON_HEIGHT = 300.0f;	//縦幅
-
 //================================================
 //生成
 //================================================
-CPolygon3D* CPolygon3D::Create()
+CPlayer* CPlayer::Create()
 {
-	CPolygon3D* pPolygon3D = nullptr;	//ポインタ
+	CPlayer* pPlayer = nullptr;	//ポインタ
 
-	if (pPolygon3D != nullptr)
+	if (pPlayer != nullptr)
 	{//NULLチェック
 		assert(false);
 	}
 
 	/* nullptrの場合 */
 
-	pPolygon3D = new CPolygon3D;	//メモリの動的確保
+	pPlayer = new CPlayer;	//メモリの動的確保
 
-	pPolygon3D->Init();	//初期化
+	pPlayer->Init();	//初期化
 
-	return pPolygon3D;	//動的確保したものを返す
+	return pPlayer;	//動的確保したものを返す
 }
 
 //================================================
 //コンストラクタ
 //================================================
-CPolygon3D::CPolygon3D()
+CPlayer::CPlayer()
 {
 	//タイプの設定
-	CObject::SetObjType(CObject::OBJ_TYPE::BG);
+	CObject::SetObjType(CObject::OBJ_TYPE::PLAYER);
 }
 
 //================================================
 //デストラクタ
 //================================================
-CPolygon3D::~CPolygon3D()
+CPlayer::~CPlayer()
 {
 }
 
 //================================================
 //初期化
 //================================================
-HRESULT CPolygon3D::Init()
+HRESULT CPlayer::Init()
 {
-	CObject3D::Init();	//親クラス
+	CObjectX::Init();	//親クラス
 
 	//位置を設定
 	D3DXVECTOR3 pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	CObject3D::SetPos(pos);
-
-	//サイズを設定
-	D3DXVECTOR3 size = D3DXVECTOR3(POLYGON_WIDTH, 0.0f, POLYGON_HEIGHT);
-	CObject3D::SetSize(size);
-
-	D3DXCOLOR col = D3DXCOLOR(0.5f, 0.5f, 0.5f, 1.0f);
-	CObject3D::SetCol(col);
+	CObjectX::SetPos(pos);
 
 	return S_OK;
 }
@@ -80,23 +67,23 @@ HRESULT CPolygon3D::Init()
 //================================================
 //終了
 //================================================
-void CPolygon3D::Uninit()
+void CPlayer::Uninit()
 {
-	CObject3D::Uninit();	//親クラス
+	CObjectX::Uninit();	//親クラス
 }
 
 //================================================
 //更新
 //================================================
-void CPolygon3D::Update()
+void CPlayer::Update()
 {
-	CObject3D::Update();	//親クラス
+	CObjectX::Update();	//親クラス
 }
 
 //================================================
 //描画
 //================================================
-void CPolygon3D::Draw()
+void CPlayer::Draw()
 {
-	CObject3D::Draw();	//親クラス
+	CObjectX::Draw();	//親クラス
 }
