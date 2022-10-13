@@ -40,19 +40,6 @@ public: /* 静的メンバ関数 */
 	static void UpdateAll();	//全ての更新
 	static void DrawAll();		//全ての描画
 
-	/*
-		オブジェクト情報の取得
-		const int &nIdx ---> インデックス数
-	*/
-	static CObject* GetObjects(int nIdx);
-
-	/*
-		オブジェクト情報の設定
-		const int &nIdx ---> インデックス数
-		void* pObject ---> 任意の型のオブジェクト
-	*/
-	static void SetObject(int nIdx, void* pObject);
-
 public: /* コンストラクタ・デストラクタ */
 	CObject();
 	virtual ~CObject();
@@ -89,6 +76,8 @@ private: /* メンバ変数 */
 	CObject* m_pNext;	//次のオブジェクトへのポインタ
 
 	CObject::OBJ_TYPE objType;	//種類
+
+	bool m_bDeath;	//死亡フラグ
 };
 
 #endif

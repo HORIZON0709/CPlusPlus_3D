@@ -23,17 +23,46 @@ int CObject::m_nNumAll = 0;	//最大数
 //================================================
 void CObject::ReleaseAll()
 {
-	//for (int i = 0; i < MAX_OBJECT; i++)
-	//{
-	//	if (m_apObject[i] == nullptr)
-	//	{//NULLチェック
-	//		continue;
-	//	}
+	//先頭のオブジェクトを保存
+	CObject* pObject = m_pTop;
 
-	//	/* nullptrではない場合 */
+	while (pObject)
+	{//pObjがnullptrになるまで
+		//先頭の一つ後のオブジェクトを保存
+		CObject* pNext = pObject->m_pNext;
 
-	//	m_apObject[i]->Release();	//解放
-	//}
+		//解放
+		pObject->Release();
+
+		//先頭を変更
+		pObject = pNext;
+	}
+
+	//先頭のオブジェクトを保存
+	pObject = m_pTop;
+
+	while (pObject)
+	{
+		if (pObject->m_bDeath)
+		{//死亡フラグが立っている場合
+			//先頭の一つ後のオブジェクトを保存
+			CObject* pNext = pObject->m_pNext;
+
+			//終了
+			pObject->Uninit();
+
+			//先頭を変更
+			pObject = pNext;
+		}
+		else
+		{//死亡フラグが立っていない場合
+			//先頭の一つ後のオブジェクトを保存
+			CObject* pNext = pObject->m_pNext;
+
+			//先頭を変更
+			pObject = pNext;
+		}
+	}
 }
 
 //================================================
@@ -41,18 +70,46 @@ void CObject::ReleaseAll()
 //================================================
 void CObject::UpdateAll()
 {
+	//先頭のオブジェクトを保存
+	CObject* pObject = m_pTop;
 
-	//for (int i = 0; i < MAX_OBJECT; i++)
-	//{
-	//	if (m_apObject[i] == nullptr)
-	//	{//NULLチェック
-	//		continue;
-	//	}
+	while (pObject)
+	{//pObjがnullptrになるまで
+		//先頭の一つ後のオブジェクトを保存
+		CObject* pNext = pObject->m_pNext;
 
-	//	/* nullptrではない場合 */
+		//更新
+		pObject->Update();
 
-	//	m_apObject[i]->Update();	//更新
-	//}
+		//先頭を変更
+		pObject = pNext;
+	}
+
+	//先頭のオブジェクトを保存
+	pObject = m_pTop;
+
+	while (pObject)
+	{
+		if (pObject->m_bDeath)
+		{//死亡フラグが立っている場合
+			//先頭の一つ後のオブジェクトを保存
+			CObject* pNext = pObject->m_pNext;
+
+			//更新
+			pObject->Update();
+
+			//先頭を変更
+			pObject = pNext;
+		}
+		else
+		{//死亡フラグが立っていない場合
+			//先頭の一つ後のオブジェクトを保存
+			CObject* pNext = pObject->m_pNext;
+
+			//先頭を変更
+			pObject = pNext;
+		}
+	}
 }
 
 //================================================
@@ -60,33 +117,46 @@ void CObject::UpdateAll()
 //================================================
 void CObject::DrawAll()
 {
-	//for (int i = 0; i < MAX_OBJECT; i++)
-	//{
-	//	if (m_apObject[i] == nullptr)
-	//	{//NULLチェック
-	//		continue;
-	//	}
+	//先頭のオブジェクトを保存
+	CObject* pObject = m_pTop;
 
-	//	/* nullptrではない場合 */
+	while (pObject)
+	{//pObjがnullptrになるまで
+		//先頭の一つ後のオブジェクトを保存
+		CObject* pNext = pObject->m_pNext;
 
-	//	m_apObject[i]->Draw();	//描画
-	//}
-}
+		//描画
+		pObject->Draw();
 
-//================================================
-//オブジェクト情報の取得
-//================================================
-CObject* CObject::GetObjects(int nIdx)
-{
-	//return m_apObject[nIdx];
-}
+		//先頭を変更
+		pObject = pNext;
+	}
 
-//================================================
-//オブジェクト情報の設定
-//================================================
-void CObject::SetObject(int nIdx, void* pObject)
-{
-	//m_apObject[nIdx] = (CObject*)pObject;
+	//先頭のオブジェクトを保存
+	pObject = m_pTop;
+
+	while (pObject)
+	{
+		if (pObject->m_bDeath)
+		{//死亡フラグが立っている場合
+			//先頭の一つ後のオブジェクトを保存
+			CObject* pNext = pObject->m_pNext;
+
+			//描画
+			pObject->Draw();
+
+			//先頭を変更
+			pObject = pNext;
+		}
+		else
+		{//死亡フラグが立っていない場合
+			//先頭の一つ後のオブジェクトを保存
+			CObject* pNext = pObject->m_pNext;
+
+			//先頭を変更
+			pObject = pNext;
+		}
+	}
 }
 
 //================================================
@@ -162,11 +232,7 @@ void CObject::Release()
 		m_pCurrent = this->m_pPrev;  
 	}
 
-	//終了
-	this->Uninit();
-
-	//メモリの解放
-	delete this;
+	
 
 	//総数を一つ減らす
 	m_nNumAll--;

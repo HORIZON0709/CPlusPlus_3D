@@ -354,56 +354,56 @@ void CObject3D::SetCol(const D3DXCOLOR &col)
 //================================================
 bool CObject3D::Collision(OBJ_TYPE myType, OBJ_TYPE targetType)
 {
-	for (int i = 0; i < MAX_OBJECT; i++)
-	{
-		CObject* pObjectTarget = GetObjects(i);	//対象の情報の取得
+	//for (int i = 0; i < MAX_OBJECT; i++)
+	//{
+	//	CObject* pObjectTarget = GetObjects(i);	//対象の情報の取得
 
-		if (pObjectTarget == nullptr || pObjectTarget == this)
-		{//NULLチェック
-			continue;
-		}
+	//	if (pObjectTarget == nullptr || pObjectTarget == this)
+	//	{//NULLチェック
+	//		continue;
+	//	}
 
-		/* 「nullptrではない」かつ「対象と自身が同じではない」場合 */
+	//	/* 「nullptrではない」かつ「対象と自身が同じではない」場合 */
 
-		CObject::OBJ_TYPE typeTarget = pObjectTarget->GetObjType();	//タイプの取得
+	//	CObject::OBJ_TYPE typeTarget = pObjectTarget->GetObjType();	//タイプの取得
 
-		if (!(((this->GetObjType() == myType) && (typeTarget == targetType))))
-		{//「自身のタイプ」と「対象のタイプ」が引数と一致しない場合
-			continue;
-		}
+	//	if (!(((this->GetObjType() == myType) && (typeTarget == targetType))))
+	//	{//「自身のタイプ」と「対象のタイプ」が引数と一致しない場合
+	//		continue;
+	//	}
 
-		/* 「自身のタイプ」と「対象のタイプ」が引数と一致した場合 */
+	//	/* 「自身のタイプ」と「対象のタイプ」が引数と一致した場合 */
 
-		//自身の情報をそれぞれ取得
-		D3DXVECTOR3 posMyself = this->GetPos();		//位置
-		D3DXVECTOR2 sizeMyself = this->GetSize();	//サイズ
+	//	//自身の情報をそれぞれ取得
+	//	D3DXVECTOR3 posMyself = this->GetPos();		//位置
+	//	D3DXVECTOR2 sizeMyself = this->GetSize();	//サイズ
 
-		/* 自身の判定用 */
-		float fLeft		= (posMyself.x - (sizeMyself.x * 0.5f));	//左端
-		float fRight	= (posMyself.x + (sizeMyself.x * 0.5f));	//右端
-		float fTop		= (posMyself.y + (sizeMyself.y * 0.5f));	//上端
-		float fBottom	= (posMyself.y - (sizeMyself.y * 0.5f));	//下端
+	//	/* 自身の判定用 */
+	//	float fLeft		= (posMyself.x - (sizeMyself.x * 0.5f));	//左端
+	//	float fRight	= (posMyself.x + (sizeMyself.x * 0.5f));	//右端
+	//	float fTop		= (posMyself.y + (sizeMyself.y * 0.5f));	//上端
+	//	float fBottom	= (posMyself.y - (sizeMyself.y * 0.5f));	//下端
 
-		CObject3D* pObjTarget3D = (CObject3D*)pObjectTarget;	//Object3D型にキャスト
+	//	CObject3D* pObjTarget3D = (CObject3D*)pObjectTarget;	//Object3D型にキャスト
 
-		//対象の情報をそれぞれ取得
-		D3DXVECTOR3 posTarget = pObjTarget3D->GetPos();	//位置
-		D3DXVECTOR2 sizeTarget = pObjTarget3D->GetSize();	//サイズ
+	//	//対象の情報をそれぞれ取得
+	//	D3DXVECTOR3 posTarget = pObjTarget3D->GetPos();	//位置
+	//	D3DXVECTOR2 sizeTarget = pObjTarget3D->GetSize();	//サイズ
 
-		/* 対象の判定用 */
-		float fLeftTarget	= (posTarget.x - (sizeTarget.x * 0.5f));	//左端
-		float fRightTarget	= (posTarget.x + (sizeTarget.x * 0.5f));	//右端
-		float fTopTarget	= (posTarget.y + (sizeTarget.y * 0.5f));	//上端
-		float fBottomTarget = (posTarget.y - (sizeTarget.y * 0.5f));	//下端
+	//	/* 対象の判定用 */
+	//	float fLeftTarget	= (posTarget.x - (sizeTarget.x * 0.5f));	//左端
+	//	float fRightTarget	= (posTarget.x + (sizeTarget.x * 0.5f));	//右端
+	//	float fTopTarget	= (posTarget.y + (sizeTarget.y * 0.5f));	//上端
+	//	float fBottomTarget = (posTarget.y - (sizeTarget.y * 0.5f));	//下端
 
-		if (fLeft < fRightTarget
-			&& fRight > fLeftTarget
-			&& fTop > fBottomTarget
-			&& fBottom < fTopTarget)
-		{//「自身」が「対象の範囲内」に来た場合
-			return true;	//「当たった」を返す
-		}
-	}
+	//	if (fLeft < fRightTarget
+	//		&& fRight > fLeftTarget
+	//		&& fTop > fBottomTarget
+	//		&& fBottom < fTopTarget)
+	//	{//「自身」が「対象の範囲内」に来た場合
+	//		return true;	//「当たった」を返す
+	//	}
+	//}
 
 	return false;	//「当たっていない」を返す
 }
