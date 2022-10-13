@@ -28,13 +28,13 @@ void CObject::ReleaseAll()
 
 	while (pObject)
 	{//pObjがnullptrになるまで
-		//先頭の一つ後のオブジェクトを保存
+		//「保存したオブジェクト」の「一つ後のオブジェクト」を保存
 		CObject* pNext = pObject->m_pNext;
 
 		//解放
 		pObject->Release();
 
-		//先頭を変更
+		//「一つ後のオブジェクト」に変更
 		pObject = pNext;
 	}
 
@@ -45,21 +45,21 @@ void CObject::ReleaseAll()
 	{
 		if (pObject->m_bDeath)
 		{//死亡フラグが立っている場合
-			//先頭の一つ後のオブジェクトを保存
+			//「保存したオブジェクト」の「一つ後のオブジェクト」を保存
 			CObject* pNext = pObject->m_pNext;
 
 			//終了
 			pObject->Uninit();
 
-			//先頭を変更
+			//「一つ後のオブジェクト」に変更
 			pObject = pNext;
 		}
 		else
 		{//死亡フラグが立っていない場合
-			//先頭の一つ後のオブジェクトを保存
+			//「保存したオブジェクト」の「一つ後のオブジェクト」を保存
 			CObject* pNext = pObject->m_pNext;
 
-			//先頭を変更
+			//「一つ後のオブジェクト」に変更
 			pObject = pNext;
 		}
 	}
@@ -75,13 +75,13 @@ void CObject::UpdateAll()
 
 	while (pObject)
 	{//pObjがnullptrになるまで
-		//先頭の一つ後のオブジェクトを保存
+		//「保存したオブジェクト」の「一つ後のオブジェクト」を保存
 		CObject* pNext = pObject->m_pNext;
 
 		//更新
 		pObject->Update();
 
-		//先頭を変更
+		//「一つ後のオブジェクト」に変更
 		pObject = pNext;
 	}
 
@@ -92,13 +92,13 @@ void CObject::UpdateAll()
 	{
 		if (pObject->m_bDeath)
 		{//死亡フラグが立っている場合
-			//先頭の一つ後のオブジェクトを保存
+			//「保存したオブジェクト」の「一つ後のオブジェクト」を保存
 			CObject* pNext = pObject->m_pNext;
 
 			//更新
 			pObject->Update();
 
-			//先頭を変更
+			//「一つ後のオブジェクト」に変更
 			pObject = pNext;
 		}
 		else
@@ -122,13 +122,13 @@ void CObject::DrawAll()
 
 	while (pObject)
 	{//pObjがnullptrになるまで
-		//先頭の一つ後のオブジェクトを保存
+		//「保存したオブジェクト」の「一つ後のオブジェクト」を保存
 		CObject* pNext = pObject->m_pNext;
 
 		//描画
 		pObject->Draw();
 
-		//先頭を変更
+		//「一つ後のオブジェクト」に変更
 		pObject = pNext;
 	}
 
@@ -139,21 +139,21 @@ void CObject::DrawAll()
 	{
 		if (pObject->m_bDeath)
 		{//死亡フラグが立っている場合
-			//先頭の一つ後のオブジェクトを保存
+			//「保存したオブジェクト」の「一つ後のオブジェクト」を保存
 			CObject* pNext = pObject->m_pNext;
 
 			//描画
 			pObject->Draw();
 
-			//先頭を変更
+			//「一つ後のオブジェクト」に変更
 			pObject = pNext;
 		}
 		else
 		{//死亡フラグが立っていない場合
-			//先頭の一つ後のオブジェクトを保存
+			//「保存したオブジェクト」の「一つ後のオブジェクト」を保存
 			CObject* pNext = pObject->m_pNext;
 
-			//先頭を変更
+			//「一つ後のオブジェクト」に変更
 			pObject = pNext;
 		}
 	}
