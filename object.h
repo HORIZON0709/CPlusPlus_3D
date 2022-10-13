@@ -34,7 +34,6 @@ public: /* 列挙型の定義 */
 
 public: /* 定数の定義 */
 	static const int MAX_OBJECT = 128;		//ポリゴンの最大数
-	//static const int MAX_NUM_PRIORITY = 5;	//優先順位の最大数
 
 public: /* 静的メンバ関数 */
 	static void ReleaseAll();	//全ての解放
@@ -56,7 +55,6 @@ public: /* 静的メンバ関数 */
 
 public: /* コンストラクタ・デストラクタ */
 	CObject();
-	//explicit CObject(const int &nPriority = 3);	//デフォルト引数(引数に値を設定しない場合は「3」になる)
 	virtual ~CObject();
 
 public: /* 純粋仮想関数 */
@@ -81,19 +79,14 @@ public:	/* ObjType */
 	OBJ_TYPE GetObjType();
 
 private: /* 静的メンバ変数 */
-	static CObject* m_apObject[MAX_OBJECT];	//ポインタ
-	//static CObject* m_apObject[MAX_NUM_PRIORITY][MAX_OBJECT];	//ポインタ(優先順位付き)
-
 	static CObject* m_pTop;		//先頭のオブジェクトのポインタ
 	static CObject* m_pCurrent;	//現在(一番後ろ)のオブジェクトのポインタ
 
-	static int m_nNumAll;	//最大数
+	static int m_nNumAll;	//オブジェクトの総数
 	
 private: /* メンバ変数 */
 	CObject* m_pPrev;	//前のオブジェクトへのポインタ
 	CObject* m_pNext;	//次のオブジェクトへのポインタ
-
-	int m_nID;	//格納先の番号
 
 	CObject::OBJ_TYPE objType;	//種類
 };

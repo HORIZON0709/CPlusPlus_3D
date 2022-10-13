@@ -13,7 +13,6 @@
 //***************************
 //静的メンバ変数
 //***************************
-CObject* CObject::m_apObject[MAX_OBJECT] = {};	//ポインタ
 CObject* CObject::m_pTop = nullptr;		//先頭のオブジェクトのポインタ
 CObject* CObject::m_pCurrent = nullptr;	//現在のオブジェクトのポインタ
 
@@ -24,17 +23,17 @@ int CObject::m_nNumAll = 0;	//最大数
 //================================================
 void CObject::ReleaseAll()
 {
-	for (int i = 0; i < MAX_OBJECT; i++)
-	{
-		if (m_apObject[i] == nullptr)
-		{//NULLチェック
-			continue;
-		}
+	//for (int i = 0; i < MAX_OBJECT; i++)
+	//{
+	//	if (m_apObject[i] == nullptr)
+	//	{//NULLチェック
+	//		continue;
+	//	}
 
-		/* nullptrではない場合 */
+	//	/* nullptrではない場合 */
 
-		m_apObject[i]->Release();	//解放
-	}
+	//	m_apObject[i]->Release();	//解放
+	//}
 }
 
 //================================================
@@ -42,17 +41,18 @@ void CObject::ReleaseAll()
 //================================================
 void CObject::UpdateAll()
 {
-	for (int i = 0; i < MAX_OBJECT; i++)
-	{
-		if (m_apObject[i] == nullptr)
-		{//NULLチェック
-			continue;
-		}
 
-		/* nullptrではない場合 */
+	//for (int i = 0; i < MAX_OBJECT; i++)
+	//{
+	//	if (m_apObject[i] == nullptr)
+	//	{//NULLチェック
+	//		continue;
+	//	}
 
-		m_apObject[i]->Update();	//更新
-	}
+	//	/* nullptrではない場合 */
+
+	//	m_apObject[i]->Update();	//更新
+	//}
 }
 
 //================================================
@@ -60,17 +60,17 @@ void CObject::UpdateAll()
 //================================================
 void CObject::DrawAll()
 {
-	for (int i = 0; i < MAX_OBJECT; i++)
-	{
-		if (m_apObject[i] == nullptr)
-		{//NULLチェック
-			continue;
-		}
+	//for (int i = 0; i < MAX_OBJECT; i++)
+	//{
+	//	if (m_apObject[i] == nullptr)
+	//	{//NULLチェック
+	//		continue;
+	//	}
 
-		/* nullptrではない場合 */
+	//	/* nullptrではない場合 */
 
-		m_apObject[i]->Draw();	//描画
-	}
+	//	m_apObject[i]->Draw();	//描画
+	//}
 }
 
 //================================================
@@ -78,7 +78,7 @@ void CObject::DrawAll()
 //================================================
 CObject* CObject::GetObjects(int nIdx)
 {
-	return m_apObject[nIdx];
+	//return m_apObject[nIdx];
 }
 
 //================================================
@@ -86,7 +86,7 @@ CObject* CObject::GetObjects(int nIdx)
 //================================================
 void CObject::SetObject(int nIdx, void* pObject)
 {
-	m_apObject[nIdx] = (CObject*)pObject;
+	//m_apObject[nIdx] = (CObject*)pObject;
 }
 
 //================================================
@@ -96,52 +96,28 @@ CObject::CObject()
 {
 	if (m_pTop == nullptr)
 	{//オブジェクトが一つも無い場合
-		//自身を先頭として代入
+		//自身を先頭として登録
 		m_pTop = this;
+
+		//末尾に自身(先頭)を入れる
+		m_pCurrent = m_pTop;
 		return;
 	}
 
 	/* オブジェクトが1つ以上ある場合 */
 
+	//末尾の次に自身を入れる
 	m_pCurrent->m_pNext = this;
-	m_pTop->m_pPrev = m_pNext;
-	m_pCurrent = this;
 
-	for (int i = 0; i < MAX_OBJECT; i++)
-	{
-		if (m_apObject[i] != nullptr)
-		{//NULLチェック
-			continue;
-		}
+	//自身が一番後ろになる
+	this->m_pPrev = m_pCurrent;
 
-		/* nullptrの場合 */
+	//末尾に自身(先頭)を入れる
+	m_pCurrent = m_pTop;
 
-		m_apObject[i] = this;	//自身のポインタを返す
-
-		m_nID = i;	//自分の番号を設定
-
-		m_nNumAll++;	//数を増やす
-		break;
-	}
+	//総数を一つ増やす
+	m_nNumAll++;
 }
-
-//================================================
-//コンストラクタ(デフォルト引数ver.)
-//================================================
-//CObject::CObject(const int &nPriority /* = 3 */)
-//{
-//	for (int i = 0; i < MAX_OBJECT; i++)
-//	{
-//		if (m_apObject[nPriority][i] != nullptr)
-//		{//NULLチェック
-//			continue;
-//		}
-//
-//		/* nullptrの場合 */
-//
-//
-//	}
-//}
 
 //================================================
 //デストラクタ
@@ -155,20 +131,45 @@ CObject::~CObject()
 //================================================
 void CObject::Release()
 {
-	if (m_apObject[m_nID] == nullptr)
+	if (this == nullptr)
 	{//NULLチェック
 		return;
 	}
 
 	/* nullptrではない場合 */
 
-	int nID = m_nID;	//番号を保存
+	if (this->m_pPrev != nullptr)
+	{//自身の一つ前が存在している場合
+		//「自身の一つ前が持つ、一つ後の情報」に、「自身の一つ後の情報」を接続
+		this->m_pPrev->m_pNext = this->m_pNext;
+	}
 
-	m_apObject[nID]->Uninit();	//終了
-	delete m_apObject[nID];		//メモリの解放
-	m_apObject[nID] = nullptr;	//nullptrにする
+	if (this->m_pNext != nullptr)
+	{//自身の一つ後が存在している場合
+		//「自身の一つ後が持つ、一つ前の情報」に、「自身の一つ前の情報」を接続
+		this->m_pNext->m_pPrev = this->m_pPrev;
+	}
 
-	m_nNumAll--;	//数を減らす
+	if (this->m_pPrev == nullptr)
+	{//自身の一つ前に何も無い場合(自身が先頭)
+		//先頭に、自身の一つ後の情報を設定
+		m_pTop = this->m_pNext;
+	}
+
+	if (this->m_pNext == nullptr)
+	{//自身の一つ後に何も無い場合(自身が末尾)
+		//末尾に、自身の一つ前の情報を設定
+		m_pCurrent = this->m_pPrev;  
+	}
+
+	//終了
+	this->Uninit();
+
+	//メモリの解放
+	delete this;
+
+	//総数を一つ減らす
+	m_nNumAll--;
 }
 
 //================================================
