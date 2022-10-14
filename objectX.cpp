@@ -44,7 +44,7 @@ CObjectX* CObjectX::Create()
 //================================================
 //コンストラクタ
 //================================================
-CObjectX::CObjectX() :
+CObjectX::CObjectX() :CObject::CObject(CObject::PRIORITY::PRIO_MODEL),
 	m_pos(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
 	m_rot(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
 	m_rotDest(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),

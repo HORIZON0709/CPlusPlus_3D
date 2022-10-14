@@ -37,7 +37,7 @@ CObject3D* CObject3D::Create()
 //================================================
 //コンストラクタ
 //================================================
-CObject3D::CObject3D() :
+CObject3D::CObject3D() : CObject::CObject(CObject::PRIORITY::PRIO_POLYGON_3D),
 	m_pTexture(nullptr),
 	m_pVtxBuff(nullptr),
 	m_texture(CTexture::NONE),

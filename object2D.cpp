@@ -37,7 +37,7 @@ CObject2D* CObject2D::Create()
 //================================================
 //コンストラクタ
 //================================================
-CObject2D::CObject2D() :
+CObject2D::CObject2D() : CObject::CObject(CObject::PRIORITY::PRIO_POLYGON_2D),
 	m_pTexture(nullptr),
 	m_pVtxBuff(nullptr),
 	m_pos(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),

@@ -18,8 +18,9 @@
 class CObject
 {/* 基本クラス */
 public: /* 列挙型の定義 */
+	//オブジェクトの種類
 	enum OBJ_TYPE
-	{/* オブジェクトの種類 */
+	{
 		NONE = -1,
 		PLAYER = 0,	//プレイヤー
 		ENEMY,		//敵
@@ -32,13 +33,24 @@ public: /* 列挙型の定義 */
 		MAX
 	};
 
+	//描画の優先順位
+	enum PRIORITY
+	{
+		PRIO_NONE = -1,
+		PRIO_BG = 0,		//背景
+		PRIO_MODEL,			//モデル
+		PRIO_POLYGON_3D,	//3Dポリゴン
+		PRIO_POLYGON_2D,	//2Dポリゴン
+		PRIO_MAX
+	};
+
 public: /* 静的メンバ関数 */
 	static void ReleaseAll();	//全ての解放
 	static void UpdateAll();	//全ての更新
 	static void DrawAll();		//全ての描画
 
 public: /* コンストラクタ・デストラクタ */
-	CObject();
+	CObject(const PRIORITY &priority);
 	virtual ~CObject();
 
 public: /* 純粋仮想関数 */
@@ -61,8 +73,8 @@ public:	/* ObjType */
 	OBJ_TYPE GetObjType();
 
 private: /* 静的メンバ変数 */
-	static CObject* m_pTop;		//先頭のオブジェクトのポインタ
-	static CObject* m_pCurrent;	//現在(一番後ろ)のオブジェクトのポインタ
+	static CObject* m_apTop[PRIORITY::PRIO_MAX];		//先頭のオブジェクトのポインタ
+	static CObject* m_apCurrent[PRIORITY::PRIO_MAX];	//現在(末尾)のオブジェクトのポインタ
 
 	static int m_nNumAll;	//オブジェクトの総数
 	
@@ -70,7 +82,7 @@ private: /* メンバ変数 */
 	CObject* m_pPrev;	//前のオブジェクトへのポインタ
 	CObject* m_pNext;	//次のオブジェクトへのポインタ
 
-	CObject::OBJ_TYPE objType;	//種類
+	CObject::OBJ_TYPE m_objType;	//種類
 
 	bool m_bDeath;	//死亡フラグ
 };
