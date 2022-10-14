@@ -43,25 +43,17 @@ void CObject::ReleaseAll()
 
 	while (pObject)
 	{
+		//「保存したオブジェクト」の「一つ後のオブジェクト」を保存
+		CObject* pNext = pObject->m_pNext;
+
 		if (pObject->m_bDeath)
 		{//死亡フラグが立っている場合
-			//「保存したオブジェクト」の「一つ後のオブジェクト」を保存
-			CObject* pNext = pObject->m_pNext;
-
 			//終了
 			pObject->Uninit();
-
-			//「一つ後のオブジェクト」に変更
-			pObject = pNext;
 		}
-		else
-		{//死亡フラグが立っていない場合
-			//「保存したオブジェクト」の「一つ後のオブジェクト」を保存
-			CObject* pNext = pObject->m_pNext;
 
-			//「一つ後のオブジェクト」に変更
-			pObject = pNext;
-		}
+		//「一つ後のオブジェクト」に変更
+		pObject = pNext;
 	}
 }
 
@@ -90,25 +82,17 @@ void CObject::UpdateAll()
 
 	while (pObject)
 	{
+		//「保存したオブジェクト」の「一つ後のオブジェクト」を保存
+		CObject* pNext = pObject->m_pNext;
+
 		if (pObject->m_bDeath)
 		{//死亡フラグが立っている場合
-			//「保存したオブジェクト」の「一つ後のオブジェクト」を保存
-			CObject* pNext = pObject->m_pNext;
-
 			//更新
 			pObject->Update();
-
-			//「一つ後のオブジェクト」に変更
-			pObject = pNext;
 		}
-		else
-		{//死亡フラグが立っていない場合
-			//先頭の一つ後のオブジェクトを保存
-			CObject* pNext = pObject->m_pNext;
 
-			//先頭を変更
-			pObject = pNext;
-		}
+		//「一つ後のオブジェクト」に変更
+		pObject = pNext;
 	}
 }
 
@@ -137,25 +121,17 @@ void CObject::DrawAll()
 
 	while (pObject)
 	{
+		//「保存したオブジェクト」の「一つ後のオブジェクト」を保存
+		CObject* pNext = pObject->m_pNext;
+
 		if (pObject->m_bDeath)
 		{//死亡フラグが立っている場合
-			//「保存したオブジェクト」の「一つ後のオブジェクト」を保存
-			CObject* pNext = pObject->m_pNext;
-
 			//描画
 			pObject->Draw();
-
-			//「一つ後のオブジェクト」に変更
-			pObject = pNext;
 		}
-		else
-		{//死亡フラグが立っていない場合
-			//「保存したオブジェクト」の「一つ後のオブジェクト」を保存
-			CObject* pNext = pObject->m_pNext;
 
-			//「一つ後のオブジェクト」に変更
-			pObject = pNext;
-		}
+		//「一つ後のオブジェクト」に変更
+		pObject = pNext;
 	}
 }
 
@@ -231,8 +207,6 @@ void CObject::Release()
 		//末尾に、自身の一つ前の情報を設定
 		m_pCurrent = this->m_pPrev;  
 	}
-
-	
 
 	//総数を一つ減らす
 	m_nNumAll--;

@@ -167,24 +167,24 @@ void CGame::Update()
 		m_pLight->Update();	//ライト
 	}
 
-	if (CApplication::GetInput()->GetKey()->Trigger(CInput::DECISION))
-	{//Enterキー押下
-		m_nCntIntervalFade++;	//カウントアップ
+	//if (CApplication::GetInput()->GetKey()->Trigger(CInput::DECISION))
+	//{//Enterキー押下
+	//	m_nCntIntervalFade++;	//カウントアップ
 
-		if (!m_bFadeOut && (m_nCntIntervalFade % FADE_INTERVAL_GAMEOVER == 0))
-		{//暗転していない & カウントが一定数を超えた
-			//暗転
-			CApplication::GetFade()->Set(CFade::STATE::FADE_OUT);
+	//	if (!m_bFadeOut && (m_nCntIntervalFade % FADE_INTERVAL_GAMEOVER == 0))
+	//	{//暗転していない & カウントが一定数を超えた
+	//		//暗転
+	//		CApplication::GetFade()->Set(CFade::STATE::FADE_OUT);
 
-			//暗転した
-			m_bFadeOut = true;
-		}
+	//		//暗転した
+	//		m_bFadeOut = true;
+	//	}
 
-		if (m_bFadeOut && (CApplication::GetFade()->GetState() == CFade::STATE::NONE))
-		{//暗転した & 現在フェードしていない
-			Change(MODE::RESULT);	//モードの設定
-		}
-	}
+	//	if (m_bFadeOut && (CApplication::GetFade()->GetState() == CFade::STATE::NONE))
+	//	{//暗転した & 現在フェードしていない
+	//		Change(MODE::RESULT);	//モードの設定
+	//	}
+	//}
 }
 
 //================================================
