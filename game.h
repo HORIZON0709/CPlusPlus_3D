@@ -21,6 +21,7 @@ class CCamera;
 class CLight;
 class CPolygon3D;
 class CPlayer;
+class CObjectMesh;
 
 //***************************
 //ゲームクラスの定義
@@ -50,6 +51,7 @@ private: /* 静的メンバ変数 */
 	static CLight* m_pLight;			//ライト
 	static CPolygon3D* m_pPolygon3D;	//3Dポリゴン
 	static CPlayer* m_pPlayer;			//プレイヤー
+	static CObjectMesh* m_pMesh;
 	
 private: /* メンバ変数 */
 	int m_nCntIntervalFade;	//フェードするまでの間隔カウント用

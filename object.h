@@ -38,6 +38,7 @@ public: /* 列挙型の定義 */
 	{
 		PRIO_NONE = -1,
 		PRIO_BG = 0,		//背景
+		PRIO_MESH,			//メッシュ
 		PRIO_MODEL,			//モデル
 		PRIO_POLYGON_3D,	//3Dポリゴン
 		PRIO_POLYGON_2D,	//2Dポリゴン

@@ -126,6 +126,9 @@
     <ClCompile Include="debug_proc.cpp">
       <Filter>ソース ファイル\Main</Filter>
     </ClCompile>
+    <ClCompile Include="objectMesh.cpp">
+      <Filter>ソース ファイル\Object</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mode.h">
@@ -190,6 +193,9 @@
     </ClInclude>
     <ClInclude Include="debug_proc.h">
       <Filter>ヘッダー ファイル\Main</Filter>
+    </ClInclude>
+    <ClInclude Include="objectMesh.h">
+      <Filter>ヘッダー ファイル\Object</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
