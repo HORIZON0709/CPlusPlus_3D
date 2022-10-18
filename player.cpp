@@ -11,6 +11,8 @@
 #include "application.h"
 #include "renderer.h"
 #include "input.h"
+#include "game.h"
+#include "objectMesh.h"
 
 #include <assert.h>
 

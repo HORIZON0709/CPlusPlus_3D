@@ -19,6 +19,8 @@
 class CObjectMesh : public CObject
 {/* CObjectの派生クラス */
 private: /* 定数の定義 */
+	static const int NUM_VERTEX;	//1ポリゴンの頂点数
+
 	static const int NUM_BLK_X;	//ブロック数(X軸)
 	static const int NUM_BLK_Z;	//ブロック数(Z軸)
 
@@ -60,7 +62,28 @@ public: /* Rot */
 	//向きを取得
 	D3DXVECTOR3 GetRot();
 
-private: /* メンバ関数 */
+public: /* メンバ関数 */
+	/*
+		当たり判定
+		D3DXVECTOR3* pPos ---> 位置のポインタ
+	*/
+	bool Collision(D3DXVECTOR3* pPos);
+
+	/*
+		2Dベクトルの内積
+		D3DXVECTOR3* vec1 ---> 任意のベクトル1
+		D3DXVECTOR3* vec2 ---> 任意のベクトル2
+	*/
+	float Vec2Dot(D3DXVECTOR3* vec1, D3DXVECTOR3* vec2);
+
+	/*
+		2Dベクトルの外積
+		D3DXVECTOR3* vec1 ---> 任意のベクトル1
+		D3DXVECTOR3* vec2 ---> 任意のベクトル2
+	*/
+	float Vec2Cross(D3DXVECTOR3* vec1, D3DXVECTOR3* vec2);
+
+private:
 	int AskVtx();	//頂点数を求める
 	int AskIdx();	//インデックス数を求める
 	int AskPol();	//ポリゴン数を求める

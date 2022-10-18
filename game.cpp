@@ -39,7 +39,7 @@ CCamera* CGame::m_pCamera = nullptr;		//カメラ
 CLight* CGame::m_pLight = nullptr;			//ライト
 CPolygon3D* CGame::m_pPolygon3D = nullptr;	//3Dポリゴン
 CPlayer* CGame::m_pPlayer = nullptr;		//プレイヤー
-CObjectMesh* CGame::m_pMesh = nullptr;
+CObjectMesh* CGame::m_pMesh = nullptr;		//メッシュ
 
 //================================================
 //カメラ情報を取得
@@ -47,6 +47,38 @@ CObjectMesh* CGame::m_pMesh = nullptr;
 CCamera* CGame::GetCamera()
 {
 	return m_pCamera;
+}
+
+//================================================
+//ライト情報を取得
+//================================================
+CLight* CGame::GetLight()
+{
+	return m_pLight;
+}
+
+//================================================
+//3Dポリゴン情報を取得
+//================================================
+CPolygon3D* CGame::GetPolygon3D()
+{
+	return m_pPolygon3D;
+}
+
+//================================================
+//プレイヤー情報を取得
+//================================================
+CPlayer* CGame::GetPlayer()
+{
+	return m_pPlayer;
+}
+
+//================================================
+//メッシュ情報を取得
+//================================================
+CObjectMesh* CGame::GetMesh()
+{
+	return m_pMesh;
 }
 
 //================================================
@@ -160,7 +192,9 @@ void CGame::Uninit()
 
 	m_pPlayer = nullptr;	//nullptrにする
 
-	m_pMesh = nullptr;
+	/* メッシュ */
+
+	m_pMesh = nullptr;	//nullptrにする
 }
 
 //================================================

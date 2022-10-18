@@ -34,7 +34,11 @@ private: /* 定数の定義 */
 	static const int FADE_INTERVAL_GAMECLEAR;	//フェードまでの間隔(ゲームクリア時)
 
 public: /* 静的メンバ関数 */
-	static CCamera* GetCamera();	//カメラの情報を取得
+	static CCamera* GetCamera();		//カメラの情報を取得
+	static CLight* GetLight();			//ライトの情報を取得
+	static CPolygon3D* GetPolygon3D();	//3Dポリゴンの情報を取得
+	static CPlayer* GetPlayer();		//プレイヤーの情報を取得
+	static CObjectMesh* GetMesh();		//メッシュの情報を取得
 	
 public: /* コンストラクタ・デストラクタ */
 	CGame();
@@ -51,7 +55,7 @@ private: /* 静的メンバ変数 */
 	static CLight* m_pLight;			//ライト
 	static CPolygon3D* m_pPolygon3D;	//3Dポリゴン
 	static CPlayer* m_pPlayer;			//プレイヤー
-	static CObjectMesh* m_pMesh;
+	static CObjectMesh* m_pMesh;		//メッシュ
 	
 private: /* メンバ変数 */
 	int m_nCntIntervalFade;	//フェードするまでの間隔カウント用

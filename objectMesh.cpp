@@ -16,6 +16,8 @@
 //***************************
 //定数の定義
 //***************************
+const int CObjectMesh::NUM_VERTEX = 3;	//1ポリゴンの頂点数
+
 const int CObjectMesh::NUM_BLK_X = 10;	//ブロック数(X軸)
 const int CObjectMesh::NUM_BLK_Z = 10;	//ブロック数(Z軸)
 
@@ -288,6 +290,134 @@ void CObjectMesh::SetRot(const D3DXVECTOR3 &rot)
 D3DXVECTOR3 CObjectMesh::GetRot()
 {
 	return m_rot;
+}
+
+//================================================
+//当たり判定
+//================================================
+bool CObjectMesh::Collision(D3DXVECTOR3* pPos)
+{
+	D3DXMATRIX mtxTrans, mtxWorld;	//計算用マトリックス
+
+	//ワールドマトリックスの初期化
+	D3DXMatrixIdentity(&mtxWorld);
+
+	//位置を反映
+	D3DXMatrixTranslation(&mtxTrans, m_pos.x, m_pos.y, m_pos.z);
+	D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxTrans);
+
+	CObject3D::VERTEX_3D* pVtx = nullptr;	//頂点情報へのポインタ
+
+	WORD* pIdx = nullptr;	//インデックス情報へのポインタ
+
+	//頂点バッファをロックし、頂点情報へのポインタを取得
+	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
+
+	//インデックスバッファをロック
+	m_pIdxBuff->Lock(0, 0, (void**)&pIdx, 0);
+
+	bool bCollsion = false;	//当たったかどうか
+
+	for (int i = 0; i < m_nNumPol; i++)
+	{
+		if (pIdx[i] == pIdx[i + 1] ||
+			pIdx[i] == pIdx[i + 2] ||
+			pIdx[i + 1] == pIdx[i + 2])
+		{//縮退ポリゴンを形成している頂点だった場合
+			continue;
+		}
+
+		/* 上記以外の頂点の場合 */
+
+		D3DXVECTOR3 vecPos[NUM_VERTEX] = {};	//ベクトルの位置
+
+		for (int nVtx = 0; nVtx < NUM_VERTEX; nVtx++)
+		{
+			int nIdx = pIdx[i + nVtx];	//インデックス番号
+
+			//インデックス番号に応じた頂点の位置を代入
+			vecPos[i] = pVtx[nIdx].pos;
+		}
+
+		for (int nVtx = 0; nVtx < NUM_VERTEX; nVtx++)
+		{
+			//位置の反映
+			D3DXVec3TransformCoord(&vecPos[nVtx], &vecPos[nVtx], &mtxWorld);
+		}
+
+		int nInLine = 0;	//ポリゴンの内側にいるかどうか
+
+		for (int nVtx = 0; nVtx < NUM_VERTEX; nVtx++)
+		{
+			//頂点間のベクトルを求める
+			D3DXVECTOR3 vec = vecPos[(nVtx + 1) % NUM_VERTEX] - vecPos[nVtx];
+
+			//現在の位置と始点までのベクトル
+			D3DXVECTOR3 diffVec = *pPos - vecPos[nVtx];
+
+			//外積計算
+			float fVecLine = Vec2Cross(&diffVec, &vec);
+
+			if ((i % 2 == 0 && fVecLine > 0.0f) ||
+				(i % 2 != 0 && fVecLine < 0.0f))
+			{//内側にいる
+				nInLine++;	//判定した一辺をカウントする
+			}
+			else
+			{//外側にいる
+				break;
+			}
+		}
+
+		if (nInLine == NUM_VERTEX)
+		{//三角形の中にいる
+			D3DXVECTOR3 nor = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	//法線ベクトル
+
+			//ベクトルを求める
+			D3DXVECTOR3 vec1 = vecPos[1] - vecPos[0];
+			D3DXVECTOR3 vec2 = vecPos[2] - vecPos[0];
+
+			//法線を求める
+			D3DXVec3Cross(&nor, &vec1, &vec2);
+
+			//正規化
+			D3DXVec3Normalize(&nor, &nor);
+
+			//位置の設定
+			float fPosX = nor.x * (pPos->x - vecPos[0].x);
+			float fPosZ = nor.z * (pPos->z - vecPos[0].z);
+
+			//Y座標を求める
+			pPos->y = (vecPos[0].y - ((fPosX + fPosZ) / nor.y));
+			
+			//当たった
+			bCollsion = true;
+		}
+	}
+
+	//インデックスバッファをアンロック
+	m_pIdxBuff->Unlock();
+
+	//頂点バッファをアンロックする
+	m_pVtxBuff->Unlock();
+
+	return bCollsion;	//判定を返す
+}
+
+//================================================
+// 2Dベクトルの内積
+//================================================
+float CObjectMesh::Vec2Dot(D3DXVECTOR3* vec1, D3DXVECTOR3* vec2)
+{
+	return (vec1->x * vec2->x) + (vec1->z * vec2->z);
+}
+
+//================================================
+// 2Dベクトルの外積
+//================================================
+float CObjectMesh::Vec2Cross(D3DXVECTOR3* vec1, D3DXVECTOR3* vec2)
+{
+	return (vec1->x * vec2->z) - (vec1->z * vec2->x);
 }
 
 //================================================
