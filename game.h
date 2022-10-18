@@ -57,5 +57,6 @@ private: /* メンバ変数 */
 	int m_nCntIntervalFade;	//フェードするまでの間隔カウント用
 
 	bool m_bFadeOut;	//暗転したかどうか
+	bool m_bWireFrame;	//ワイヤーフレーム表示切り替え
 };
 #endif

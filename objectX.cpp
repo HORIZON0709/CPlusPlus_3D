@@ -46,6 +46,7 @@ CObjectX* CObjectX::Create()
 //================================================
 CObjectX::CObjectX() :CObject::CObject(CObject::PRIORITY::PRIO_MODEL),
 	m_pos(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
+	m_move(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
 	m_rot(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
 	m_rotDest(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
 	m_vtxMax(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
@@ -74,6 +75,7 @@ HRESULT CObjectX::Init()
 {
 	//ÉÅÉìÉoïœêîÇÃèâä˙ê›íË
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_rotDest = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_vtxMax = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -224,7 +226,7 @@ void CObjectX::Draw()
 //================================================
 void CObjectX::SetPos(const D3DXVECTOR3 &pos)
 {
-	m_pos = pos;	//à íuÇê›íË
+	m_pos = pos;
 }
 
 //================================================
@@ -233,6 +235,22 @@ void CObjectX::SetPos(const D3DXVECTOR3 &pos)
 D3DXVECTOR3 CObjectX::GetPos()
 {
 	return m_pos;
+}
+
+//================================================
+//à⁄ìÆó Çê›íË
+//================================================
+void CObjectX::SetMove(const D3DXVECTOR3 &move)
+{
+	m_move = move;
+}
+
+//================================================
+//à⁄ìÆó ÇéÊìæ
+//================================================
+D3DXVECTOR3 CObjectX::GetMove()
+{
+	return m_move;
 }
 
 //================================================

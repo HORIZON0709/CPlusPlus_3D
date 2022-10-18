@@ -46,6 +46,16 @@ public: /* Pos */
 	//位置を取得
 	D3DXVECTOR3 GetPos();
 
+public: /* Move */
+	/*
+		移動量を設定
+		const D3DXVECTOR3 &move ---> 任意の移動量
+	*/
+	void SetMove(const D3DXVECTOR3 &move);
+
+	//移動量を取得
+	D3DXVECTOR3 GetMove();
+
 public: /* Collision */
 	/*
 		当たり判定
@@ -66,6 +76,7 @@ private: /* メンバ関数 */
 
 private: /* メンバ変数 */
 	D3DXVECTOR3 m_pos;		//位置
+	D3DXVECTOR3 m_move;		//移動量
 	D3DXVECTOR3 m_rot;		//現在の向き
 	D3DXVECTOR3 m_rotDest;	//目的の向き
 	D3DXVECTOR3 m_vtxMax;	//最大値

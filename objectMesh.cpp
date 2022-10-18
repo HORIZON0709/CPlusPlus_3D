@@ -16,8 +16,8 @@
 //***************************
 //定数の定義
 //***************************
-const int CObjectMesh::NUM_BLK_X = 3;	//ブロック数(X軸)
-const int CObjectMesh::NUM_BLK_Z = 3;	//ブロック数(Z軸)
+const int CObjectMesh::NUM_BLK_X = 10;	//ブロック数(X軸)
+const int CObjectMesh::NUM_BLK_Z = 10;	//ブロック数(Z軸)
 
 const int CObjectMesh::NUM_VTX_X = (NUM_BLK_X + 1);	//頂点数(X軸)
 const int CObjectMesh::NUM_VTX_Z = (NUM_BLK_Z + 1);	//頂点数(Z軸)
@@ -84,7 +84,7 @@ HRESULT CObjectMesh::Init()
 
 	//メンバ変数の初期設定
 	m_texture = CTexture::TEXTURE::NONE;
-	m_pos = D3DXVECTOR3(0.0f, 50.0f, 0.0f);
+	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_fWidth = MESH_SIZE;
 	m_fHeight = MESH_SIZE;
@@ -130,7 +130,7 @@ HRESULT CObjectMesh::Init()
 		pVtx[i].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
 
 		//頂点カラーの設定
-		pVtx[i].col = D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f);
+		pVtx[i].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 
 		float fU = (float)(i % NUM_VTX_X);	//U座標
 		float fV = (float)(i / NUM_VTX_X);	//V座標

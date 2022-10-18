@@ -61,9 +61,9 @@ public: /* Rot */
 	D3DXVECTOR3 GetRot();
 
 private: /* メンバ関数 */
-	int AskVtx();
-	int AskIdx();
-	int AskPol();
+	int AskVtx();	//頂点数を求める
+	int AskIdx();	//インデックス数を求める
+	int AskPol();	//ポリゴン数を求める
 
 private: /* メンバ変数 */
 	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff;	//頂点バッファへのポインタ

@@ -54,7 +54,8 @@ CCamera* CGame::GetCamera()
 //================================================
 CGame::CGame() : CMode(MODE::GAME),
 m_nCntIntervalFade(0),
-m_bFadeOut(false)
+m_bFadeOut(false),
+m_bWireFrame(false)
 {
 }
 
@@ -75,6 +76,7 @@ HRESULT CGame::Init()
 	//メンバ変数の初期化
 	m_nCntIntervalFade = 0;
 	m_bFadeOut = false;
+	m_bWireFrame = false;
 
 	//***** 生成 *****//
 
@@ -96,10 +98,10 @@ HRESULT CGame::Init()
 
 	/* 3Dポリゴン */
 
-	if (m_pPolygon3D == nullptr)
-	{//NULLチェック
-		m_pPolygon3D = CPolygon3D::Create();	//生成
-	}
+	//if (m_pPolygon3D == nullptr)
+	//{//NULLチェック
+	//	m_pPolygon3D = CPolygon3D::Create();	//生成
+	//}
 
 	/* プレイヤー */
 
@@ -176,6 +178,27 @@ void CGame::Update()
 	if (m_pLight != nullptr)
 	{//NULLチェック
 		m_pLight->Update();	//ライト
+	}
+
+	//ワイヤーフレームの切り替え
+	if (CApplication::GetInputKeyboard()->GetTrigger(DIK_F2))
+	{//F2キー
+		//表示:非表示の切り替え
+		m_bWireFrame = m_bWireFrame ? false : true;
+
+		//デバイスの取得
+		LPDIRECT3DDEVICE9 pDevice = CApplication::GetRenderer()->GetDevice();
+
+		if (m_bWireFrame)
+		{//表示中
+			//ワイヤーフレームモードの設定
+			pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
+		}
+		else
+		{//非表示中
+			//元に戻す
+			pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
+		}
 	}
 
 	//if (CApplication::GetInput()->GetKey()->Trigger(CInput::DECISION))
