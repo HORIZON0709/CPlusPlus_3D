@@ -82,7 +82,6 @@ public: /* メンバ関数 */
 		D3DXVECTOR3* vec2 ---> 任意のベクトル2
 	*/
 	float Vec2Cross(D3DXVECTOR3* vec1, D3DXVECTOR3* vec2);
-
 private:
 	int AskVtx();	//頂点数を求める
 	int AskIdx();	//インデックス数を求める
