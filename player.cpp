@@ -89,6 +89,11 @@ void CPlayer::Update()
 
 	//ˆÚ“®
 	Move();
+
+	D3DXVECTOR3 pos = CObjectX::GetPos();	//ˆÊ’u‚ðŽæ“¾
+
+	//ƒƒbƒVƒ…‚Æ‚Ì“–‚½‚è”»’è
+	CGame::GetMesh()->Collision(&pos);
 }
 
 //================================================

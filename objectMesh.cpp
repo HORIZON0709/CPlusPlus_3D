@@ -125,6 +125,8 @@ HRESULT CObjectMesh::Init()
 		float fX = (float)(((i % NUM_VTX_X) - (NUM_BLK_X * 0.5f)) * MESH_SIZE);			//X座標
 		float fZ = (float)(((i / NUM_VTX_X) - (NUM_BLK_X * 0.5f)) * MESH_SIZE * -1.0f);	//Z座標
 
+		//float fY = sinf();
+
 		//頂点座標の設定
 		pVtx[i].pos = D3DXVECTOR3(fX, 0.0f, fZ);
 
@@ -336,7 +338,7 @@ bool CObjectMesh::Collision(D3DXVECTOR3* pPos)
 			int nIdx = pIdx[i + nVtx];	//インデックス番号
 
 			//インデックス番号に応じた頂点の位置を代入
-			vecPos[i] = pVtx[nIdx].pos;
+			vecPos[nVtx] = pVtx[nIdx].pos;
 		}
 
 		for (int nVtx = 0; nVtx < NUM_VERTEX; nVtx++)
