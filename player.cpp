@@ -94,6 +94,8 @@ void CPlayer::Update()
 
 	//ƒƒbƒVƒ…‚Æ‚Ì“–‚½‚è”»’è
 	CGame::GetMesh()->Collision(&pos);
+
+	CObjectX::SetPos(pos);
 }
 
 //================================================

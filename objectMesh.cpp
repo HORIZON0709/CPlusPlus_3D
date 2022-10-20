@@ -18,8 +18,8 @@
 //***************************
 const int CObjectMesh::NUM_VERTEX = 3;	//1ポリゴンの頂点数
 
-const int CObjectMesh::NUM_BLK_X = 10;	//ブロック数(X軸)
-const int CObjectMesh::NUM_BLK_Z = 10;	//ブロック数(Z軸)
+const int CObjectMesh::NUM_BLK_X = 30;	//ブロック数(X軸)
+const int CObjectMesh::NUM_BLK_Z = 30;	//ブロック数(Z軸)
 
 const int CObjectMesh::NUM_VTX_X = (NUM_BLK_X + 1);	//頂点数(X軸)
 const int CObjectMesh::NUM_VTX_Z = (NUM_BLK_Z + 1);	//頂点数(Z軸)
@@ -125,10 +125,10 @@ HRESULT CObjectMesh::Init()
 		float fX = (float)(((i % NUM_VTX_X) - (NUM_BLK_X * 0.5f)) * MESH_SIZE);			//X座標
 		float fZ = (float)(((i / NUM_VTX_X) - (NUM_BLK_X * 0.5f)) * MESH_SIZE * -1.0f);	//Z座標
 
-		//float fY = sinf();
+		float fY = sinf(D3DX_PI / 6 * i) * 20.0f;
 
 		//頂点座標の設定
-		pVtx[i].pos = D3DXVECTOR3(fX, 0.0f, fZ);
+		pVtx[i].pos = D3DXVECTOR3(fX, fY, fZ);
 
 		//各頂点の法線の設定
 		pVtx[i].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
@@ -146,14 +146,13 @@ HRESULT CObjectMesh::Init()
 	//頂点バッファをアンロックする
 	m_pVtxBuff->Unlock();
 
-	//***** インデックス情報の初期化 *****//
+	//***** インデックス情報の設定 *****//
 
 	WORD* pIdx = nullptr;	//インデックス情報へのポインタ
 
 	//インデックスバッファをロック
 	m_pIdxBuff->Lock(0, 0, (void**)&pIdx, 0);
 
-	//インデックスの設定
 	for (int z = 0, n = 0; z < NUM_BLK_Z; z++)
 	{
 		for (int x = 0; x < NUM_VTX_X; x++)
@@ -175,6 +174,89 @@ HRESULT CObjectMesh::Init()
 
 	//インデックスバッファをアンロック
 	m_pIdxBuff->Unlock();
+
+	//***** 法線の設定 *****//
+
+	D3DXMATRIX mtxTrans, mtxWorld;	//計算用マトリックス
+
+	//ワールドマトリックスの初期化
+	D3DXMatrixIdentity(&mtxWorld);
+
+	//位置を反映
+	D3DXMatrixTranslation(&mtxTrans, m_pos.x, m_pos.y, m_pos.z);
+	D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxTrans);
+
+	pVtx = nullptr;	//頂点情報へのポインタをnullptrに
+
+	pIdx = nullptr;	//インデックス情報へのポインタをnullptrに
+
+	//頂点バッファをロックし、頂点情報へのポインタを取得
+	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
+
+	//インデックスバッファをロック
+	m_pIdxBuff->Lock(0, 0, (void**)&pIdx, 0);
+
+	D3DXVECTOR3 norSurface[NUM_VTX_X * NUM_VTX_Z] = {};	//面法線ベクトル
+
+	for (int i = 0; i < m_nNumPol; i++)
+	{
+		if (pIdx[i] == pIdx[i + 1] ||
+			pIdx[i] == pIdx[i + 2] ||
+			pIdx[i + 1] == pIdx[i + 2])
+		{//縮退ポリゴンを形成している頂点だった場合
+			continue;
+		}
+
+		/* 上記以外の頂点の場合 */
+
+		D3DXVECTOR3 vecPos[NUM_VERTEX] = {};	//ベクトルの位置
+
+		for (int nVtx = 0; nVtx < NUM_VERTEX; nVtx++)
+		{
+			int nIdx = pIdx[i + nVtx];	//インデックス番号
+
+			//インデックス番号に応じた頂点の位置を代入
+			vecPos[nVtx] = pVtx[nIdx].pos;
+		}
+
+		for (int nVtx = 0; nVtx < NUM_VERTEX; nVtx++)
+		{
+			//位置の反映
+			D3DXVec3TransformCoord(&vecPos[nVtx], &vecPos[nVtx], &mtxWorld);
+		}
+
+		D3DXVECTOR3 nor = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	//法線ベクトル
+
+		//ベクトルを求める
+		D3DXVECTOR3 vec1 = vecPos[1] - vecPos[0];
+		D3DXVECTOR3 vec2 = vecPos[2] - vecPos[0];
+
+		//法線を求める
+		D3DXVec3Cross(&nor, &vec1, &vec2);
+
+		//正規化
+		D3DXVec3Normalize(&nor, &nor);
+
+		//頂点毎の法線ベクトルを加算
+		norSurface[pIdx[i]] += nor;
+
+		//正規化
+		D3DXVec3Normalize(&norSurface[pIdx[i]], &norSurface[pIdx[i]]);
+	}
+
+	for (int i = 0; i < m_nNumVtx; i++)
+	{
+		//法線の設定
+		pVtx[pIdx[i + 0]].nor = norSurface[i];
+		pVtx[pIdx[i + 1]].nor = norSurface[i];
+		pVtx[pIdx[i + 2]].nor = norSurface[i];
+	}
+
+	//インデックスバッファをアンロック
+	m_pIdxBuff->Unlock();
+
+	//頂点バッファをアンロックする
+	m_pVtxBuff->Unlock();
 
 	return S_OK;
 }
@@ -394,6 +476,14 @@ bool CObjectMesh::Collision(D3DXVECTOR3* pPos)
 			
 			//当たった
 			bCollsion = true;
+
+			if (bCollsion)
+			{//当たっていたら
+				//当たったポリゴンの色を変える
+				pVtx[pIdx[i + 0]].col = D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f);
+				pVtx[pIdx[i + 1]].col = D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f);
+				pVtx[pIdx[i + 2]].col = D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f);
+			}
 		}
 	}
 
