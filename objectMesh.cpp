@@ -18,13 +18,13 @@
 //***************************
 const int CObjectMesh::NUM_VERTEX = 3;	//1ポリゴンの頂点数
 
-const int CObjectMesh::NUM_BLK_X = 30;	//ブロック数(X軸)
-const int CObjectMesh::NUM_BLK_Z = 30;	//ブロック数(Z軸)
+const int CObjectMesh::NUM_BLK_X = 20;	//ブロック数(X軸)
+const int CObjectMesh::NUM_BLK_Z = 20;	//ブロック数(Z軸)
 
 const int CObjectMesh::NUM_VTX_X = (NUM_BLK_X + 1);	//頂点数(X軸)
 const int CObjectMesh::NUM_VTX_Z = (NUM_BLK_Z + 1);	//頂点数(Z軸)
 
-const float CObjectMesh::MESH_SIZE = 50.0f;	//メッシュのサイズ
+const float CObjectMesh::MESH_SIZE = 80.0f;	//メッシュのサイズ
 
 //================================================
 //生成
@@ -125,7 +125,7 @@ HRESULT CObjectMesh::Init()
 		float fX = (float)(((i % NUM_VTX_X) - (NUM_BLK_X * 0.5f)) * MESH_SIZE);			//X座標
 		float fZ = (float)(((i / NUM_VTX_X) - (NUM_BLK_X * 0.5f)) * MESH_SIZE * -1.0f);	//Z座標
 
-		float fY = sinf(D3DX_PI / 6 * i) * 20.0f;
+		float fY = sinf(D3DX_PI / 3 * (i % NUM_VTX_X)) * 30.0f;
 
 		//頂点座標の設定
 		pVtx[i].pos = D3DXVECTOR3(fX, fY, fZ);
@@ -191,12 +191,10 @@ HRESULT CObjectMesh::Init()
 	pIdx = nullptr;	//インデックス情報へのポインタをnullptrに
 
 	//頂点バッファをロックし、頂点情報へのポインタを取得
-	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
+	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0); 
 
 	//インデックスバッファをロック
 	m_pIdxBuff->Lock(0, 0, (void**)&pIdx, 0);
-
-	D3DXVECTOR3 norSurface[NUM_VTX_X * NUM_VTX_Z] = {};	//面法線ベクトル
 
 	for (int i = 0; i < m_nNumPol; i++)
 	{
@@ -209,23 +207,19 @@ HRESULT CObjectMesh::Init()
 
 		/* 上記以外の頂点の場合 */
 
-		D3DXVECTOR3 vecPos[NUM_VERTEX] = {};	//ベクトルの位置
+		D3DXVECTOR3 vecPos[NUM_VERTEX];	//ベクトルの位置
+
+		memset(vecPos, 0, sizeof(vecPos));
 
 		for (int nVtx = 0; nVtx < NUM_VERTEX; nVtx++)
 		{
 			int nIdx = pIdx[i + nVtx];	//インデックス番号
 
-			//インデックス番号に応じた頂点の位置を代入
+			//インデックス番号に応じたポリゴンの頂点の位置を代入
 			vecPos[nVtx] = pVtx[nIdx].pos;
 		}
 
-		for (int nVtx = 0; nVtx < NUM_VERTEX; nVtx++)
-		{
-			//位置の反映
-			D3DXVec3TransformCoord(&vecPos[nVtx], &vecPos[nVtx], &mtxWorld);
-		}
-
-		D3DXVECTOR3 nor = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	//法線ベクトル
+		D3DXVECTOR3 nor = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	//面法線ベクトル
 
 		//ベクトルを求める
 		D3DXVECTOR3 vec1 = vecPos[1] - vecPos[0];
@@ -234,22 +228,23 @@ HRESULT CObjectMesh::Init()
 		//法線を求める
 		D3DXVec3Cross(&nor, &vec1, &vec2);
 
+		if (i % 2 != 0)
+		{
+			nor *= -1;	//ベクトル方向を反転
+		}
+
 		//正規化
 		D3DXVec3Normalize(&nor, &nor);
 
-		//頂点毎の法線ベクトルを加算
-		norSurface[pIdx[i]] += nor;
+		//頂点毎の面法線ベクトルを加算
+		pVtx[pIdx[i + 0]].nor += nor;
+		pVtx[pIdx[i + 1]].nor += nor;
+		pVtx[pIdx[i + 2]].nor += nor;
 
 		//正規化
-		D3DXVec3Normalize(&norSurface[pIdx[i]], &norSurface[pIdx[i]]);
-	}
-
-	for (int i = 0; i < m_nNumVtx; i++)
-	{
-		//法線の設定
-		pVtx[pIdx[i + 0]].nor = norSurface[i];
-		pVtx[pIdx[i + 1]].nor = norSurface[i];
-		pVtx[pIdx[i + 2]].nor = norSurface[i];
+		D3DXVec3Normalize(&pVtx[pIdx[i + 0]].nor, &pVtx[pIdx[i + 0]].nor);
+		D3DXVec3Normalize(&pVtx[pIdx[i + 1]].nor, &pVtx[pIdx[i + 1]].nor);
+		D3DXVec3Normalize(&pVtx[pIdx[i + 2]].nor, &pVtx[pIdx[i + 2]].nor);
 	}
 
 	//インデックスバッファをアンロック
@@ -299,7 +294,7 @@ void CObjectMesh::Draw()
 	D3DXMATRIX mtxRot, mtxTrans;	//計算用マトリックス
 	
 	//ライトを切る
-	pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
+	//pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
 
 	//ワールドマトリックスの初期化
 	D3DXMatrixIdentity(&m_mtxWorld);

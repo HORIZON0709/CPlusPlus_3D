@@ -36,7 +36,7 @@ void CLight::Init()
 
 	//ŠgUŒõ‚Æ•ûŒü‚Ìİ’è—p
 	D3DXCOLOR diffuse = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-	D3DXVECTOR3 vecDir = D3DXVECTOR3(0.2f, -0.8f, -0.4f);
+	D3DXVECTOR3 vecDir = D3DXVECTOR3(1.0f, -0.8f, 0.0f);
 
 	//İ’è
 	Set(0, diffuse, vecDir);
@@ -46,7 +46,7 @@ void CLight::Init()
 	vecDir = D3DXVECTOR3(1.0f, 1.0f, 1.0f);	//•ûŒü‚Ìİ’è
 
 	//İ’è
-	Set(1, diffuse, vecDir);
+	//Set(1, diffuse, vecDir);
 }
 
 //================================================
