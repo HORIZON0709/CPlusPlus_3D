@@ -130,10 +130,10 @@ HRESULT CGame::Init()
 
 	/* 3Dポリゴン */
 
-	//if (m_pPolygon3D == nullptr)
-	//{//NULLチェック
-	//	m_pPolygon3D = CPolygon3D::Create();	//生成
-	//}
+	if (m_pPolygon3D == nullptr)
+	{//NULLチェック
+		m_pPolygon3D = CPolygon3D::Create();	//生成
+	}
 
 	/* プレイヤー */
 
@@ -144,10 +144,10 @@ HRESULT CGame::Init()
 
 	/* メッシュ */
 
-	if (m_pMesh == nullptr)
+	/*if (m_pMesh == nullptr)
 	{
 		m_pMesh = CObjectMesh::Create();
-	}
+	}*/
 
 	//明転
 	CApplication::GetFade()->Set(CFade::STATE::FADE_IN);

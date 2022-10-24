@@ -90,12 +90,12 @@ void CPlayer::Update()
 	//移動
 	Move();
 
-	D3DXVECTOR3 pos = CObjectX::GetPos();	//位置を取得
+	//D3DXVECTOR3 pos = CObjectX::GetPos();	//位置を取得
 
-	//メッシュとの当たり判定
-	CGame::GetMesh()->Collision(&pos);
+	////メッシュとの当たり判定
+	//CGame::GetMesh()->Collision(&pos);
 
-	CObjectX::SetPos(pos);
+	//CObjectX::SetPos(pos);
 }
 
 //================================================

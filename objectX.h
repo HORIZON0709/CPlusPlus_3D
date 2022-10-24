@@ -65,6 +65,8 @@ public: /* Collision */
 	//bool Collision(OBJ_TYPE myType, OBJ_TYPE targetType);
 
 private: /* ƒƒ“ƒoŠÖ” */
+	void DrawShadow();	//‰e‚Ì•`‰æ
+
 	void Load();	//“Ç‚İ‚İ
 
 	/*

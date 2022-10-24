@@ -199,6 +199,9 @@ void CObjectX::Draw()
 	D3DXMatrixTranslation(&mtxTrans, m_pos.x, m_pos.y, m_pos.z);
 	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);
 
+	//モデルの影を描画
+	DrawShadow();
+
 	//ワールドマトリックスの設定
 	pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
 
@@ -208,13 +211,13 @@ void CObjectX::Draw()
 	//マテリアルデータへのポインタを保持
 	pMat = (D3DXMATERIAL*)m_pBuffMat->GetBufferPointer();
 
-	for (int j = 0; j < (int)m_numMat; j++)
+	for (int i = 0; i < (int)m_numMat; i++)
 	{
 		//マテリアルの設定
-		pDevice->SetMaterial(&pMat[j].MatD3D);
+		pDevice->SetMaterial(&pMat[i].MatD3D);
 
 		//モデルパーツの描画
-		m_pMesh->DrawSubset(j);
+		m_pMesh->DrawSubset(i);
 	}
 
 	//保持していたマテリアルを戻す
@@ -251,6 +254,70 @@ void CObjectX::SetMove(const D3DXVECTOR3 &move)
 D3DXVECTOR3 CObjectX::GetMove()
 {
 	return m_move;
+}
+
+//================================================
+//影の描画
+//================================================
+void CObjectX::DrawShadow()
+{
+	D3DXMATRIX mtxShadow;
+	D3DXPLANE planeField;
+	D3DXVECTOR4 vecLight;
+	D3DXVECTOR3 pos, nor;
+
+	D3DMATERIAL9 matDef;	//現在のマテリアル保存用
+	D3DXMATERIAL* pMat;		//マテリアルデータへのポインタ
+
+	//デバイスの取得
+	LPDIRECT3DDEVICE9 pDevice = CApplication::GetRenderer()->GetDevice();
+
+	//シャドウマトリックスの初期化
+	D3DXMatrixIdentity(&mtxShadow);
+
+	//ライトの方向を設定
+	vecLight = D3DXVECTOR4(-1.0f, 0.8f, 0.0f, 0.0f);
+
+	//位置を設定
+	pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+
+	//法線を設定
+	nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+
+	//法線と平面の1点から平面を作成
+	D3DXPlaneFromPointNormal(&planeField, &pos, &nor);
+
+	//ライトと平面から影行列を作成
+	D3DXMatrixShadow(&mtxShadow, &vecLight, &planeField);
+
+	//ワールドマトリックスとシャドウマトリックスを掛け合わせる
+	D3DXMatrixMultiply(&mtxShadow, &mtxShadow, &m_mtxWorld);
+
+	//ワールドマトリックスの設定
+	pDevice->SetTransform(D3DTS_WORLD, &mtxShadow);
+
+	//現在のマテリアルを保持
+	pDevice->GetMaterial(&matDef);
+
+	//マテリアルデータへのポインタを保持
+	pMat = (D3DXMATERIAL*)m_pBuffMat->GetBufferPointer();
+	D3DMATERIAL9 mat = pMat->MatD3D;
+
+	//色を黒に設定
+	mat.Diffuse = D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f);
+	mat.Ambient = D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f);
+
+	//マテリアルの設定
+	pDevice->SetMaterial(&mat);
+
+	for (int i = 0; i < (int)m_numMat; i++)
+	{
+		//モデルパーツの描画
+		m_pMesh->DrawSubset(i);
+	}
+
+	//保持していたマテリアルを戻す
+	pDevice->SetMaterial(&matDef);
 }
 
 //================================================
