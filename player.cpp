@@ -12,7 +12,8 @@
 #include "renderer.h"
 #include "input.h"
 #include "game.h"
-#include "objectMesh.h"
+//#include "objectMesh.h"
+#include "model.h"
 
 #include <assert.h>
 
@@ -45,8 +46,15 @@ CPlayer* CPlayer::Create()
 //================================================
 //コンストラクタ
 //================================================
-CPlayer::CPlayer()
+CPlayer::CPlayer() :
+	m_pModel(nullptr),
+	m_pos(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
+	m_move(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
+	m_rot(D3DXVECTOR3(0.0f, 0.0f, 0.0f))
 {
+	//メンバ変数のクリア
+	memset(m_mtxWorld, 0, sizeof(m_mtxWorld));
+
 	//タイプの設定
 	CObject::SetObjType(CObject::OBJ_TYPE::PLAYER);
 }
@@ -63,11 +71,16 @@ CPlayer::~CPlayer()
 //================================================
 HRESULT CPlayer::Init()
 {
-	CObjectX::Init();	//親クラス
+	//モデルの生成
+	m_pModel = CModel::Create();
 
-	//位置を設定
-	D3DXVECTOR3 pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	CObjectX::SetPos(pos);
+	//親モデルの設定
+	//CModel::SetParent(m_pModel);
+
+	//メンバ変数の初期化
+	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 
 	return S_OK;
 }
@@ -77,7 +90,6 @@ HRESULT CPlayer::Init()
 //================================================
 void CPlayer::Uninit()
 {
-	CObjectX::Uninit();	//親クラス
 }
 
 //================================================
@@ -85,8 +97,6 @@ void CPlayer::Uninit()
 //================================================
 void CPlayer::Update()
 {
-	CObjectX::Update();	//親クラス
-
 	//移動
 	Move();
 
@@ -103,7 +113,27 @@ void CPlayer::Update()
 //================================================
 void CPlayer::Draw()
 {
-	CObjectX::Draw();	//親クラス
+	D3DXMATRIX mtxRot, mtxTrans;	//計算用マトリックス
+
+	//デバイスの取得
+	LPDIRECT3DDEVICE9 pDevice = CApplication::GetRenderer()->GetDevice();
+
+	//ワールドマトリックスの初期化
+	D3DXMatrixIdentity(&m_mtxWorld);
+
+	//向きを反映
+	D3DXMatrixRotationYawPitchRoll(&mtxRot, m_rot.y, m_rot.x, m_rot.z);
+	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);
+
+	//位置を反映
+	D3DXMatrixTranslation(&mtxTrans, m_pos.x, m_pos.y, m_pos.z);
+	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);
+
+	//ワールドマトリックスの設定
+	pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
+
+	//モデルの描画
+	m_pModel->Draw();
 }
 
 //================================================
@@ -114,26 +144,23 @@ void CPlayer::Move()
 	//キーボード情報を取得
 	CInputKeyboard* pKeyboard = CApplication::GetInputKeyboard();
 
-	D3DXVECTOR3 pos = CObjectX::GetPos();	//位置を取得
-	D3DXVECTOR3 move = CObjectX::GetMove();	//移動量を取得
-
 	if (pKeyboard->GetPress(DIK_D))
 	{//右
 		/* 移動方向に応じて移動量を増加 */
 
 		if (pKeyboard->GetPress(DIK_W))
 		{//右前
-			move.x += sinf(+D3DX_PI * 0.75f) * MOVE_SPEED;	//X軸方向
-			move.z += cosf(-D3DX_PI * 0.25f) * MOVE_SPEED;	//Z軸方向
+			m_move.x += sinf(+D3DX_PI * 0.75f) * MOVE_SPEED;	//X軸方向
+			m_move.z += cosf(-D3DX_PI * 0.25f) * MOVE_SPEED;	//Z軸方向
 		}
 		else if (pKeyboard->GetPress(DIK_S))
 		{//右後ろ
-			move.x += sinf(+D3DX_PI * 0.25f) * MOVE_SPEED;	//X軸方向
-			move.z += cosf(+D3DX_PI * 0.75f) * MOVE_SPEED;	//Z軸方向
+			m_move.x += sinf(+D3DX_PI * 0.25f) * MOVE_SPEED;	//X軸方向
+			m_move.z += cosf(+D3DX_PI * 0.75f) * MOVE_SPEED;	//Z軸方向
 		}
 		else
 		{//右
-			move.x += sinf(+D3DX_PI * 0.5f) * MOVE_SPEED;	//X軸方向
+			m_move.x += sinf(+D3DX_PI * 0.5f) * MOVE_SPEED;	//X軸方向
 		}
 	}
 	else if (pKeyboard->GetPress(DIK_A))
@@ -142,29 +169,27 @@ void CPlayer::Move()
 
 		if (pKeyboard->GetPress(DIK_W))
 		{//左前
-			move.x += sinf(-D3DX_PI * 0.75f) * MOVE_SPEED;	//X軸方向
-			move.z += cosf(-D3DX_PI * 0.25f) * MOVE_SPEED;	//Z軸方向
+			m_move.x += sinf(-D3DX_PI * 0.75f) * MOVE_SPEED;	//X軸方向
+			m_move.z += cosf(-D3DX_PI * 0.25f) * MOVE_SPEED;	//Z軸方向
 		}
 		else if (pKeyboard->GetPress(DIK_S))
 		{//左後ろ
-			move.x += sinf(-D3DX_PI * 0.25f) * MOVE_SPEED;	//X軸方向
-			move.z += cosf(+D3DX_PI * 0.75f) * MOVE_SPEED;	//Z軸方向
+			m_move.x += sinf(-D3DX_PI * 0.25f) * MOVE_SPEED;	//X軸方向
+			m_move.z += cosf(+D3DX_PI * 0.75f) * MOVE_SPEED;	//Z軸方向
 		}
 		else
 		{//左
-			move.x += sinf(-D3DX_PI * 0.5f) * MOVE_SPEED;	//X軸方向
+			m_move.x += sinf(-D3DX_PI * 0.5f) * MOVE_SPEED;	//X軸方向
 		}
 	}
 	else if (pKeyboard->GetPress(DIK_W))
 	{//前
-		move.z += cosf(-D3DX_PI * 0.0f) * MOVE_SPEED;	//Z軸方向
+		m_move.z += cosf(-D3DX_PI * 0.0f) * MOVE_SPEED;	//Z軸方向
 	}
 	else if (pKeyboard->GetPress(DIK_S))
 	{//後ろ
-		move.z += cosf(+D3DX_PI * 1.0f) * MOVE_SPEED;	//Z軸方向
+		m_move.z += cosf(+D3DX_PI * 1.0f) * MOVE_SPEED;	//Z軸方向
 	}
 
-	pos += move;	//位置に移動量を加算
-
-	CObjectX::SetPos(pos);	//位置を更新
+	m_pos += m_move;	//位置に移動量を加算
 }

@@ -10,13 +10,18 @@
 //***************************
 //インクルード
 //***************************
-#include "objectX.h"
+#include "object.h"
+
+//***************************
+//前方宣言
+//***************************
+class CModel;
 
 //***************************
 //プレイヤークラスの定義
 //***************************
-class CPlayer : public CObjectX
-{/* CObjectXの派生クラス */
+class CPlayer : public CObject
+{/* CObjectの派生クラス */
 private: /* 定数の定義 */
 	static const float MOVE_SPEED;	//移動速度
 
@@ -37,7 +42,13 @@ private: /* メンバ関数 */
 	void Move();	//移動量
 
 private: /* メンバ変数 */
-	
+	CModel* m_pModel;	//モデルのポインタ
+
+	D3DXMATRIX m_mtxWorld;	//ワールドマトリックス
+
+	D3DXVECTOR3 m_pos;	//位置
+	D3DXVECTOR3 m_move;	//移動量
+	D3DXVECTOR3 m_rot;	//向き
 };
 
 #endif

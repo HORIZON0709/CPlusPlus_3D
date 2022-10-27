@@ -51,6 +51,7 @@ public: /* 静的メンバ関数 */
 	static void DrawAll();		//全ての描画
 
 public: /* コンストラクタ・デストラクタ */
+	CObject();
 	CObject(const PRIORITY &priority);
 	virtual ~CObject();
 
