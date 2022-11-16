@@ -36,6 +36,9 @@ CModel* CModel::Create()
 
 	pModel = new CModel;	//メモリの動的確保
 
+	//読み込み
+	pModel->Load(FILE_NAME);
+
 	pModel->Init();	//初期化
 
 	return pModel;	//動的確保したものを返す
@@ -70,7 +73,7 @@ CModel::~CModel()
 //================================================
 //初期化
 //================================================
-HRESULT CModel::Init()
+HRESULT CModel::Init(const char* aFileName)
 {
 	//メンバ変数の初期設定
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -83,8 +86,7 @@ HRESULT CModel::Init()
 	m_pFileName = "\0";
 	m_nIdx = 0;
 
-	//読み込み
-	Load();
+	
 
 	//頂点数の取得
 	int nNumVtx = m_pMesh->GetNumVertices();
@@ -198,7 +200,7 @@ void CModel::Draw()
 	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);
 
 	//モデルの影を描画
-	DrawShadow();
+	//DrawShadow();
 
 	if (m_pParent != nullptr)
 	{//親がnullptrではない場合
@@ -250,6 +252,22 @@ void CModel::SetParent(CModel* pModel)
 D3DXMATRIX CModel::GetMtxWorld()
 {
 	return m_mtxWorld;
+}
+
+//================================================
+//位置を設定
+//================================================
+void CModel::SetPos(const D3DXVECTOR3 &pos)
+{
+	m_pos = pos;
+}
+
+//================================================
+//位置を取得
+//================================================
+D3DXVECTOR3 CModel::GetPos()
+{
+	return m_pos;
 }
 
 //================================================
@@ -319,13 +337,13 @@ void CModel::DrawShadow()
 //================================================
 //読み込み
 //================================================
-void CModel::Load()
+void CModel::Load(const char* aFileName)
 {
 	//デバイスの取得
 	LPDIRECT3DDEVICE9 pDevice = CApplication::GetRenderer()->GetDevice();
 
 	//ファイルを開く
-	FILE *pFile = fopen(FILE_NAME, "r");
+	FILE *pFile = fopen(aFileName, "r");
 	
 	if (pFile == nullptr)
 	{//ファイルが開けなかった場合

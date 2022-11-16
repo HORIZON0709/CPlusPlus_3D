@@ -84,10 +84,11 @@ CObjectMesh* CGame::GetMesh()
 //================================================
 //コンストラクタ
 //================================================
-CGame::CGame() : CMode(MODE::GAME),
-m_nCntIntervalFade(0),
-m_bFadeOut(false),
-m_bWireFrame(false)
+CGame::CGame() : 
+	CMode(MODE::GAME),
+	m_nCntIntervalFade(0),
+	m_bFadeOut(false),
+	m_bWireFrame(false)
 {
 }
 

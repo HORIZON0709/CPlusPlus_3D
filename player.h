@@ -24,6 +24,8 @@ class CPlayer : public CObject
 {/* CObjectの派生クラス */
 private: /* 定数の定義 */
 	static const float MOVE_SPEED;	//移動速度
+	
+	static const int MAX_PARTS = 2;	//最大パーツ数
 
 public: /* 静的メンバ関数 */
 	static CPlayer* Create();	//生成
@@ -42,7 +44,7 @@ private: /* メンバ関数 */
 	void Move();	//移動量
 
 private: /* メンバ変数 */
-	CModel* m_pModel;	//モデルのポインタ
+	CModel* m_apModel[MAX_PARTS];	//モデルのポインタ
 
 	D3DXMATRIX m_mtxWorld;	//ワールドマトリックス
 

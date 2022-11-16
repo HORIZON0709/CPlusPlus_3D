@@ -30,7 +30,7 @@ public: /* コンストラクタ・デストラクタ */
 	~CModel();
 
 public: /* メンバ関数 */
-	HRESULT Init();	//初期化
+	HRESULT Init(const char* aFileName);	//初期化
 	void Uninit();	//終了
 	void Update();	//更新
 	void Draw();	//描画
@@ -42,10 +42,20 @@ public: /* メンバ関数 */
 	void SetParent(CModel* pModel);
 
 	D3DXMATRIX GetMtxWorld();	//ワールドマトリックスの取得
+public: /* Pos */
+	/*
+		位置を設定
+		const D3DXVECTOR3 &pos ---> 任意の位置
+	*/
+	void SetPos(const D3DXVECTOR3 &pos);
+
+	//位置を取得
+	D3DXVECTOR3 GetPos();
+
 private:
 	void DrawShadow();	//影の描画
 
-	void Load();	//読み込み
+	void Load(const char* aFileName);	//読み込み
 
 	/*
 		設定

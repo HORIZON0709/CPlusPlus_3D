@@ -17,10 +17,10 @@ MODEL_FILENAME = data/MODEL/chair.x		#[0]ˆÖŽq
 #------------------
 #ˆÖŽq
 #------------------
-MODELSET
-	INDEX = 0
-	POS = 0.0 0.0 0.0
-	ROT = 0.0 0.0 0.0
-END_MODELSET
+#MODELSET
+#	INDEX = 0
+#	POS = 0.0 0.0 0.0
+#	ROT = 0.0 0.0 0.0
+#END_MODELSET
 
 END_SCRIPT

@@ -46,14 +46,14 @@ CPlayer* CPlayer::Create()
 //================================================
 //コンストラクタ
 //================================================
-CPlayer::CPlayer() :
-	m_pModel(nullptr),
+CPlayer::CPlayer() :CObject::CObject(CObject::PRIORITY::PRIO_MODEL),
 	m_pos(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
 	m_move(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
 	m_rot(D3DXVECTOR3(0.0f, 0.0f, 0.0f))
 {
 	//メンバ変数のクリア
 	memset(m_mtxWorld, 0, sizeof(m_mtxWorld));
+	memset(m_apModel, 0, sizeof(m_apModel));
 
 	//タイプの設定
 	CObject::SetObjType(CObject::OBJ_TYPE::PLAYER);
@@ -72,10 +72,15 @@ CPlayer::~CPlayer()
 HRESULT CPlayer::Init()
 {
 	//モデルの生成
-	m_pModel = CModel::Create();
+	for (int i = 0; i < MAX_PARTS; i++)
+	{
+		m_apModel[i] = CModel::Create();
+	}
 
 	//親モデルの設定
-	//CModel::SetParent(m_pModel);
+	m_apModel[1]->SetParent(m_apModel[0]);
+
+	m_apModel[1]->SetPos(D3DXVECTOR3(0.0f, 50.0f, 0.0f));
 
 	//メンバ変数の初期化
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -132,8 +137,11 @@ void CPlayer::Draw()
 	//ワールドマトリックスの設定
 	pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
 
-	//モデルの描画
-	m_pModel->Draw();
+	for (int i = 0; i < MAX_PARTS; i++)
+	{
+		//モデルの描画
+		m_apModel[i]->Draw();
+	}
 }
 
 //================================================
@@ -192,4 +200,6 @@ void CPlayer::Move()
 	}
 
 	m_pos += m_move;	//位置に移動量を加算
+
+	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 }
