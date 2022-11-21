@@ -27,8 +27,24 @@ private: /* 定数の定義 */
 	
 	static const int MAX_PARTS = 2;	//最大パーツ数
 
+private: /* 構造体の定義 */
+	struct KEY //キー要素
+	{
+		D3DXVECTOR3 pos;	//位置
+		D3DXVECTOR3 rot;	//向き
+	};
+
+	struct KEY_SET //キー情報
+	{
+		int nFrame;				//フレーム数
+		KEY aKey[MAX_PARTS];	//キー要素
+	};
+
 public: /* 静的メンバ関数 */
 	static CPlayer* Create();	//生成
+
+private: /* 静的メンバ変数 */
+	static KEY_SET m_aKeySet[];
 
 public: /* コンストラクタ・デストラクタ */
 	CPlayer();
@@ -51,6 +67,10 @@ private: /* メンバ変数 */
 	D3DXVECTOR3 m_pos;	//位置
 	D3DXVECTOR3 m_move;	//移動量
 	D3DXVECTOR3 m_rot;	//向き
+
+	int m_nNumKey;		//キーの総数
+	int m_nCurrentKey;	//現在のキー番号
+	int m_nCntMotion;	//モーションカウンター
 };
 
 #endif
