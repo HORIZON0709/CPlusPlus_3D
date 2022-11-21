@@ -18,23 +18,43 @@
 //***************************
 class CModel
 {/* 基本クラス */
-private: /* 定数の定義 */
+public: /* 列挙型の定義 */
+	enum XFILE //Xファイルのパス
+	{
+		NONE = -1,
+
+		/* デバッグ */
+		chair = 0,	//椅子
+		table,		//机
+
+		MAX
+	};
+
+public: /* 定数の定義 */
+	static const char* s_apFileName[];	//ファイルパス
+private:
 	static const int MAX_WORD;		//最大文字数
-	static const char* FILE_NAME;	//読み込むファイル名
 
 public: /* 静的メンバ関数 */
-	static CModel* Create();	//生成
+	/*
+		生成
+		XFILE xFile ---> 読み込むXファイル
+	*/
+	static CModel* Create(XFILE xFile);
 
 public: /* コンストラクタ・デストラクタ */
 	CModel();
 	~CModel();
 
 public: /* メンバ関数 */
-	HRESULT Init(const char* aFileName);	//初期化
+	HRESULT Init(XFILE xFile);	//初期化
 	void Uninit();	//終了
 	void Update();	//更新
 	void Draw();	//描画
  
+	void LoadAll();			//全ての読み込み
+	void Load(XFILE xFile);	//指定の読み込み
+
 	/*
 		親の設定
 		CModel* pModel ---> モデルのポインタ
@@ -55,15 +75,6 @@ public: /* Pos */
 private:
 	void DrawShadow();	//影の描画
 
-	void Load(const char* aFileName);	//読み込み
-
-	/*
-		設定
-		FILE *pFile ---> ファイルポインタ
-		char aText[] ---> テキスト格納用
-	*/
-	void Set(FILE *pFile, char aText[]);
-
 private: /* メンバ変数 */
 	D3DXVECTOR3 m_pos;		//位置
 	D3DXVECTOR3 m_rot;		//現在の向き
@@ -75,8 +86,6 @@ private: /* メンバ変数 */
 	LPD3DXBUFFER m_pBuffMat;	//マテリアル情報のポインタ
 
 	DWORD m_numMat;	//マテリアル情報の数
-
-	char* m_pFileName;	//ファイル名
 
 	int m_nIdx;	//インデックス数
 

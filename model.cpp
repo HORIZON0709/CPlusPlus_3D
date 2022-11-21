@@ -18,12 +18,20 @@
 //***************************
 const int CModel::MAX_WORD = 256;	//最大文字数
 
-const char* CModel::FILE_NAME = "data/TEXT/model.txt";	//読み込むファイル名
+const char* CModel::s_apFileName[] =
+{//Xファイルのパス
+	/* デバッグ */
+	"data/MODEL/chair.x",	//椅子
+	"data/MODEL/table.x",	//机
+
+};
+
+static_assert(sizeof(CModel::s_apFileName) / sizeof(CModel::s_apFileName[0]) == CModel::MAX, "aho");
 
 //================================================
 //生成
 //================================================
-CModel* CModel::Create()
+CModel* CModel::Create(XFILE xFile)
 {
 	CModel* pModel = nullptr;	//ポインタ
 
@@ -36,10 +44,7 @@ CModel* CModel::Create()
 
 	pModel = new CModel;	//メモリの動的確保
 
-	//読み込み
-	pModel->Load(FILE_NAME);
-
-	pModel->Init();	//初期化
+	pModel->Init(xFile);	//初期化
 
 	return pModel;	//動的確保したものを返す
 }
@@ -55,7 +60,6 @@ CModel::CModel():
 	m_pMesh(nullptr),
 	m_pBuffMat(nullptr),
 	m_numMat(0),
-	m_pFileName("\0"),
 	m_nIdx(0),
 	m_pParent(nullptr)
 {
@@ -73,7 +77,7 @@ CModel::~CModel()
 //================================================
 //初期化
 //================================================
-HRESULT CModel::Init(const char* aFileName)
+HRESULT CModel::Init(XFILE xFile)
 {
 	//メンバ変数の初期設定
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -83,10 +87,10 @@ HRESULT CModel::Init(const char* aFileName)
 	m_pMesh = nullptr;
 	m_pBuffMat = nullptr;
 	m_numMat = 0;
-	m_pFileName = "\0";
 	m_nIdx = 0;
 
-	
+	//Xファイルの読み込み
+	Load(xFile);
 
 	//頂点数の取得
 	int nNumVtx = m_pMesh->GetNumVertices();
@@ -96,7 +100,7 @@ HRESULT CModel::Init(const char* aFileName)
 
 	BYTE *pVtxBuff;	//頂点バッファへのポインタ
 
-					//頂点バッファのロック
+	//頂点バッファのロック
 	m_pMesh->LockVertexBuffer(D3DLOCK_READONLY, (void**)&pVtxBuff);
 
 	for (int j = 0; j < nNumVtx; j++)
@@ -239,6 +243,61 @@ void CModel::Draw()
 }
 
 //================================================
+//全ての読み込み
+//================================================
+void CModel::LoadAll()
+{
+	//デバイスへのポインタの取得
+	LPDIRECT3DDEVICE9 pDevice = CApplication::GetRenderer()->GetDevice();
+	
+	for (int i = 0; i < MAX; ++i)
+	{
+		//if (s_apFileName[i] != nullptr)
+		//{//テクスチャの読み込みがされている
+		//	continue;
+		//}
+
+		//Xファイルの読み込み
+		D3DXLoadMeshFromX(
+			s_apFileName[i],
+			D3DXMESH_SYSTEMMEM,
+			pDevice,
+			NULL,
+			&m_pBuffMat,
+			NULL,
+			&m_numMat,
+			&m_pMesh);
+	}
+}
+
+//================================================
+//読み込み
+//================================================
+void CModel::Load(XFILE xFile)
+{
+	assert(xFile >= 0 && xFile < MAX);
+
+	//if (s_pTexture[inTexture] != nullptr)
+	//{// テクスチャの読み込みがされている
+	//	return;
+	//}
+
+	// デバイスへのポインタの取得
+	LPDIRECT3DDEVICE9 pDevice = CApplication::GetRenderer()->GetDevice();
+
+	//Xファイルの読み込み
+	D3DXLoadMeshFromX(
+		s_apFileName[xFile],
+		D3DXMESH_SYSTEMMEM,
+		pDevice,
+		NULL,
+		&m_pBuffMat,
+		NULL,
+		&m_numMat,
+		&m_pMesh);
+}
+
+//================================================
 //親の設定
 //================================================
 void CModel::SetParent(CModel* pModel)
@@ -332,132 +391,4 @@ void CModel::DrawShadow()
 
 	//保持していたマテリアルを戻す
 	pDevice->SetMaterial(&matDef);
-}
-
-//================================================
-//読み込み
-//================================================
-void CModel::Load(const char* aFileName)
-{
-	//デバイスの取得
-	LPDIRECT3DDEVICE9 pDevice = CApplication::GetRenderer()->GetDevice();
-
-	//ファイルを開く
-	FILE *pFile = fopen(aFileName, "r");
-	
-	if (pFile == nullptr)
-	{//ファイルが開けなかった場合
-		assert(false);
-	}
-
-	/* ファイルが開けた場合 */
-
-	char aText[MAX_WORD];	//テキスト格納用
-
-	while (strncmp(&aText[0], "SCRIPT", 6) != 0)
-	{//テキストの最初の行を読み込むまで繰り返す
-		fgets(aText, MAX_WORD, pFile);		//1行丸ごと読み込む
-	}
-
-	while (strcmp(&aText[0], "END_SCRIPT") != 0)
-	{//テキストの最終行を読み込むまで繰り返す
-		//文字を読み込む
-		fscanf(pFile, "%s", &aText[0]);
-
-		if (strncmp(&aText[0], "#-", 2) == 0)
-		{//ブロックコメント
-			continue;
-		}
-		else if (strncmp(&aText[0], "#", 1) == 0)
-		{//コメント
-			//1行全て読み込む
-			fgets(aText, MAX_WORD, pFile);
-			continue;
-		}
-
-		if (strcmp(&aText[0], "MODEL_FILENAME") == 0)
-		{//ファイル名
-			//「＝」を読み込む
-			fscanf(pFile, "%s", &aText[0]);
-
-			char aFileName[MAX_WORD];	//ファイル名読み込み用
-
-			//Xファイルのパスを読み込む
-			fscanf(pFile, "%s", &aFileName[0]);
-
-			//読み込んだファイル名を代入
-			m_pFileName = &aFileName[0];
-		}
-		else if (strcmp(&aText[0], "MODELSET") == 0)
-		{//モデルのセット
-			//設定
-			Set(pFile, &aText[0]);
-		}
-	}
-
-	//Xファイルの読み込み
-	D3DXLoadMeshFromX(
-		m_pFileName,
-		D3DXMESH_SYSTEMMEM,
-		pDevice,
-		NULL,
-		&m_pBuffMat,
-		NULL,
-		&m_numMat,
-		&m_pMesh);
-
-	//ファイルを閉じる
-	fclose(pFile);
-}
-
-//================================================
-//設定
-//================================================
-void CModel::Set(FILE *pFile, char aText[])
-{
-	while (strcmp(&aText[0], "END_MODELSET") != 0)
-	{//モデルのセットが終わるまで繰り返す
-		//文字を読み込む
-		fscanf(pFile, "%s", &aText[0]);
-
-		if (strncmp(&aText[0], "#-", 2) == 0)
-		{//ブロックコメント
-			continue;
-		}
-		else if (strncmp(&aText[0], "#", 1) == 0)
-		{//コメント
-			//1行全て読み込む
-			fgets(aText, MAX_WORD, pFile);
-			continue;
-		}
-
-		if (strcmp(&aText[0], "INDEX") == 0)
-		{//インデックス数
-			//「＝」を読み込む
-			fscanf(pFile, "%s", &aText[0]);
-
-			//インデックス数を読み込む
-			fscanf(pFile, "%d", &m_nIdx);
-		}
-		else if (strcmp(&aText[0], "POS") == 0)
-		{//位置
-			//「＝」を読み込む
-			fscanf(pFile, "%s", &aText[0]);
-
-			//位置を読み込む
-			fscanf(pFile, "%f", &m_pos.x);	//X軸
-			fscanf(pFile, "%f", &m_pos.y);	//Y軸
-			fscanf(pFile, "%f", &m_pos.z);	//Z軸
-		}
-		else if (strcmp(&aText[0], "ROT") == 0)
-		{//向き
-			//「＝」を読み込む
-			fscanf(pFile, "%s", &aText[0]);
-
-			//向きを読み込む
-			fscanf(pFile, "%f", &m_rot.x);	//X軸
-			fscanf(pFile, "%f", &m_rot.y);	//Y軸
-			fscanf(pFile, "%f", &m_rot.z);	//Z軸
-		}
-	}
 }

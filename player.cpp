@@ -12,7 +12,6 @@
 #include "renderer.h"
 #include "input.h"
 #include "game.h"
-//#include "objectMesh.h"
 #include "model.h"
 
 #include <assert.h>
@@ -72,10 +71,13 @@ CPlayer::~CPlayer()
 HRESULT CPlayer::Init()
 {
 	//モデルの生成
-	for (int i = 0; i < MAX_PARTS; i++)
+	/*for (int i = 0; i < MAX_PARTS; i++)
 	{
 		m_apModel[i] = CModel::Create();
-	}
+	}*/
+
+	m_apModel[0] = CModel::Create(CModel::XFILE::chair);
+	m_apModel[1] = CModel::Create(CModel::XFILE::table);
 
 	//親モデルの設定
 	m_apModel[1]->SetParent(m_apModel[0]);
@@ -104,13 +106,6 @@ void CPlayer::Update()
 {
 	//移動
 	Move();
-
-	//D3DXVECTOR3 pos = CObjectX::GetPos();	//位置を取得
-
-	////メッシュとの当たり判定
-	//CGame::GetMesh()->Collision(&pos);
-
-	//CObjectX::SetPos(pos);
 }
 
 //================================================
@@ -201,5 +196,5 @@ void CPlayer::Move()
 
 	m_pos += m_move;	//位置に移動量を加算
 
-	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	//移動量を0にする
 }
