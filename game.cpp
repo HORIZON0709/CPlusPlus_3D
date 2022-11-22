@@ -15,7 +15,8 @@
 
 #include "object2D.h"
 #include "object3D.h"
-#include "objectMesh.h"
+//#include "objectMesh.h"
+#include "objectX.h"
 
 #include "camera.h"
 #include "light.h"
@@ -40,6 +41,7 @@ CLight* CGame::m_pLight = nullptr;			//ライト
 CPolygon3D* CGame::m_pPolygon3D = nullptr;	//3Dポリゴン
 CPlayer* CGame::m_pPlayer = nullptr;		//プレイヤー
 CObjectMesh* CGame::m_pMesh = nullptr;		//メッシュ
+CObjectX* CGame::m_pObjX = nullptr;			//Xモデル
 
 //================================================
 //カメラ情報を取得
@@ -150,6 +152,13 @@ HRESULT CGame::Init()
 		m_pMesh = CObjectMesh::Create();
 	}*/
 
+	/* Xモデル */
+
+	if (m_pObjX== nullptr)
+	{//NULLチェック
+		m_pObjX = CObjectX::Create();	//生成
+	}
+
 	//明転
 	CApplication::GetFade()->Set(CFade::STATE::FADE_IN);
 
@@ -165,8 +174,8 @@ void CGame::Uninit()
 
 	CObject2D::ReleaseAll();	//全ての解放(2D)
 	CObject3D::ReleaseAll();	//全ての解放(3D)
-	//CObjectX::ReleaseAll();		//全ての解放(X)
-	CObjectMesh::ReleaseAll();		//全ての解放(Mesh)
+	CObjectX::ReleaseAll();		//全ての解放(X)
+	//CObjectMesh::ReleaseAll();		//全ての解放(Mesh)
 
 	/* カメラ */
 
@@ -197,6 +206,10 @@ void CGame::Uninit()
 	/* メッシュ */
 
 	m_pMesh = nullptr;	//nullptrにする
+
+	/* Xモデル */
+
+	m_pObjX = nullptr;	//nullptrにする
 }
 
 //================================================

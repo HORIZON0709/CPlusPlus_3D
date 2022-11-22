@@ -20,7 +20,10 @@
 class CObjectX : public CObject
 {/* CObjectの派生クラス */
 private: /* 定数の定義 */
+	static const float MOVE_SPEED;	//移動速度
+
 	static const int MAX_WORD;		//最大文字数
+
 	static const char* FILE_NAME;	//読み込むファイル名
 
 public: /* 静的メンバ関数 */
@@ -65,9 +68,9 @@ public: /* Collision */
 	//bool Collision(OBJ_TYPE myType, OBJ_TYPE targetType);
 
 private: /* メンバ関数 */
+	void Move();		//移動
 	void DrawShadow();	//影の描画
-
-	void Load();	//読み込み
+	void Load();		//読み込み
 
 	/*
 		設定
@@ -83,6 +86,8 @@ private: /* メンバ変数 */
 	D3DXVECTOR3 m_rotDest;	//目的の向き
 	D3DXVECTOR3 m_vtxMax;	//最大値
 	D3DXVECTOR3 m_vtxMin;	//最小値
+
+	D3DXQUATERNION m_quaternion;	//クォータニオン
 
 	D3DXMATRIX m_mtxWorld;		//ワールドマトリックス
 	LPD3DXMESH m_pMesh;			//メッシュ情報のポインタ

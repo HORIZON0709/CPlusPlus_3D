@@ -10,12 +10,15 @@
 #include "objectX.h"
 #include "application.h"
 #include "renderer.h"
+#include "input.h"
 
 #include <assert.h>
 
 //***************************
 //定数の定義
 //***************************
+const float CObjectX::MOVE_SPEED = 2.0f;	//移動速度
+
 const int CObjectX::MAX_WORD = 256;		//最大文字数
 
 const char* CObjectX::FILE_NAME = "data/TEXT/model.txt";	//読み込むファイル名
@@ -80,6 +83,7 @@ HRESULT CObjectX::Init()
 	m_rotDest = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_vtxMax = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_vtxMin = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_quaternion = D3DXQUATERNION(0.0f, 0.0f, 0.0f, 1.0f);
 	m_pMesh = nullptr;
 	m_pBuffMat = nullptr;
 	m_numMat = 0;
@@ -174,6 +178,29 @@ void CObjectX::Uninit()
 //================================================
 void CObjectX::Update()
 {
+	//移動
+	Move();
+
+	D3DXVECTOR3 axis;					//回転軸
+	D3DXVECTOR3 inverseVec = -m_move;	//move値を反対にする
+
+	D3DXVECTOR3 vecY = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+
+	//外積で回転軸を算出
+	D3DXVec3Cross(&axis, &inverseVec, &vecY);
+	
+	D3DXQUATERNION quaternion = D3DXQUATERNION(0.0f, 0.0f, 0.0f, 1.0f);	//クオータニオン計算用
+
+	//回転軸と回転角度を指定
+	D3DXQuaternionRotationAxis(&quaternion, &axis, 0.05f);
+	
+	// クオータニオンを適用
+	m_quaternion *= quaternion;
+	
+	// クオータニオンのノーマライズ
+	D3DXQuaternionNormalize(&m_quaternion, &m_quaternion);
+
+	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	//移動量を0にする
 }
 
 //================================================
@@ -192,15 +219,19 @@ void CObjectX::Draw()
 	D3DXMatrixIdentity(&m_mtxWorld);
 
 	//向きを反映
-	D3DXMatrixRotationYawPitchRoll(&mtxRot, m_rot.y, m_rot.x, m_rot.z);
-	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);
+	/*D3DXMatrixRotationYawPitchRoll(&mtxRot, m_rot.y, m_rot.x, m_rot.z);
+	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);*/
+
+	//クォータニオンを使用した姿勢の設定
+	D3DXMatrixRotationQuaternion(&mtxRot, &m_quaternion);	//クオータニオンによる行列回転
+	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);	//行列掛け算関数(第2引数×第3引数を第1引数に格納)
 
 	//位置を反映
 	D3DXMatrixTranslation(&mtxTrans, m_pos.x, m_pos.y, m_pos.z);
 	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);
 
 	//モデルの影を描画
-	DrawShadow();
+	//DrawShadow();
 
 	//ワールドマトリックスの設定
 	pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
@@ -254,6 +285,64 @@ void CObjectX::SetMove(const D3DXVECTOR3 &move)
 D3DXVECTOR3 CObjectX::GetMove()
 {
 	return m_move;
+}
+
+//================================================
+//移動
+//================================================
+void CObjectX::Move()
+{
+	//キーボード情報を取得
+	CInputKeyboard* pKeyboard = CApplication::GetInputKeyboard();
+
+	if (pKeyboard->GetPress(DIK_D))
+	{//右
+		/* 移動方向に応じて移動量を増加 */
+
+		if (pKeyboard->GetPress(DIK_W))
+		{//右前
+			m_move.x += sinf(+D3DX_PI * 0.75f) * MOVE_SPEED;	//X軸方向
+			m_move.z += cosf(-D3DX_PI * 0.25f) * MOVE_SPEED;	//Z軸方向
+		}
+		else if (pKeyboard->GetPress(DIK_S))
+		{//右後ろ
+			m_move.x += sinf(+D3DX_PI * 0.25f) * MOVE_SPEED;	//X軸方向
+			m_move.z += cosf(+D3DX_PI * 0.75f) * MOVE_SPEED;	//Z軸方向
+		}
+		else
+		{//右
+			m_move.x += sinf(+D3DX_PI * 0.5f) * MOVE_SPEED;	//X軸方向
+		}
+	}
+	else if (pKeyboard->GetPress(DIK_A))
+	{//左
+		/* 移動方向に応じて移動量を増加 */
+
+		if (pKeyboard->GetPress(DIK_W))
+		{//左前
+			m_move.x += sinf(-D3DX_PI * 0.75f) * MOVE_SPEED;	//X軸方向
+			m_move.z += cosf(-D3DX_PI * 0.25f) * MOVE_SPEED;	//Z軸方向
+		}
+		else if (pKeyboard->GetPress(DIK_S))
+		{//左後ろ
+			m_move.x += sinf(-D3DX_PI * 0.25f) * MOVE_SPEED;	//X軸方向
+			m_move.z += cosf(+D3DX_PI * 0.75f) * MOVE_SPEED;	//Z軸方向
+		}
+		else
+		{//左
+			m_move.x += sinf(-D3DX_PI * 0.5f) * MOVE_SPEED;	//X軸方向
+		}
+	}
+	else if (pKeyboard->GetPress(DIK_W))
+	{//前
+		m_move.z += cosf(-D3DX_PI * 0.0f) * MOVE_SPEED;	//Z軸方向
+	}
+	else if (pKeyboard->GetPress(DIK_S))
+	{//後ろ
+		m_move.z += cosf(+D3DX_PI * 1.0f) * MOVE_SPEED;	//Z軸方向
+	}
+
+	m_pos += m_move;	//位置に移動量を加算
 }
 
 //================================================
