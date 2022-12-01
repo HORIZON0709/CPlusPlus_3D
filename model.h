@@ -72,6 +72,16 @@ public: /* Pos */
 	//ˆÊ’u‚ðŽæ“¾
 	D3DXVECTOR3 GetPos();
 
+public: /* Rot */
+	/*
+		Œü‚«‚ðÝ’è
+		const D3DXVECTOR3 &rot ---> ”CˆÓ‚ÌŒü‚«
+	*/
+	void SetRot(const D3DXVECTOR3 &rot);
+
+	//Œü‚«‚ðŽæ“¾
+	D3DXVECTOR3 GetRot();
+
 private:
 	void DrawShadow();	//‰e‚Ì•`‰æ
 

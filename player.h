@@ -26,6 +26,7 @@ private: /* 定数の定義 */
 	static const float MOVE_SPEED;	//移動速度
 	
 	static const int MAX_PARTS = 2;	//最大パーツ数
+	static const int NUM_KEYSET = 2;	//キーセット数
 
 private: /* 構造体の定義 */
 	struct KEY //キー要素
@@ -44,7 +45,7 @@ public: /* 静的メンバ関数 */
 	static CPlayer* Create();	//生成
 
 private: /* 静的メンバ変数 */
-	static KEY_SET m_aKeySet[];
+	static KEY_SET m_aKeySet[NUM_KEYSET];	//キー情報
 
 public: /* コンストラクタ・デストラクタ */
 	CPlayer();
@@ -58,6 +59,7 @@ public: /* オーバーライド関数 */
 
 private: /* メンバ関数 */
 	void Move();	//移動量
+	void Motion();	//モーション
 
 private: /* メンバ変数 */
 	CModel* m_apModel[MAX_PARTS];	//モデルのポインタ
