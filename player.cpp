@@ -19,7 +19,7 @@
 //***************************
 //定数の定義
 //***************************
-const float CPlayer::MOVE_SPEED = 3.0f;	//移動速度
+const float CPlayer::MOVE_SPEED = 1.5f;	//移動速度
 
 //***************************
 //静的メンバ変数
@@ -27,26 +27,26 @@ const float CPlayer::MOVE_SPEED = 3.0f;	//移動速度
 CPlayer::KEY_SET CPlayer::m_aKeySet[NUM_KEYSET] =
 {
 	/* KEY : 0 / 2 */
-	{ 30,	//フレーム数
+	{ 60,	//フレーム数
 		{//[0]
 		D3DXVECTOR3(0.0f,0.0f,0.0f),	//位置(POS)
 		D3DXVECTOR3(0.0f,0.0f,0.0f),	//向き(ROT)
 
 		//[1]
-		D3DXVECTOR3(0.0f,50.0f,0.0f),	//位置(POS)
-		D3DXVECTOR3(0.0f,0.0f,0.0f)		//向き(ROT)
+		D3DXVECTOR3(0.0f,0.0f,0.0f),	//位置(POS)
+		D3DXVECTOR3(0.0f,0.0f,0.0f),	//向き(ROT)
 		}
 	},
 	
 	/* KEY : 1 / 2 */
-	{ 30,	//フレーム数
+	{ 60,	//フレーム数
 		{//[0]
 		D3DXVECTOR3(0.0f,0.0f,0.0f),	//位置(POS)
 		D3DXVECTOR3(0.0f,0.0f,0.0f),	//向き(ROT)
 
 		//[1]
-		D3DXVECTOR3(0.0f,70.0f,0.0f),	//位置(POS)
-		D3DXVECTOR3(0.0f,0.0f,0.0f)		//向き(ROT)
+		D3DXVECTOR3(0.0f,0.0f,0.0f),	//位置(POS)
+		D3DXVECTOR3(0.0f,0.0f,0.0f),	//向き(ROT)
 		}
 	},
 };
@@ -109,8 +109,8 @@ HRESULT CPlayer::Init()
 		m_apModel[i] = CModel::Create();
 	}*/
 
-	m_apModel[0] = CModel::Create(CModel::XFILE::chair);
-	m_apModel[1] = CModel::Create(CModel::XFILE::table);
+	m_apModel[0] = CModel::Create(CModel::XFILE::Fish_Body);
+	m_apModel[1] = CModel::Create(CModel::XFILE::Fish_Tail);
 
 	//親モデルの設定
 	m_apModel[1]->SetParent(m_apModel[0]);
@@ -120,7 +120,7 @@ HRESULT CPlayer::Init()
 	//メンバ変数の初期化
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_rot = D3DXVECTOR3(0.0f, 1.57f, 0.0f);
 	m_nNumKey = NUM_KEYSET;
 	m_nCurrentKey = 0;
 	m_nCntMotion = 0;
@@ -256,8 +256,8 @@ void CPlayer::Motion()
 		float fRelativeValue = (float)(m_nCntMotion / m_aKeySet[i].nFrame);
 
 		//差分(終了値 - 開始値)
-		D3DXVECTOR3 posDif = (m_aKeySet[m_nCurrentKey % NUM_KEYSET].aKey[i].pos - m_aKeySet[m_nCurrentKey].aKey[i].pos);
-		D3DXVECTOR3 rotDif = (m_aKeySet[m_nCurrentKey % NUM_KEYSET].aKey[i].rot - m_aKeySet[m_nCurrentKey].aKey[i].rot);
+		D3DXVECTOR3 posDif = (m_aKeySet[(m_nCurrentKey + 1) % m_nNumKey].aKey[i].pos - m_aKeySet[m_nCurrentKey].aKey[i].pos);
+		D3DXVECTOR3 rotDif = (m_aKeySet[(m_nCurrentKey + 1) % m_nNumKey].aKey[i].rot - m_aKeySet[m_nCurrentKey].aKey[i].rot);
 
 		//差分 * 相対値
 		D3DXVECTOR3 pos = D3DXVECTOR3(	//位置
@@ -270,9 +270,21 @@ void CPlayer::Motion()
 			rotDif.y * fRelativeValue,
 			rotDif.z * fRelativeValue);
 
-		//現在値を計算(開始値 + (差分 * 相対値))
-		D3DXVECTOR3 posPre = m_aKeySet[m_nCurrentKey].aKey[i].pos + pos;
-		D3DXVECTOR3 rotPre = m_aKeySet[m_nCurrentKey].aKey[i].rot + rot;
+		//位置・向きの現在値を取得
+		D3DXVECTOR3 posPre = m_apModel[i]->GetPos();
+		D3DXVECTOR3 rotPre = m_apModel[i]->GetRot();
+
+		//現在値に加算(開始値 + (差分 * 相対値))
+		if (m_nCurrentKey == 0)
+		{
+			posPre += m_aKeySet[m_nCurrentKey].aKey[i].pos + pos;
+			rotPre += m_aKeySet[m_nCurrentKey].aKey[i].rot + rot;
+		}
+		else if (m_nCurrentKey == 1)
+		{
+			posPre += m_aKeySet[m_nCurrentKey].aKey[i].pos - pos;
+			rotPre += m_aKeySet[m_nCurrentKey].aKey[i].rot - rot;
+		}
 
 		//位置・向きを反映
 		m_apModel[i]->SetPos(posPre);

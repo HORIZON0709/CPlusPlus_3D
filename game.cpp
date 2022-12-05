@@ -154,10 +154,10 @@ HRESULT CGame::Init()
 
 	/* Xモデル */
 
-	if (m_pObjX== nullptr)
-	{//NULLチェック
-		m_pObjX = CObjectX::Create();	//生成
-	}
+	//if (m_pObjX== nullptr)
+	//{//NULLチェック
+	//	m_pObjX = CObjectX::Create();	//生成
+	//}
 
 	//明転
 	CApplication::GetFade()->Set(CFade::STATE::FADE_IN);

@@ -21,9 +21,12 @@ const int CModel::MAX_WORD = 256;	//最大文字数
 const char* CModel::s_apFileName[] =
 {//Xファイルのパス
 	/* デバッグ */
-	"data/MODEL/chair.x",	//椅子
-	"data/MODEL/table.x",	//机
-
+	"data/MODEL/chair.x",				//椅子
+	"data/MODEL/table.x",				//机
+	"data/MODEL/Stage_Debug_Obstade.x",	//ステージデバッグ用の障害物(立方体
+	"data/MODEL/Coin01.x",				//コイン
+	"data/MODEL/Fish_Body.x",			//魚の胴体
+	"data/MODEL/Fish_Tail.x",			//魚の尾ひれ
 };
 
 static_assert(sizeof(CModel::s_apFileName) / sizeof(CModel::s_apFileName[0]) == CModel::MAX, "aho");

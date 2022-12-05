@@ -24,8 +24,12 @@ public: /* 列挙型の定義 */
 		NONE = -1,
 
 		/* デバッグ */
-		chair = 0,	//椅子
-		table,		//机
+		chair = 0,				//椅子
+		table,					//机
+		Stage_Debug_Obstade,	//ステージデバッグ用の障害物(立方体)
+		Coin01,					//コイン
+		Fish_Body,				//魚の胴体
+		Fish_Tail,				//魚の尾ひれ
 
 		MAX
 	};
