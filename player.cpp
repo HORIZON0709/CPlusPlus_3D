@@ -18,7 +18,17 @@
 
 #include <assert.h>
 
-static int ppp = 0;
+//***************************
+//namespaceの定義
+//***************************
+namespace Utility	//便利関数
+{
+/*
+	角度の正規化
+	float *pAngle ---> 角度
+*/
+void NormalizeAngle(float* pAngle);
+} //namespaceはここまで
 
 //***************************
 //定数の定義
@@ -144,23 +154,23 @@ void CPlayer::Uninit()
 //================================================
 void CPlayer::Update()
 {
-	ppp++;
 	//移動
 	Move();
 
 	//モーション
 	Motion();
 
-	for (int i = 0; i < MAX_PARTS; i++)
-	{
-		m_apModel[i]->Update();
-	}
-
 	CDebugProc::Print("\n");
-	CDebugProc::Print("%d\n", ppp);
-	CDebugProc::Print("%f,%f,%f\n", m_rot.x, m_rot.y, m_rot.z);
-	CDebugProc::Print("%f,%f,%f\n", m_apModel[0]->GetRot().x, m_apModel[0]->GetRot().y, m_apModel[0]->GetRot().z);
-	CDebugProc::Print("%f,%f,%f\n", m_apModel[1]->GetRot().x, m_apModel[1]->GetRot().y, m_apModel[1]->GetRot().z);
+	CDebugProc::Print("m_rot : [%f,%f,%f]\n", m_rot.x, m_rot.y, m_rot.z);
+
+	D3DXVECTOR3 aRot[2] =
+	{
+		m_apModel[0]->GetRot(),
+		m_apModel[1]->GetRot(),
+	};
+
+	CDebugProc::Print("m_apModel[0]->GetRot() : [%f,%f,%f]\n", aRot[0].x, aRot[0].y, aRot[0].z);
+	CDebugProc::Print("m_apModel[1]->GetRot() : [%f,%f,%f]\n", aRot[1].x, aRot[1].y, aRot[1].z);
 }
 
 //================================================
@@ -168,7 +178,6 @@ void CPlayer::Update()
 //================================================
 void CPlayer::Draw()
 {
-	ppp = 0;
 	D3DXMATRIX mtxRot, mtxTrans;	//計算用マトリックス
 
 	//デバイスの取得
@@ -316,6 +325,11 @@ void CPlayer::Motion()
 			rotPre += m_aKeySet[m_nCurrentKey].aKey[i].rot - rot;
 		}
 
+		//角度の正規化
+		Utility::NormalizeAngle(&rotPre.x);	
+		Utility::NormalizeAngle(&rotPre.y);
+		Utility::NormalizeAngle(&rotPre.z);
+
 		//位置・向きを反映
 		m_apModel[i]->SetPos(posPre);
 		m_apModel[i]->SetRot(rotPre);
@@ -338,3 +352,21 @@ void CPlayer::Motion()
 		m_nCurrentKey = 0;	//現在のキー番号を0に戻す
 	}
 }
+
+namespace Utility
+{
+//------------------------------------------------
+//角度の正規化
+//------------------------------------------------
+void NormalizeAngle(float* pAngle)
+{
+	if (*pAngle >= D3DX_PI)
+	{//角度が[3.14]以上の場合
+		*pAngle -= D3DX_PI * 2.0f;
+	}
+	else if (*pAngle <= -D3DX_PI)
+	{//角度が[-3.14]以下の場合
+		*pAngle += D3DX_PI * 2.0f;
+	}
+}
+} //namespaceはここまで

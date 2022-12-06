@@ -161,7 +161,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
 				dwFrameCount++;
 
 				//•¶Žš—ñ‚Ì“o˜^
-				CDebugProc::Print("FPS : %d",s_nCountFPS);
+				CDebugProc::Print("FPS : %d\n",s_nCountFPS);
 #endif //_DEBUG
 			}
 		}
