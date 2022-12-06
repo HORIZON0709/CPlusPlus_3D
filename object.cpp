@@ -93,7 +93,7 @@ void CObject::UpdateAll()
 			if (pObject->m_bDeath)
 			{//死亡フラグが立っている場合
 				//更新
-				pObject->Update();
+				pObject->Uninit();
 			}
 
 			//「次のオブジェクト」に変更
@@ -123,24 +123,6 @@ void CObject::DrawAll()
 			//「次のオブジェクト」に変更
 			pObject = pNext;
 		}
-
-		//先頭のオブジェクトを保存
-		pObject = m_apTop[i];
-
-		while (pObject)
-		{
-			//「保存したオブジェクト」の「次のオブジェクト」を保存
-			CObject* pNext = pObject->m_pNext;
-
-			if (pObject->m_bDeath)
-			{//死亡フラグが立っている場合
-				//描画
-				pObject->Draw();
-			}
-
-			//「次のオブジェクト」に変更
-			pObject = pNext;
-		}
 	}
 }
 //================================================
@@ -155,32 +137,32 @@ CObject::CObject()
 //================================================
 CObject::CObject(const PRIORITY &priority)
 {
-	for (int i = 0; i < PRIORITY::PRIO_MAX; i++)
-	{
-		if (m_apTop[i] == nullptr)
-		{//オブジェクトが一つも無い場合
-			//自身を先頭として登録
-			m_apTop[i] = this;
-
-			//末尾に自身(先頭)を入れる
-			m_apCurrent[i] = m_apTop[i];
-			return;
-		}
-
-		/* オブジェクトが1つ以上ある場合 */
-
-		//末尾の次に自身を入れる
-		m_apCurrent[i]->m_pNext = this;
-
-		//自身が一番後ろになる
-		this->m_pPrev = m_apCurrent[i];
+	if (m_apTop[priority] == nullptr)
+	{//オブジェクトが一つも無い場合
+		//自身を先頭として登録
+		m_apTop[priority] = this;
 
 		//末尾に自身(先頭)を入れる
-		m_apCurrent[i] = m_apTop[i];
-
+		m_apCurrent[priority] = m_apTop[priority];
 		//総数を一つ増やす
 		m_nNumAll++;
+		return;
 	}
+
+	/* オブジェクトが1つ以上ある場合 */
+
+	//末尾の次に自身を入れる
+	m_apCurrent[priority]->m_pNext = this;
+
+	//自身が一番後ろになる
+	this->m_pPrev = m_apCurrent[priority];
+
+	//末尾に自身(先頭)を入れる
+	m_apCurrent[priority] = m_apTop[priority];
+
+	//総数を一つ増やす
+	m_nNumAll++;
+	return;
 }
 
 //================================================

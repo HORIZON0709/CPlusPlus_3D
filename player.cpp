@@ -14,7 +14,11 @@
 #include "game.h"
 #include "model.h"
 
+#include "debug_proc.h"
+
 #include <assert.h>
+
+static int ppp = 0;
 
 //***************************
 //定数の定義
@@ -27,26 +31,26 @@ const float CPlayer::MOVE_SPEED = 1.5f;	//移動速度
 CPlayer::KEY_SET CPlayer::m_aKeySet[NUM_KEYSET] =
 {
 	/* KEY : 0 / 2 */
-	{ 60,	//フレーム数
+	{ 45,	//フレーム数
 		{//[0]
 		D3DXVECTOR3(0.0f,0.0f,0.0f),	//位置(POS)
-		D3DXVECTOR3(0.0f,0.0f,0.0f),	//向き(ROT)
+		D3DXVECTOR3(0.0f,0.09f,0.0f),	//向き(ROT)
 
 		//[1]
 		D3DXVECTOR3(0.0f,0.0f,0.0f),	//位置(POS)
-		D3DXVECTOR3(0.0f,0.0f,0.0f),	//向き(ROT)
+		D3DXVECTOR3(0.0f,-0.91f,0.0f),	//向き(ROT)
 		}
 	},
 	
 	/* KEY : 1 / 2 */
-	{ 60,	//フレーム数
+	{ 45,	//フレーム数
 		{//[0]
 		D3DXVECTOR3(0.0f,0.0f,0.0f),	//位置(POS)
-		D3DXVECTOR3(0.0f,0.0f,0.0f),	//向き(ROT)
+		D3DXVECTOR3(0.0f,-0.09f,0.0f),	//向き(ROT)
 
 		//[1]
 		D3DXVECTOR3(0.0f,0.0f,0.0f),	//位置(POS)
-		D3DXVECTOR3(0.0f,0.0f,0.0f),	//向き(ROT)
+		D3DXVECTOR3(0.0f,0.91f,0.0f),	//向き(ROT)
 		}
 	},
 };
@@ -115,12 +119,12 @@ HRESULT CPlayer::Init()
 	//親モデルの設定
 	m_apModel[1]->SetParent(m_apModel[0]);
 
-	//m_apModel[1]->SetPos(D3DXVECTOR3(0.0f, 50.0f, 0.0f));
+	m_apModel[1]->SetPos(D3DXVECTOR3(0.0f, 24.0f, 65.0f));
 
 	//メンバ変数の初期化
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	m_rot = D3DXVECTOR3(0.0f, 1.57f, 0.0f);
+	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_nNumKey = NUM_KEYSET;
 	m_nCurrentKey = 0;
 	m_nCntMotion = 0;
@@ -140,11 +144,23 @@ void CPlayer::Uninit()
 //================================================
 void CPlayer::Update()
 {
+	ppp++;
 	//移動
 	Move();
 
 	//モーション
 	Motion();
+
+	for (int i = 0; i < MAX_PARTS; i++)
+	{
+		m_apModel[i]->Update();
+	}
+
+	CDebugProc::Print("\n");
+	CDebugProc::Print("%d\n", ppp);
+	CDebugProc::Print("%f,%f,%f\n", m_rot.x, m_rot.y, m_rot.z);
+	CDebugProc::Print("%f,%f,%f\n", m_apModel[0]->GetRot().x, m_apModel[0]->GetRot().y, m_apModel[0]->GetRot().z);
+	CDebugProc::Print("%f,%f,%f\n", m_apModel[1]->GetRot().x, m_apModel[1]->GetRot().y, m_apModel[1]->GetRot().z);
 }
 
 //================================================
@@ -152,6 +168,7 @@ void CPlayer::Update()
 //================================================
 void CPlayer::Draw()
 {
+	ppp = 0;
 	D3DXMATRIX mtxRot, mtxTrans;	//計算用マトリックス
 
 	//デバイスの取得
@@ -185,6 +202,16 @@ void CPlayer::Move()
 {
 	//キーボード情報を取得
 	CInputKeyboard* pKeyboard = CApplication::GetInputKeyboard();
+
+	//向きを変える(急ごしらえ)
+	if (pKeyboard->GetPress(DIK_Q))
+	{
+		m_rot.y += 0.01f;
+	}
+	else if (pKeyboard->GetPress(DIK_E))
+	{
+		m_rot.y -= 0.01f;
+	}
 
 	if (pKeyboard->GetPress(DIK_D))
 	{//右
@@ -255,9 +282,12 @@ void CPlayer::Motion()
 		//相対値を計算(モーションカウンター / 再生フレーム数)
 		float fRelativeValue = (float)(m_nCntMotion / m_aKeySet[i].nFrame);
 
+		//次のキー番号(計算用)
+		int nNextKey = (m_nCurrentKey + 1) % m_nNumKey;
+
 		//差分(終了値 - 開始値)
-		D3DXVECTOR3 posDif = (m_aKeySet[(m_nCurrentKey + 1) % m_nNumKey].aKey[i].pos - m_aKeySet[m_nCurrentKey].aKey[i].pos);
-		D3DXVECTOR3 rotDif = (m_aKeySet[(m_nCurrentKey + 1) % m_nNumKey].aKey[i].rot - m_aKeySet[m_nCurrentKey].aKey[i].rot);
+		D3DXVECTOR3 posDif = (m_aKeySet[nNextKey].aKey[i].pos - m_aKeySet[m_nCurrentKey].aKey[i].pos);
+		D3DXVECTOR3 rotDif = (m_aKeySet[nNextKey].aKey[i].rot - m_aKeySet[m_nCurrentKey].aKey[i].rot);
 
 		//差分 * 相対値
 		D3DXVECTOR3 pos = D3DXVECTOR3(	//位置
@@ -275,13 +305,13 @@ void CPlayer::Motion()
 		D3DXVECTOR3 rotPre = m_apModel[i]->GetRot();
 
 		//現在値に加算(開始値 + (差分 * 相対値))
-		if (m_nCurrentKey == 0)
-		{
+		if (m_nCurrentKey < nNextKey)
+		{//キーが進む時
 			posPre += m_aKeySet[m_nCurrentKey].aKey[i].pos + pos;
 			rotPre += m_aKeySet[m_nCurrentKey].aKey[i].rot + rot;
 		}
-		else if (m_nCurrentKey == 1)
-		{
+		else if (m_nCurrentKey > nNextKey)
+		{//初めのキー番号に戻る時
 			posPre += m_aKeySet[m_nCurrentKey].aKey[i].pos - pos;
 			rotPre += m_aKeySet[m_nCurrentKey].aKey[i].rot - rot;
 		}

@@ -180,6 +180,32 @@ void CModel::Uninit()
 //================================================
 void CModel::Update()
 {
+	if (m_rot.x >= D3DX_PI)
+	{// 3.14‚æ‚è‘å‚«‚¢
+		m_rot.x -= D3DX_PI * 2.0f;
+	}
+	else if (m_rot.x <= -D3DX_PI)
+	{// -3.14‚æ‚è¬‚³‚¢
+		m_rot.x += D3DX_PI * 2.0f;
+	}
+
+	if (m_rot.y >= D3DX_PI)
+	{// 3.14‚æ‚è‘å‚«‚¢
+		m_rot.y -= D3DX_PI * 2.0f;
+	}
+	else if (m_rot.y <= -D3DX_PI)
+	{// -3.14‚æ‚è¬‚³‚¢
+		m_rot.y += D3DX_PI * 2.0f;
+	}
+
+	if (m_rot.z >= D3DX_PI)
+	{// 3.14‚æ‚è‘å‚«‚¢
+		m_rot.z -= D3DX_PI * 2.0f;
+	}
+	else if (m_rot.z <= -D3DX_PI)
+	{// -3.14‚æ‚è¬‚³‚¢
+		m_rot.z += D3DX_PI * 2.0f;
+	}
 }
 
 //================================================
