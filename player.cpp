@@ -1,6 +1,6 @@
 //================================================
 //
-//制作実践基礎[player.cpp]
+//3Dゲーム(仮)[player.cpp]
 //Author:Kishimoto Eiji
 //
 //================================================
@@ -160,17 +160,21 @@ void CPlayer::Update()
 	//モーション
 	Motion();
 
+#ifdef _DEBUG
+	//プレイヤーの向きを表示
 	CDebugProc::Print("\n");
 	CDebugProc::Print("m_rot : [%f,%f,%f]\n", m_rot.x, m_rot.y, m_rot.z);
 
-	D3DXVECTOR3 aRot[2] =
-	{
+	D3DXVECTOR3 aRot[MAX_PARTS] =
+	{//各パーツの向き
 		m_apModel[0]->GetRot(),
 		m_apModel[1]->GetRot(),
 	};
 
+	//各パーツの向きを表示
 	CDebugProc::Print("m_apModel[0]->GetRot() : [%f,%f,%f]\n", aRot[0].x, aRot[0].y, aRot[0].z);
 	CDebugProc::Print("m_apModel[1]->GetRot() : [%f,%f,%f]\n", aRot[1].x, aRot[1].y, aRot[1].z);
+#endif // _DEBUG
 }
 
 //================================================
@@ -289,7 +293,7 @@ void CPlayer::Motion()
 		/* nullptrではない場合 */
 
 		//相対値を計算(モーションカウンター / 再生フレーム数)
-		float fRelativeValue = (float)(m_nCntMotion / m_aKeySet[i].nFrame);
+		float fRelativeValue = (float)(m_nCntMotion / m_aKeySet[m_nCurrentKey].nFrame);
 
 		//次のキー番号(計算用)
 		int nNextKey = (m_nCurrentKey + 1) % m_nNumKey;
