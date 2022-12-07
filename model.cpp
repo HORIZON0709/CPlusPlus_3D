@@ -91,6 +91,7 @@ HRESULT CModel::Init(XFILE xFile)
 	m_pBuffMat = nullptr;
 	m_numMat = 0;
 	m_nIdx = 0;
+	m_pParent = nullptr;
 
 	//Xファイルの読み込み
 	Load(xFile);
@@ -210,12 +211,12 @@ void CModel::Draw()
 	//DrawShadow();
 
 	if (m_pParent != nullptr)
-	{//親がnullptrではない場合
-		//親のワールドマトリックスを取得
+	{//自身に親モデルが存在するとき
+		//親モデルのワールドマトリックスを取得
 		mtxParent = m_pParent->GetMtxWorld();
 	}
 	else
-	{
+	{//自身が親モデルの場合
 		//現在のマトリックスを取得
 		pDevice->GetTransform(D3DTS_WORLD, &mtxParent);
 	}

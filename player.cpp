@@ -44,11 +44,11 @@ CPlayer::KEY_SET CPlayer::m_aKeySet[NUM_KEYSET] =
 	{ 45,	//フレーム数
 		{//[0]
 		D3DXVECTOR3(0.0f,0.0f,0.0f),	//位置(POS)
-		D3DXVECTOR3(0.0f,0.09f,0.0f),	//向き(ROT)
+		D3DXVECTOR3(0.0f,0.18f,0.0f),	//向き(ROT)
 
 		//[1]
 		D3DXVECTOR3(0.0f,0.0f,0.0f),	//位置(POS)
-		D3DXVECTOR3(0.0f,-0.91f,0.0f),	//向き(ROT)
+		D3DXVECTOR3(0.0f,-1.82f,0.0f),	//向き(ROT)
 		}
 	},
 	
@@ -56,11 +56,11 @@ CPlayer::KEY_SET CPlayer::m_aKeySet[NUM_KEYSET] =
 	{ 45,	//フレーム数
 		{//[0]
 		D3DXVECTOR3(0.0f,0.0f,0.0f),	//位置(POS)
-		D3DXVECTOR3(0.0f,-0.09f,0.0f),	//向き(ROT)
+		D3DXVECTOR3(0.0f,-0.18f,0.0f),	//向き(ROT)
 
 		//[1]
 		D3DXVECTOR3(0.0f,0.0f,0.0f),	//位置(POS)
-		D3DXVECTOR3(0.0f,0.91f,0.0f),	//向き(ROT)
+		D3DXVECTOR3(0.0f,1.82f,0.0f),	//向き(ROT)
 		}
 	},
 };
@@ -93,6 +93,7 @@ CPlayer::CPlayer() :CObject::CObject(CObject::PRIORITY::PRIO_MODEL),
 	m_pos(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
 	m_move(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
 	m_rot(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
+	m_rotDest(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
 	m_nNumKey(0),
 	m_nCurrentKey(0),
 	m_nCntMotion(0)
@@ -129,12 +130,11 @@ HRESULT CPlayer::Init()
 	//親モデルの設定
 	m_apModel[1]->SetParent(m_apModel[0]);
 
-	m_apModel[1]->SetPos(D3DXVECTOR3(0.0f, 24.0f, 65.0f));
-
 	//メンバ変数の初期化
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_rotDest = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_nNumKey = NUM_KEYSET;
 	m_nCurrentKey = 0;
 	m_nCntMotion = 0;
@@ -160,16 +160,28 @@ void CPlayer::Update()
 	//モーション
 	Motion();
 
+	m_apModel[1]->SetPos(D3DXVECTOR3(0.0f, 24.0f, 65.0f));
+
 #ifdef _DEBUG
 	//プレイヤーの向きを表示
 	CDebugProc::Print("\n");
 	CDebugProc::Print("m_rot : [%f,%f,%f]\n", m_rot.x, m_rot.y, m_rot.z);
+
+	D3DXVECTOR3 aPos[MAX_PARTS] =
+	{//各パーツの向き
+		m_apModel[0]->GetPos(),
+		m_apModel[1]->GetPos(),
+	};
 
 	D3DXVECTOR3 aRot[MAX_PARTS] =
 	{//各パーツの向き
 		m_apModel[0]->GetRot(),
 		m_apModel[1]->GetRot(),
 	};
+
+	//各パーツの位置を表示
+	CDebugProc::Print("m_apModel[0]->GetPos() : [%f,%f,%f]\n", aPos[0].x, aPos[0].y, aPos[0].z);
+	CDebugProc::Print("m_apModel[1]->GetPos() : [%f,%f,%f]\n", aPos[1].x, aPos[1].y, aPos[1].z);
 
 	//各パーツの向きを表示
 	CDebugProc::Print("m_apModel[0]->GetRot() : [%f,%f,%f]\n", aRot[0].x, aRot[0].y, aRot[0].z);
@@ -293,7 +305,7 @@ void CPlayer::Motion()
 		/* nullptrではない場合 */
 
 		//相対値を計算(モーションカウンター / 再生フレーム数)
-		float fRelativeValue = (float)(m_nCntMotion / m_aKeySet[m_nCurrentKey].nFrame);
+		float fRelativeValue = (float)m_nCntMotion / (float)m_aKeySet[m_nCurrentKey].nFrame;
 
 		//次のキー番号(計算用)
 		int nNextKey = (m_nCurrentKey + 1) % m_nNumKey;
@@ -317,22 +329,20 @@ void CPlayer::Motion()
 		D3DXVECTOR3 posPre = m_apModel[i]->GetPos();
 		D3DXVECTOR3 rotPre = m_apModel[i]->GetRot();
 
-		//現在値に加算(開始値 + (差分 * 相対値))
-		if (m_nCurrentKey < nNextKey)
-		{//キーが進む時
-			posPre += m_aKeySet[m_nCurrentKey].aKey[i].pos + pos;
-			rotPre += m_aKeySet[m_nCurrentKey].aKey[i].rot + rot;
-		}
-		else if (m_nCurrentKey > nNextKey)
-		{//初めのキー番号に戻る時
-			posPre += m_aKeySet[m_nCurrentKey].aKey[i].pos - pos;
-			rotPre += m_aKeySet[m_nCurrentKey].aKey[i].rot - rot;
-		}
+		//現在値に代入(開始値 + (差分 * 相対値))
+		posPre = m_aKeySet[m_nCurrentKey].aKey[i].pos + pos;
+		rotPre = m_aKeySet[m_nCurrentKey].aKey[i].rot + rot;
 
 		//角度の正規化
 		Utility::NormalizeAngle(&rotPre.x);	
 		Utility::NormalizeAngle(&rotPre.y);
 		Utility::NormalizeAngle(&rotPre.z);
+
+#ifdef _DEBUG
+		//計算後の現在の位置と向きを表示
+		CDebugProc::Print("posPre(パーツ%d) : [%f,%f,%f]\n", i, posPre.x, posPre.y, posPre.z);
+		CDebugProc::Print("rotPre(パーツ%d) : [%f,%f,%f]\n", i, rotPre.x, rotPre.y, rotPre.z);
+#endif // _DEBUG
 
 		//位置・向きを反映
 		m_apModel[i]->SetPos(posPre);

@@ -58,7 +58,7 @@ public: /* オーバーライド関数 */
 	void Draw() override;		//描画
 
 private: /* メンバ関数 */
-	void Move();	//移動量
+	void Move();	//移動
 	void Motion();	//モーション
 
 private: /* メンバ変数 */
@@ -66,9 +66,10 @@ private: /* メンバ変数 */
 
 	D3DXMATRIX m_mtxWorld;	//ワールドマトリックス
 
-	D3DXVECTOR3 m_pos;	//位置
-	D3DXVECTOR3 m_move;	//移動量
-	D3DXVECTOR3 m_rot;	//向き
+	D3DXVECTOR3 m_pos;		//位置
+	D3DXVECTOR3 m_move;		//移動量
+	D3DXVECTOR3 m_rot;		//現在の向き
+	D3DXVECTOR3 m_rotDest;	//目的の向き
 
 	int m_nNumKey;		//キーの総数
 	int m_nCurrentKey;	//現在のキー番号

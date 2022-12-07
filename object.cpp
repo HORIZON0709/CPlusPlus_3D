@@ -92,7 +92,7 @@ void CObject::UpdateAll()
 
 			if (pObject->m_bDeath)
 			{//死亡フラグが立っている場合
-				//更新
+				//終了
 				pObject->Uninit();
 			}
 
