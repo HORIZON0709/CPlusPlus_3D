@@ -238,6 +238,8 @@ void CPlayer::Move()
 		m_rot.y -= 0.01f;
 	}
 
+	//float fRot = 0.0f;
+
 	if (pKeyboard->GetPress(DIK_D))
 	{//‰E
 		/* ˆÚ“®•ûŒü‚É‰‚¶‚ÄˆÚ“®—Ê‚ğ‘‰Á */
@@ -288,6 +290,16 @@ void CPlayer::Move()
 	m_pos += m_move;	//ˆÊ’u‚ÉˆÚ“®—Ê‚ğ‰ÁZ
 
 	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	//ˆÚ“®—Ê‚ğ0‚É‚·‚é
+
+	/*
+	float fDif = m_rotDest.y - m_rot.y;
+
+	Utility::NormalizeAngle(&fDif);
+
+	m_rot.y += fDif * 0.1f;
+
+	Utility::NormalizeAngle(&m_rot.y);
+	*/
 }
 
 //================================================
