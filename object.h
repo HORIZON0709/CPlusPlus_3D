@@ -24,8 +24,6 @@ public: /* 列挙型の定義 */
 		NONE = -1,
 		PLAYER = 0,	//プレイヤー
 		ENEMY,		//敵
-		BULLET,		//弾
-		EXPLOSION,	//爆発
 		BG,			//背景
 		ITEM,		//アイテム
 		SCORE,		//スコア

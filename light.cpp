@@ -46,7 +46,7 @@ void CLight::Init()
 	vecDir = D3DXVECTOR3(1.0f, 1.0f, 1.0f);	//•ûŒü‚Ìİ’è
 
 	//İ’è
-	//Set(1, diffuse, vecDir);
+	Set(1, diffuse, vecDir);
 }
 
 //================================================

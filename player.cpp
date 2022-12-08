@@ -98,7 +98,8 @@ CPlayer::CPlayer() :CObject::CObject(CObject::PRIORITY::PRIO_MODEL),
 	m_rotDest(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
 	m_nNumKey(0),
 	m_nCurrentKey(0),
-	m_nCntMotion(0)
+	m_nCntMotion(0),
+	m_bPressKey(false)
 {
 	//メンバ変数のクリア
 	memset(m_mtxWorld, 0, sizeof(m_mtxWorld));
@@ -141,6 +142,7 @@ HRESULT CPlayer::Init()
 	m_nNumKey = NUM_KEYSET;
 	m_nCurrentKey = 0;
 	m_nCntMotion = 0;
+	m_bPressKey = false;
 
 	return S_OK;
 }
@@ -167,9 +169,10 @@ void CPlayer::Update()
 
 #ifdef _DEBUG
 	//プレイヤーの向きを表示
-	CDebugProc::Print("\n");
-	CDebugProc::Print("m_pos : [%f,%f,%f]\n", m_pos.x, m_pos.y, m_pos.z);
-	CDebugProc::Print("m_rot : [%f,%f,%f]\n", m_rot.x, m_rot.y, m_rot.z);
+	CDebugProc::Print("m_pos:[%f,%f,%f]\n", m_pos.x, m_pos.y, m_pos.z);
+	CDebugProc::Print("m_rot:[%f,%f,%f]\n", m_rot.x, m_rot.y, m_rot.z);
+	CDebugProc::Print("m_vec:[%f,%f,%f]\n", m_vec.x, m_vec.y, m_vec.z);
+
 #endif // _DEBUG
 }
 
@@ -226,6 +229,9 @@ void CPlayer::Move()
 		{//右
 			m_vec = D3DXVECTOR3(1.0f, 0.0f, 0.0f);	//移動方向を設定
 		}
+
+		//キー押下中
+		m_bPressKey = true;
 	}
 	else if (pKeyboard->GetPress(DIK_A))
 	{//Aキー押下中
@@ -241,14 +247,23 @@ void CPlayer::Move()
 		{//左
 			m_vec = D3DXVECTOR3(-1.0f, 0.0f, 0.0f);	//移動方向を設定
 		}
+
+		//キー押下中
+		m_bPressKey = true;
 	}
 	else if (pKeyboard->GetPress(DIK_W))
 	{//Wキー押下中
 		m_vec = D3DXVECTOR3(0.0f, 0.0f, 1.0f);	//移動方向を設定
+
+		//キー押下中
+		m_bPressKey = true;
 	}
 	else if (pKeyboard->GetPress(DIK_S))
 	{//Sキー押下中
 		m_vec = D3DXVECTOR3(0.0f, 0.0f, -1.0f);	//移動方向を設定
+
+		//キー押下中
+		m_bPressKey = true;
 	}
 
 	//********** ↓ 移動方向 ↓ **********//
@@ -273,6 +288,13 @@ void CPlayer::Move()
 
 	//********** ↓ 移動量 ↓ **********//
 
+	if (!m_bPressKey)
+	{//移動キーが押されていない場合
+		return;
+	}
+
+	/* 移動キーが押されている場合 */
+
 	//移動量に代入(移動ベクトル * 移動速度)
 	m_move = m_vec * MOVE_SPEED;
 
@@ -281,6 +303,9 @@ void CPlayer::Move()
 
 	//移動量を0にする
 	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+
+	//「キー押下されていない」にする
+	m_bPressKey = false;
 }
 
 //================================================

@@ -21,7 +21,8 @@
 const char* CTexture::s_FileName[] =
 {// テクスチャのパス
 	/* 背景 */
-	"data/TEXTURE/bg000.png",	//仮背景：タイトル
+	"data/TEXTURE/Bg_Title_Tentative.png",	//仮背景：タイトル
+	"data/TEXTURE/Bg_Result_Tentative.png",	//仮背景：リザルト
 };
 
 static_assert(sizeof(CTexture::s_FileName) / sizeof(CTexture::s_FileName[0]) == CTexture::MAX, "aho");

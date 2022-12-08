@@ -26,7 +26,7 @@ private: /* 定数の定義 */
 	static const float MOVE_SPEED;		//移動速度
 	static const float ROT_SMOOTHNESS;	//回転の滑らかさ
 	
-	static const int MAX_PARTS = 2;	//最大パーツ数
+	static const int MAX_PARTS = 2;		//最大パーツ数
 	static const int NUM_KEYSET = 2;	//キーセット数
 
 private: /* 構造体の定義 */
@@ -76,6 +76,8 @@ private: /* メンバ変数 */
 	int m_nNumKey;		//キーの総数
 	int m_nCurrentKey;	//現在のキー番号
 	int m_nCntMotion;	//モーションカウンター
+
+	bool m_bPressKey;	//キー押下中かどうか
 };
 
 #endif

@@ -24,7 +24,8 @@ public: /* 定義 */
 		NONE = -1,	//使用しない
 
 		/* 背景 */
-		bg000 = 0,	//仮背景：タイトル
+		Bg_Title_Tentative = 0,	//仮背景：タイトル
+		Bg_Result_Tentative,	//仮背景：リザルト
 
 		MAX
 	};
