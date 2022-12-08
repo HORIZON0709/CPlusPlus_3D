@@ -23,7 +23,8 @@ class CModel;
 class CPlayer : public CObject
 {/* CObjectの派生クラス */
 private: /* 定数の定義 */
-	static const float MOVE_SPEED;	//移動速度
+	static const float MOVE_SPEED;		//移動速度
+	static const float ROT_SMOOTHNESS;	//回転の滑らかさ
 	
 	static const int MAX_PARTS = 2;	//最大パーツ数
 	static const int NUM_KEYSET = 2;	//キーセット数
@@ -68,6 +69,7 @@ private: /* メンバ変数 */
 
 	D3DXVECTOR3 m_pos;		//位置
 	D3DXVECTOR3 m_move;		//移動量
+	D3DXVECTOR3 m_vec;		//方向ベクトル
 	D3DXVECTOR3 m_rot;		//現在の向き
 	D3DXVECTOR3 m_rotDest;	//目的の向き
 

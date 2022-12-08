@@ -33,7 +33,8 @@ void NormalizeAngle(float* pAngle);
 //***************************
 //定数の定義
 //***************************
-const float CPlayer::MOVE_SPEED = 1.5f;	//移動速度
+const float CPlayer::MOVE_SPEED = 1.5f;		//移動速度
+const float CPlayer::ROT_SMOOTHNESS = 0.5f;	//回転の滑らかさ
 
 //***************************
 //静的メンバ変数
@@ -92,6 +93,7 @@ CPlayer* CPlayer::Create()
 CPlayer::CPlayer() :CObject::CObject(CObject::PRIORITY::PRIO_MODEL),
 	m_pos(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
 	m_move(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
+	m_vec(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
 	m_rot(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
 	m_rotDest(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
 	m_nNumKey(0),
@@ -133,6 +135,7 @@ HRESULT CPlayer::Init()
 	//メンバ変数の初期化
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_vec = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_rotDest = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_nNumKey = NUM_KEYSET;
@@ -165,27 +168,8 @@ void CPlayer::Update()
 #ifdef _DEBUG
 	//プレイヤーの向きを表示
 	CDebugProc::Print("\n");
+	CDebugProc::Print("m_pos : [%f,%f,%f]\n", m_pos.x, m_pos.y, m_pos.z);
 	CDebugProc::Print("m_rot : [%f,%f,%f]\n", m_rot.x, m_rot.y, m_rot.z);
-
-	D3DXVECTOR3 aPos[MAX_PARTS] =
-	{//各パーツの向き
-		m_apModel[0]->GetPos(),
-		m_apModel[1]->GetPos(),
-	};
-
-	D3DXVECTOR3 aRot[MAX_PARTS] =
-	{//各パーツの向き
-		m_apModel[0]->GetRot(),
-		m_apModel[1]->GetRot(),
-	};
-
-	//各パーツの位置を表示
-	CDebugProc::Print("m_apModel[0]->GetPos() : [%f,%f,%f]\n", aPos[0].x, aPos[0].y, aPos[0].z);
-	CDebugProc::Print("m_apModel[1]->GetPos() : [%f,%f,%f]\n", aPos[1].x, aPos[1].y, aPos[1].z);
-
-	//各パーツの向きを表示
-	CDebugProc::Print("m_apModel[0]->GetRot() : [%f,%f,%f]\n", aRot[0].x, aRot[0].y, aRot[0].z);
-	CDebugProc::Print("m_apModel[1]->GetRot() : [%f,%f,%f]\n", aRot[1].x, aRot[1].y, aRot[1].z);
 #endif // _DEBUG
 }
 
@@ -228,78 +212,75 @@ void CPlayer::Move()
 	//キーボード情報を取得
 	CInputKeyboard* pKeyboard = CApplication::GetInputKeyboard();
 
-	//向きを変える(急ごしらえ)
-	if (pKeyboard->GetPress(DIK_Q))
-	{
-		m_rot.y += 0.01f;
-	}
-	else if (pKeyboard->GetPress(DIK_E))
-	{
-		m_rot.y -= 0.01f;
-	}
-
-	//float fRot = 0.0f;
-
 	if (pKeyboard->GetPress(DIK_D))
-	{//右
-		/* 移動方向に応じて移動量を増加 */
-
+	{//Dキー押下中
 		if (pKeyboard->GetPress(DIK_W))
 		{//右前
-			m_move.x += sinf(+D3DX_PI * 0.75f) * MOVE_SPEED;	//X軸方向
-			m_move.z += cosf(-D3DX_PI * 0.25f) * MOVE_SPEED;	//Z軸方向
+			m_vec = D3DXVECTOR3(1.0f, 0.0f, 1.0f);	//移動方向を設定
 		}
 		else if (pKeyboard->GetPress(DIK_S))
 		{//右後ろ
-			m_move.x += sinf(+D3DX_PI * 0.25f) * MOVE_SPEED;	//X軸方向
-			m_move.z += cosf(+D3DX_PI * 0.75f) * MOVE_SPEED;	//Z軸方向
+			m_vec = D3DXVECTOR3(1.0f, 0.0f, -1.0f);	//移動方向を設定
 		}
 		else
 		{//右
-			m_move.x += sinf(+D3DX_PI * 0.5f) * MOVE_SPEED;	//X軸方向
+			m_vec = D3DXVECTOR3(1.0f, 0.0f, 0.0f);	//移動方向を設定
 		}
 	}
 	else if (pKeyboard->GetPress(DIK_A))
-	{//左
-		/* 移動方向に応じて移動量を増加 */
-
+	{//Aキー押下中
 		if (pKeyboard->GetPress(DIK_W))
 		{//左前
-			m_move.x += sinf(-D3DX_PI * 0.75f) * MOVE_SPEED;	//X軸方向
-			m_move.z += cosf(-D3DX_PI * 0.25f) * MOVE_SPEED;	//Z軸方向
+			m_vec = D3DXVECTOR3(-1.0f, 0.0f, 1.0f);	//移動方向を設定
 		}
 		else if (pKeyboard->GetPress(DIK_S))
 		{//左後ろ
-			m_move.x += sinf(-D3DX_PI * 0.25f) * MOVE_SPEED;	//X軸方向
-			m_move.z += cosf(+D3DX_PI * 0.75f) * MOVE_SPEED;	//Z軸方向
+			m_vec = D3DXVECTOR3(-1.0f, 0.0f, -1.0f);	//移動方向を設定
 		}
 		else
 		{//左
-			m_move.x += sinf(-D3DX_PI * 0.5f) * MOVE_SPEED;	//X軸方向
+			m_vec = D3DXVECTOR3(-1.0f, 0.0f, 0.0f);	//移動方向を設定
 		}
 	}
 	else if (pKeyboard->GetPress(DIK_W))
-	{//前
-		m_move.z += cosf(-D3DX_PI * 0.0f) * MOVE_SPEED;	//Z軸方向
+	{//Wキー押下中
+		m_vec = D3DXVECTOR3(0.0f, 0.0f, 1.0f);	//移動方向を設定
 	}
 	else if (pKeyboard->GetPress(DIK_S))
-	{//後ろ
-		m_move.z += cosf(+D3DX_PI * 1.0f) * MOVE_SPEED;	//Z軸方向
+	{//Sキー押下中
+		m_vec = D3DXVECTOR3(0.0f, 0.0f, -1.0f);	//移動方向を設定
 	}
 
-	m_pos += m_move;	//位置に移動量を加算
+	//********** ↓ 移動方向 ↓ **********//
 
-	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	//移動量を0にする
+	//ベクトルの大きさを1にする
+	D3DXVec3Normalize(&m_vec, &m_vec);
 
-	/*
+	//2方向の単位ベクトルから角度を求める
+	m_rotDest.y = atan2f(-m_vec.x, -m_vec.z);
+
+	//現在の向きと目的の向きの差分を計算
 	float fDif = m_rotDest.y - m_rot.y;
 
+	//角度の正規化
 	Utility::NormalizeAngle(&fDif);
 
-	m_rot.y += fDif * 0.1f;
+	//現在の向きを更新
+	m_rot.y += fDif * ROT_SMOOTHNESS;
 
+	//角度の正規化
 	Utility::NormalizeAngle(&m_rot.y);
-	*/
+
+	//********** ↓ 移動量 ↓ **********//
+
+	//移動量に代入(移動ベクトル * 移動速度)
+	m_move = m_vec * MOVE_SPEED;
+
+	//位置に移動量を加算
+	m_pos += m_move;
+
+	//移動量を0にする
+	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 }
 
 //================================================
@@ -349,12 +330,6 @@ void CPlayer::Motion()
 		Utility::NormalizeAngle(&rotPre.x);	
 		Utility::NormalizeAngle(&rotPre.y);
 		Utility::NormalizeAngle(&rotPre.z);
-
-#ifdef _DEBUG
-		//計算後の現在の位置と向きを表示
-		CDebugProc::Print("posPre(パーツ%d) : [%f,%f,%f]\n", i, posPre.x, posPre.y, posPre.z);
-		CDebugProc::Print("rotPre(パーツ%d) : [%f,%f,%f]\n", i, rotPre.x, rotPre.y, rotPre.z);
-#endif // _DEBUG
 
 		//位置・向きを反映
 		m_apModel[i]->SetPos(posPre);
