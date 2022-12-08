@@ -15,20 +15,9 @@
 #include "model.h"
 
 #include "debug_proc.h"
+#include "utility.h"
 
 #include <assert.h>
-
-//***************************
-//namespaceの定義
-//***************************
-namespace Utility	//便利関数
-{
-/*
-	角度の正規化
-	float *pAngle ---> 角度
-*/
-void NormalizeAngle(float* pAngle);
-} //namespaceはここまで
 
 //***************************
 //定数の定義
@@ -168,7 +157,8 @@ void CPlayer::Update()
 	m_apModel[1]->SetPos(D3DXVECTOR3(0.0f, 24.0f, 65.0f));
 
 #ifdef _DEBUG
-	//プレイヤーの向きを表示
+	//各情報を表示
+	CDebugProc::Print("\n《 Player 》\n");
 	CDebugProc::Print("m_pos:[%f,%f,%f]\n", m_pos.x, m_pos.y, m_pos.z);
 	CDebugProc::Print("m_rot:[%f,%f,%f]\n", m_rot.x, m_rot.y, m_rot.z);
 	CDebugProc::Print("m_vec:[%f,%f,%f]\n", m_vec.x, m_vec.y, m_vec.z);
@@ -278,13 +268,13 @@ void CPlayer::Move()
 	float fDif = m_rotDest.y - m_rot.y;
 
 	//角度の正規化
-	Utility::NormalizeAngle(&fDif);
+	NormalizeAngle(&fDif);
 
 	//現在の向きを更新
 	m_rot.y += fDif * ROT_SMOOTHNESS;
 
 	//角度の正規化
-	Utility::NormalizeAngle(&m_rot.y);
+	NormalizeAngle(&m_rot.y);
 
 	//********** ↓ 移動量 ↓ **********//
 
@@ -352,9 +342,9 @@ void CPlayer::Motion()
 		rotPre = m_aKeySet[m_nCurrentKey].aKey[i].rot + rot;
 
 		//角度の正規化
-		Utility::NormalizeAngle(&rotPre.x);	
-		Utility::NormalizeAngle(&rotPre.y);
-		Utility::NormalizeAngle(&rotPre.z);
+		NormalizeAngle(&rotPre.x);	
+		NormalizeAngle(&rotPre.y);
+		NormalizeAngle(&rotPre.z);
 
 		//位置・向きを反映
 		m_apModel[i]->SetPos(posPre);
@@ -378,21 +368,3 @@ void CPlayer::Motion()
 		m_nCurrentKey = 0;	//現在のキー番号を0に戻す
 	}
 }
-
-namespace Utility
-{
-//------------------------------------------------
-//角度の正規化
-//------------------------------------------------
-void NormalizeAngle(float* pAngle)
-{
-	if (*pAngle >= D3DX_PI)
-	{//角度が[3.14]以上の場合
-		*pAngle -= D3DX_PI * 2.0f;
-	}
-	else if (*pAngle <= -D3DX_PI)
-	{//角度が[-3.14]以下の場合
-		*pAngle += D3DX_PI * 2.0f;
-	}
-}
-} //namespaceはここまで

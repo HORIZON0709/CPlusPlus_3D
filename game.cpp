@@ -22,6 +22,7 @@
 #include "light.h"
 #include "polygon3D.h"
 #include "player.h"
+#include "item.h"
 
 #include <assert.h>
 #include <time.h>
@@ -42,6 +43,7 @@ CPolygon3D* CGame::m_pPolygon3D = nullptr;	//3Dポリゴン
 CPlayer* CGame::m_pPlayer = nullptr;		//プレイヤー
 CObjectMesh* CGame::m_pMesh = nullptr;		//メッシュ
 CObjectX* CGame::m_pObjX = nullptr;			//Xモデル
+CItem* CGame::m_pItem = nullptr;			//アイテム
 
 //================================================
 //カメラ情報を取得
@@ -81,6 +83,14 @@ CPlayer* CGame::GetPlayer()
 CObjectMesh* CGame::GetMesh()
 {
 	return m_pMesh;
+}
+
+//================================================
+//アイテム情報を取得
+//================================================
+CItem* CGame::GetItem()
+{
+	return m_pItem;
 }
 
 //================================================
@@ -159,6 +169,13 @@ HRESULT CGame::Init()
 	//	m_pObjX = CObjectX::Create();	//生成
 	//}
 
+	/* アイテム */
+
+	if (m_pItem == nullptr)
+	{//NULLチェック
+		m_pItem = CItem::Create();	//生成
+	}
+
 	//明転
 	CApplication::GetFade()->Set(CFade::STATE::FADE_IN);
 
@@ -210,6 +227,10 @@ void CGame::Uninit()
 	/* Xモデル */
 
 	m_pObjX = nullptr;	//nullptrにする
+
+	/* アイテム */
+
+	m_pItem = nullptr;	//nullptrにする
 }
 
 //================================================

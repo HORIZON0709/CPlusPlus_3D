@@ -23,6 +23,7 @@ class CPolygon3D;
 class CPlayer;
 class CObjectMesh;
 class CObjectX;
+class CItem;
 
 //***************************
 //ゲームクラスの定義
@@ -40,6 +41,7 @@ public: /* 静的メンバ関数 */
 	static CPolygon3D* GetPolygon3D();	//3Dポリゴンの情報を取得
 	static CPlayer* GetPlayer();		//プレイヤーの情報を取得
 	static CObjectMesh* GetMesh();		//メッシュの情報を取得
+	static CItem* GetItem();			//アイテムの情報を取得
 	
 public: /* コンストラクタ・デストラクタ */
 	CGame();
@@ -47,9 +49,9 @@ public: /* コンストラクタ・デストラクタ */
 
 public: /* オーバーライド関数 */
 	HRESULT Init() override;	//初期化
-	void Uninit() override;	//終了
-	void Update() override;	//更新
-	void Draw() override;	//描画
+	void Uninit() override;		//終了
+	void Update() override;		//更新
+	void Draw() override;		//描画
 
 private: /* 静的メンバ変数 */
 	static CCamera* m_pCamera;			//カメラ
@@ -58,6 +60,7 @@ private: /* 静的メンバ変数 */
 	static CPlayer* m_pPlayer;			//プレイヤー
 	static CObjectMesh* m_pMesh;		//メッシュ
 	static CObjectX* m_pObjX;			//Xモデル
+	static CItem* m_pItem;				//アイテム
 	
 private: /* メンバ変数 */
 	int m_nCntIntervalFade;	//フェードするまでの間隔カウント用
