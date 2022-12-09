@@ -61,37 +61,22 @@ public: /* Move */
 	//移動量を取得
 	D3DXVECTOR3 GetMove();
 
-public: /* bool判定系 */
+public: /* Rot */
 	/*
-		移動の有無を設定
-		bool bMove ---> 移動するかしないか
+		向きを設定
+		const D3DXVECTOR3 &rot ---> 任意の向き
 	*/
-	void SetFlagOfMove(bool bMove);
+	void Setrot(const D3DXVECTOR3 &rot);
 
-	/*
-		回転の有無を設定
-		bool bRotation ---> 回転するかどうか
-	*/
-	void SetFlagOfRotation(bool bRotation);
-
-private: /* メンバ関数 */
-	void Move();				//移動
-	void RotationQuaternion();
+	//向きを取得
+	D3DXVECTOR3 GetRot();
 
 private: /* メンバ変数 */
-	CModel* m_pModel;	//モデルのポインタ
-
-	D3DXVECTOR3 m_pos;		//位置
-	D3DXVECTOR3 m_move;		//移動量
-	D3DXVECTOR3 m_vec;		//方向ベクトル
-
-	D3DXQUATERNION m_quaternion;	//クォータニオン
-
+	D3DXVECTOR3 m_pos;	//位置
+	D3DXVECTOR3 m_move;	//移動量
+	D3DXVECTOR3 m_rot;	//向き
+	
 	D3DXMATRIX m_mtxWorld;	//ワールドマトリックス
-
-	bool m_bPressKey;	//キー押下中かどうか
-	bool m_bMove;		//移動するかどうか
-	bool m_bRotation;	//回転するかどうか
 };
 
 #endif

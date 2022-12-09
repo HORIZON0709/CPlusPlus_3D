@@ -158,6 +158,7 @@
     <ClCompile Include="debug_proc.cpp" />
     <ClCompile Include="fade.cpp" />
     <ClCompile Include="game.cpp" />
+    <ClCompile Include="gimmick.cpp" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="inputKeyboard.cpp" />
     <ClCompile Include="item.cpp" />
@@ -185,6 +186,7 @@
     <ClInclude Include="debug_proc.h" />
     <ClInclude Include="fade.h" />
     <ClInclude Include="game.h" />
+    <ClInclude Include="gimmick.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="inputKeyboard.h" />
     <ClInclude Include="item.h" />

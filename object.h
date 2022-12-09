@@ -26,6 +26,7 @@ public: /* 列挙型の定義 */
 		ENEMY,		//敵
 		BG,			//背景
 		ITEM,		//アイテム
+		GIMMICK,	//ギミック
 		SCORE,		//スコア
 		NUMBER,		//ナンバー
 		MAX
