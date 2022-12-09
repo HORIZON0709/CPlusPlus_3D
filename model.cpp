@@ -23,7 +23,7 @@ const char* CModel::s_apFileName[] =
 	/* デバッグ */
 	"data/MODEL/chair.x",				//椅子
 	"data/MODEL/table.x",				//机
-	"data/MODEL/Stage_Debug_Obstade.x",	//ステージデバッグ用の障害物(立方体
+	"data/MODEL/Stage_Debug_Obstade.x",	//ステージデバッグ用の障害物(立方体)
 	"data/MODEL/Coin01.x",				//コイン
 	"data/MODEL/Fish_Body.x",			//魚の胴体
 	"data/MODEL/Fish_Tail.x",			//魚の尾ひれ

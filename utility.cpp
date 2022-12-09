@@ -23,3 +23,17 @@ void NormalizeAngle(float* pAngle)
 		*pAngle += D3DX_PI * 2.0f;
 	}
 }
+
+//================================================
+//“–‚½‚è”»’è(ƒ‚ƒfƒ‹“¯Žm)
+//================================================
+bool CollisionModel(
+	D3DXVECTOR3* pPosOwn,
+	D3DXVECTOR3* pPosTarget,
+	const D3DXVECTOR3 &sizeOwn,
+	const D3DXVECTOR3 &sizeTarget)
+{
+
+
+	return false;
+}

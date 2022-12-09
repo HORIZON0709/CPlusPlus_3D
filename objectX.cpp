@@ -11,6 +11,7 @@
 #include "application.h"
 #include "renderer.h"
 #include "input.h"
+#include "model.h"
 
 #include <assert.h>
 
@@ -76,6 +77,9 @@ CObjectX::~CObjectX()
 //================================================
 HRESULT CObjectX::Init()
 {
+	//ƒ‚ƒfƒ‹‚Ì¶¬
+	m_pModel = CModel::Create(CModel::XFILE::Stage_Debug_Obstade);
+
 	//ƒƒ“ƒo•Ï”‚Ì‰Šúİ’è
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);

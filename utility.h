@@ -21,4 +21,17 @@
 */
 void NormalizeAngle(float* pAngle); 
 
+/*
+	当たり判定(モデル同士)
+	D3DXVECTOR3* pPosOwn ---> 自身の位置
+	D3DXVECTOR3* pPosTarget ---> 対象の位置
+	const D3DXVECTOR3 &sizeOwn ---> 自身のサイズ
+	const D3DXVECTOR3 &sizeTarget ---> 対象のサイズ
+*/
+bool CollisionModel(
+	D3DXVECTOR3* pPosOwn,
+	D3DXVECTOR3* pPosTarget,
+	const D3DXVECTOR3 &sizeOwn,
+	const D3DXVECTOR3 &sizeTarget);
+
 #endif

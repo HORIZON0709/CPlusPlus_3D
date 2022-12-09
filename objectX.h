@@ -15,6 +15,11 @@
 #include <stdio.h>
 
 //***************************
+//前方宣言
+//***************************
+class CModel;
+
+//***************************
 //オブジェクトクラスの定義
 //***************************
 class CObjectX : public CObject
@@ -80,6 +85,8 @@ private: /* メンバ関数 */
 	void Set(FILE *pFile, char aText[]);
 
 private: /* メンバ変数 */
+	CModel* m_pModel;	//モデルのポインタ
+
 	D3DXVECTOR3 m_pos;		//位置
 	D3DXVECTOR3 m_move;		//移動量
 	D3DXVECTOR3 m_rot;		//現在の向き
