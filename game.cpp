@@ -16,7 +16,7 @@
 #include "object2D.h"
 #include "object3D.h"
 //#include "objectMesh.h"
-//#include "objectX.h"
+#include "objectX.h"
 
 #include "camera.h"
 #include "light.h"
@@ -191,7 +191,7 @@ void CGame::Uninit()
 
 	CObject2D::ReleaseAll();	//全ての解放(2D)
 	CObject3D::ReleaseAll();	//全ての解放(3D)
-	//CObjectX::ReleaseAll();		//全ての解放(X)
+	CObjectX::ReleaseAll();		//全ての解放(X)
 	//CObjectMesh::ReleaseAll();		//全ての解放(Mesh)
 
 	/* カメラ */
