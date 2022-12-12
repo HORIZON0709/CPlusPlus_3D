@@ -15,19 +15,10 @@
 #include <stdio.h>
 
 //***************************
-//前方宣言
-//***************************
-class CModel;
-
-//***************************
 //オブジェクトクラスの定義
 //***************************
 class CObjectX : public CObject
 {/* CObjectの派生クラス */
-private: /* 定数の定義 */
-	static const float ROTATION_SPEED;	//回転速度
-	static const float MOVE_SPEED;		//移動速度
-
 public: /* 静的メンバ関数 */
 	static CObjectX* Create();	//生成
 

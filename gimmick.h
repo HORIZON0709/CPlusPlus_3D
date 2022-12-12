@@ -20,7 +20,7 @@ class CModel;
 //***************************
 //プレイヤークラスの定義
 //***************************
-class CGimmick : public CObjectX
+class CGimmick : public CObject
 {/* CObjectXの派生クラス */
 private: /* 定数の定義 */
 	static const float MOVE_SPEED;		//移動速度

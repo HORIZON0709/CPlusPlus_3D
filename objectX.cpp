@@ -13,12 +13,6 @@
 
 #include <assert.h>
 
-//***************************
-//定数の定義
-//***************************
-const float CObjectX::ROTATION_SPEED = 0.25f;	//回転速度
-const float CObjectX::MOVE_SPEED = 5.0f;		//移動速度
-
 //================================================
 //生成
 //================================================
@@ -104,9 +98,6 @@ void CObjectX::Draw()
 	//位置を反映
 	D3DXMatrixTranslation(&mtxTrans, m_pos.x, m_pos.y, m_pos.z);
 	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);
-
-	//モデルの影を描画
-	//DrawShadow();
 
 	//ワールドマトリックスの設定
 	pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);

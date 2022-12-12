@@ -24,6 +24,7 @@ class CPlayer;
 class CObjectMesh;
 class CObjectX;
 class CItem;
+class CGimmick;
 
 //***************************
 //ゲームクラスの定義
@@ -61,6 +62,7 @@ private: /* 静的メンバ変数 */
 	static CObjectMesh* m_pMesh;		//メッシュ
 	static CObjectX* m_pObjX;			//Xモデル
 	static CItem* m_pItem;				//アイテム
+	static CGimmick* m_pGimmick;		//ギミック
 	
 private: /* メンバ変数 */
 	int m_nCntIntervalFade;	//フェードするまでの間隔カウント用

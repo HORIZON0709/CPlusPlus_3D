@@ -77,7 +77,7 @@ HRESULT CItem::Init()
 	m_pModel = CModel::Create(CModel::XFILE::Coin01);
 
 	//ƒƒ“ƒo•Ï”‚Ì‰Šú‰»
-	m_pos = D3DXVECTOR3(30.0f, 0.0f, -30.0f);
+	m_pos = D3DXVECTOR3(150.0f, 0.0f, 0.0f);
 	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_rotDest = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_bPressKey = false;

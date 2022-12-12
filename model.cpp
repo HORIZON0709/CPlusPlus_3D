@@ -281,8 +281,8 @@ void CModel::Load(XFILE xFile)
 {
 	assert(xFile >= 0 && xFile < MAX);
 
-	//if (s_pTexture[inTexture] != nullptr)
-	//{// テクスチャの読み込みがされている
+	//if (s_apFileName[xFile] != nullptr)
+	//{//モデルの読み込みがされている
 	//	return;
 	//}
 

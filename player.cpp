@@ -81,6 +81,7 @@ CPlayer* CPlayer::Create()
 //================================================
 CPlayer::CPlayer() :CObject::CObject(CObject::PRIORITY::PRIO_MODEL),
 	m_pos(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
+	m_posOld(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
 	m_move(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
 	m_vec(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
 	m_rot(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
@@ -124,6 +125,7 @@ HRESULT CPlayer::Init()
 
 	//メンバ変数の初期化
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_posOld = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_vec = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -287,7 +289,10 @@ void CPlayer::Move()
 	//移動量に代入(移動ベクトル * 移動速度)
 	m_move = m_vec * MOVE_SPEED;
 
-	//位置に移動量を加算
+	//現在の位置を、前回の位置として保存
+	m_posOld = m_pos;
+
+	//現在の位置に移動量を加算
 	m_pos += m_move;
 
 	//移動量を0にする

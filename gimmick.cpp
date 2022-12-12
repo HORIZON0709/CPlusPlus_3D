@@ -50,13 +50,14 @@ CGimmick* CGimmick::Create()
 //================================================
 //コンストラクタ
 //================================================
-CGimmick::CGimmick() :
+CGimmick::CGimmick() :CObject::CObject(CObject::PRIORITY::PRIO_MODEL),
 	m_pModel(nullptr),
 	m_pos(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
 	m_move(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
 	m_vec(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
 	m_rot(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
 	m_rotDest(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
+	m_quaternion(D3DXQUATERNION(0.0f,0.0f,0.0f,1.0f)),
 	m_bPressKey(false),
 	m_bMove(false),
 	m_bRotation(false)
@@ -89,6 +90,7 @@ HRESULT CGimmick::Init()
 	m_vec = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_rotDest = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_quaternion = D3DXQUATERNION(0.0f, 0.0f, 0.0f, 1.0f);
 	m_bPressKey = false;
 	m_bMove = false;
 	m_bRotation = false;
@@ -119,6 +121,9 @@ void CGimmick::Update()
 			RotationQuaternion();
 		}
 	}
+
+	//移動量を0にする
+	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 
 #ifdef _DEBUG
 	//各情報を表示
@@ -168,13 +173,13 @@ void CGimmick::Move()
 	//キーボード情報を取得
 	CInputKeyboard* pKeyboard = CApplication::GetInputKeyboard();
 
-	if (pKeyboard->GetPress(DIK_D))
+	if (pKeyboard->GetPress(DIK_K))
 	{//Dキー押下中
-		if (pKeyboard->GetPress(DIK_W))
+		if (pKeyboard->GetPress(DIK_U))
 		{//右前
 			m_vec = D3DXVECTOR3(1.0f, 0.0f, 1.0f);	//移動方向を設定
 		}
-		else if (pKeyboard->GetPress(DIK_S))
+		else if (pKeyboard->GetPress(DIK_J))
 		{//右後ろ
 			m_vec = D3DXVECTOR3(1.0f, 0.0f, -1.0f);	//移動方向を設定
 		}
@@ -186,13 +191,13 @@ void CGimmick::Move()
 		//キー押下中
 		m_bPressKey = true;
 	}
-	else if (pKeyboard->GetPress(DIK_A))
+	else if (pKeyboard->GetPress(DIK_H))
 	{//Aキー押下中
-		if (pKeyboard->GetPress(DIK_W))
+		if (pKeyboard->GetPress(DIK_U))
 		{//左前
 			m_vec = D3DXVECTOR3(-1.0f, 0.0f, 1.0f);	//移動方向を設定
 		}
-		else if (pKeyboard->GetPress(DIK_S))
+		else if (pKeyboard->GetPress(DIK_J))
 		{//左後ろ
 			m_vec = D3DXVECTOR3(-1.0f, 0.0f, -1.0f);	//移動方向を設定
 		}
@@ -204,14 +209,14 @@ void CGimmick::Move()
 		//キー押下中
 		m_bPressKey = true;
 	}
-	else if (pKeyboard->GetPress(DIK_W))
+	else if (pKeyboard->GetPress(DIK_U))
 	{//Wキー押下中
 		m_vec = D3DXVECTOR3(0.0f, 0.0f, 1.0f);	//移動方向を設定
 
 		//キー押下中
 		m_bPressKey = true;
 	}
-	else if (pKeyboard->GetPress(DIK_S))
+	else if (pKeyboard->GetPress(DIK_J))
 	{//Sキー押下中
 		m_vec = D3DXVECTOR3(0.0f, 0.0f, -1.0f);	//移動方向を設定
 
@@ -221,23 +226,23 @@ void CGimmick::Move()
 
 	//********** ↓ 移動方向 ↓ **********//
 
-	//ベクトルの大きさを1にする
-	D3DXVec3Normalize(&m_vec, &m_vec);
+	////ベクトルの大きさを1にする
+	//D3DXVec3Normalize(&m_vec, &m_vec);
 
-	//2方向の単位ベクトルから角度を求める
-	m_rotDest.y = atan2f(-m_vec.x, -m_vec.z);
+	////2方向の単位ベクトルから角度を求める
+	//m_rotDest.y = atan2f(-m_vec.x, -m_vec.z);
 
-	//現在の向きと目的の向きの差分を計算
-	float fDif = m_rotDest.y - m_rot.y;
+	////現在の向きと目的の向きの差分を計算
+	//float fDif = m_rotDest.y - m_rot.y;
 
-	//角度の正規化
-	NormalizeAngle(&fDif);
+	////角度の正規化
+	//NormalizeAngle(&fDif);
 
-	//現在の向きを更新
-	m_rot.y += fDif * ROT_SMOOTHNESS;
+	////現在の向きを更新
+	//m_rot.y += fDif * ROT_SMOOTHNESS;
 
-	//角度の正規化
-	NormalizeAngle(&m_rot.y);
+	////角度の正規化
+	//NormalizeAngle(&m_rot.y);
 
 	//********** ↓ 移動量 ↓ **********//
 
@@ -253,9 +258,6 @@ void CGimmick::Move()
 
 	//位置に移動量を加算
 	m_pos += m_move;
-
-	//移動量を0にする
-	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 
 	//「キー押下されていない」にする
 	m_bPressKey = false;

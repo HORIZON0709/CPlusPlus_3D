@@ -16,6 +16,7 @@
 //前方宣言
 //***************************
 class CModel;
+class CObjectX;
 
 //***************************
 //プレイヤークラスの定義
@@ -65,9 +66,12 @@ private: /* メンバ関数 */
 private: /* メンバ変数 */
 	CModel* m_apModel[MAX_PARTS];	//モデルのポインタ
 
+	CObjectX* m_pModelTarget;	//当たり判定の対象オブジェクトのポインタ
+
 	D3DXMATRIX m_mtxWorld;	//ワールドマトリックス
 
-	D3DXVECTOR3 m_pos;		//位置
+	D3DXVECTOR3 m_pos;		//現在の位置
+	D3DXVECTOR3 m_posOld;	//前回の位置
 	D3DXVECTOR3 m_move;		//移動量
 	D3DXVECTOR3 m_vec;		//方向ベクトル
 	D3DXVECTOR3 m_rot;		//現在の向き

@@ -23,6 +23,7 @@
 #include "polygon3D.h"
 #include "player.h"
 #include "item.h"
+#include "gimmick.h"
 
 #include <assert.h>
 #include <time.h>
@@ -44,6 +45,7 @@ CPlayer* CGame::m_pPlayer = nullptr;		//プレイヤー
 CObjectMesh* CGame::m_pMesh = nullptr;		//メッシュ
 CObjectX* CGame::m_pObjX = nullptr;			//Xモデル
 CItem* CGame::m_pItem = nullptr;			//アイテム
+CGimmick* CGame::m_pGimmick = nullptr;		//ギミック
 
 //================================================
 //カメラ情報を取得
@@ -176,6 +178,14 @@ HRESULT CGame::Init()
 		m_pItem = CItem::Create();	//生成
 	}
 
+	/* ギミック */
+
+	if (m_pGimmick == nullptr)
+	{//NULLチェック
+		m_pGimmick = CGimmick::Create();	//生成
+		m_pGimmick->SetFlagOfMove(true);
+	}
+
 	//明転
 	CApplication::GetFade()->Set(CFade::STATE::FADE_IN);
 
@@ -231,6 +241,10 @@ void CGame::Uninit()
 	/* アイテム */
 
 	m_pItem = nullptr;	//nullptrにする
+
+	/* ギミック */
+
+	m_pGimmick = nullptr;	//nullptrにする
 }
 
 //================================================
