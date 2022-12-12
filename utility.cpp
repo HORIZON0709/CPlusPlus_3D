@@ -30,7 +30,6 @@ void NormalizeAngle(float* pAngle)
 bool CollisionModel(
 	const D3DXVECTOR3 &posOwn,
 	const D3DXVECTOR3 &posTarget,
-	const D3DXVECTOR3 &posOldOwn,
 	const D3DXVECTOR3 &sizeOwn,
 	const D3DXVECTOR3 &sizeTarget)
 {
