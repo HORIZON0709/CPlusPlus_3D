@@ -161,7 +161,13 @@ void CPlayer::Update()
 	//ƒ‚[ƒVƒ‡ƒ“
 	Motion();
 
-	//CollisionModel(m_pos,m_pModelTarget->GetPos(),)
+	CollisionModel(
+		m_pos,
+		m_pModelTarget->GetPos(),
+		m_vtxMax,
+		m_vtxMin,
+		m_pModelTarget->GetVtxMax(),
+		m_pModelTarget->GetVtxMin());
 
 	m_apModel[1]->SetPos(D3DXVECTOR3(0.0f, 24.0f, 65.0f));
 
