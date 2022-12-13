@@ -86,6 +86,8 @@ CPlayer::CPlayer() :CObject::CObject(CObject::PRIORITY::PRIO_MODEL),
 	m_vec(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
 	m_rot(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
 	m_rotDest(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
+	m_vtxMax(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
+	m_vtxMin(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
 	m_nNumKey(0),
 	m_nCurrentKey(0),
 	m_nCntMotion(0),
@@ -123,6 +125,9 @@ HRESULT CPlayer::Init()
 	//親モデルの設定
 	m_apModel[1]->SetParent(m_apModel[0]);
 
+	//頂点の最大値と最小値を設定
+	SetVtxMaxAndMin();
+
 	//メンバ変数の初期化
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_posOld = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -156,6 +161,8 @@ void CPlayer::Update()
 	//モーション
 	Motion();
 
+	//CollisionModel(m_pos,m_pModelTarget->GetPos(),)
+
 	m_apModel[1]->SetPos(D3DXVECTOR3(0.0f, 24.0f, 65.0f));
 
 #ifdef _DEBUG
@@ -164,6 +171,9 @@ void CPlayer::Update()
 	CDebugProc::Print("m_pos:[%f,%f,%f]\n", m_pos.x, m_pos.y, m_pos.z);
 	CDebugProc::Print("m_rot:[%f,%f,%f]\n", m_rot.x, m_rot.y, m_rot.z);
 	CDebugProc::Print("m_vec:[%f,%f,%f]\n", m_vec.x, m_vec.y, m_vec.z);
+
+	CDebugProc::Print("m_vtxMax:[%f,%f,%f]\n", m_vtxMax.x, m_vtxMax.y, m_vtxMax.z);
+	CDebugProc::Print("m_vtxMin:[%f,%f,%f]\n", m_vtxMin.x, m_vtxMin.y, m_vtxMin.z);
 #endif // _DEBUG
 }
 
@@ -370,5 +380,52 @@ void CPlayer::Motion()
 	if (m_nCurrentKey == m_nNumKey)
 	{//現在のキー番号が、キーの総数に達したら
 		m_nCurrentKey = 0;	//現在のキー番号を0に戻す
+	}
+}
+
+//================================================
+//頂点の最大値と最小値を設定
+//================================================
+void CPlayer::SetVtxMaxAndMin()
+{
+	//各パーツの頂点の最大値と最小値を格納する配列
+	D3DXVECTOR3 aVtxMax[MAX_PARTS] = {};
+	D3DXVECTOR3 aVtxMin[MAX_PARTS] = {};
+
+	for (int i = 0; i < MAX_PARTS; i++)
+	{
+		//各パーツから、頂点の最大値と最小値を取得
+		aVtxMax[i] = m_apModel[i]->GetVtxMax();
+		aVtxMin[i] = m_apModel[i]->GetVtxMin();
+	}
+
+	for (int i = 0; i < MAX_PARTS; i++)
+	{
+		if ((i + 1) >= MAX_PARTS)
+		{//パーツ数の次のカウントが、最大パーツ数を超える場合
+			break;
+		}
+
+		//********** 最大値 **********//
+
+		if (aVtxMax[i] > aVtxMax[i + 1])
+		{//[ 現在のパーツの最大値 > 次のパーツの最大値]
+			m_vtxMax = aVtxMax[i];	//現在のパーツの最大値を設定
+		}
+		else if (aVtxMax[i] < aVtxMax[i + 1])
+		{//[ 現在のパーツの最大値 < 次のパーツの最大値]
+			m_vtxMax = aVtxMax[i + 1];	//次のパーツの最大値を設定
+		}
+
+		//********** 最小値 **********//
+
+		if (aVtxMin[i] < aVtxMin[i + 1])
+		{//[ 現在のパーツの最小値 < 次のパーツの最小値]
+			m_vtxMin = aVtxMin[i];	//現在のパーツの最小値を設定
+		}
+		else if (aVtxMin[i] > aVtxMin[i + 1])
+		{//[ 現在のパーツの最小値 > 次のパーツの最小値]
+			m_vtxMin = aVtxMin[i + 1];	//現在のパーツの最小値を設定
+		}
 	}
 }

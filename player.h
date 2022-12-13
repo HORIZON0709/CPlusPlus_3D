@@ -16,7 +16,6 @@
 //前方宣言
 //***************************
 class CModel;
-class CObjectX;
 
 //***************************
 //プレイヤークラスの定義
@@ -63,10 +62,11 @@ private: /* メンバ関数 */
 	void Move();	//移動
 	void Motion();	//モーション
 
+	void SetVtxMaxAndMin();	//頂点の最大値と最小値の設定
+
 private: /* メンバ変数 */
 	CModel* m_apModel[MAX_PARTS];	//モデルのポインタ
-
-	CObjectX* m_pModelTarget;	//当たり判定の対象オブジェクトのポインタ
+	CModel* m_pModelTarget;			//当たり判定の対象オブジェクトのポインタ
 
 	D3DXMATRIX m_mtxWorld;	//ワールドマトリックス
 
@@ -76,6 +76,8 @@ private: /* メンバ変数 */
 	D3DXVECTOR3 m_vec;		//方向ベクトル
 	D3DXVECTOR3 m_rot;		//現在の向き
 	D3DXVECTOR3 m_rotDest;	//目的の向き
+	D3DXVECTOR3 m_vtxMax;	//頂点の最大値
+	D3DXVECTOR3 m_vtxMin;	//頂点の最小値
 
 	int m_nNumKey;		//キーの総数
 	int m_nCurrentKey;	//現在のキー番号

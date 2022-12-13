@@ -132,9 +132,6 @@
     <ClCompile Include="objectMesh.cpp">
       <Filter>ソース ファイル\Object</Filter>
     </ClCompile>
-    <ClCompile Include="player.cpp">
-      <Filter>ソース ファイル\Model</Filter>
-    </ClCompile>
     <ClCompile Include="item.cpp">
       <Filter>ソース ファイル\Model</Filter>
     </ClCompile>
@@ -145,6 +142,9 @@
       <Filter>ソース ファイル\Model</Filter>
     </ClCompile>
     <ClCompile Include="gimmick.cpp">
+      <Filter>ソース ファイル\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="player.cpp">
       <Filter>ソース ファイル\Model</Filter>
     </ClCompile>
   </ItemGroup>

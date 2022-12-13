@@ -30,10 +30,67 @@ void NormalizeAngle(float* pAngle)
 bool CollisionModel(
 	const D3DXVECTOR3 &posOwn,
 	const D3DXVECTOR3 &posTarget,
-	const D3DXVECTOR3 &sizeOwn,
-	const D3DXVECTOR3 &sizeTarget)
+	const D3DXVECTOR3 &sizeMaxOwn,
+	const D3DXVECTOR3 &sizeMinOwn,
+	const D3DXVECTOR3 &sizeMaxTarget,
+	const D3DXVECTOR3 &sizeMinTarget)
 {
-	
+	D3DXVECTOR3 ownMax = D3DXVECTOR3(	//自身の判定の最大値
+		posOwn.x + sizeMaxOwn.x,
+		posOwn.y + sizeMaxOwn.y,
+		posOwn.z + sizeMaxOwn.z
+		);
+
+	D3DXVECTOR3 ownMin = D3DXVECTOR3(	//自身の判定の最小値
+		posOwn.x + sizeMinOwn.x,
+		posOwn.y + sizeMinOwn.y,
+		posOwn.z + sizeMinOwn.z
+	);
+
+	D3DXVECTOR3 targetMax = D3DXVECTOR3(	//対象の判定の最大値
+		posTarget.x + sizeMaxTarget.x,
+		posTarget.y + sizeMaxTarget.y,
+		posTarget.z + sizeMaxTarget.z
+	);
+
+	D3DXVECTOR3 targetMin = D3DXVECTOR3(	//対象の判定の最小値
+		posTarget.x + sizeMinTarget.x,
+		posTarget.y + sizeMinTarget.y,
+		posTarget.z + sizeMinTarget.z
+	);
+
+	{//********** X軸 **********//
+
+		bool bRightAndLeft = (ownMax.x > targetMin.x);
+		bool bLeftAndRight = (ownMin.x < targetMax.x);
+
+		if (bRightAndLeft || bLeftAndRight)
+		{
+			return true;
+		}
+	}
+
+	{//********** Y軸 **********//
+
+		bool bTopAndBottom = (ownMax.y > targetMin.y);
+		bool bBottomAndTop = (ownMin.y < targetMax.y);
+
+		if (bTopAndBottom || bBottomAndTop)
+		{
+			return true;
+		}
+	}
+
+	{//********** Z軸 **********//
+
+		bool bFrontAndBack = (ownMax.z > targetMin.z);
+		bool bBackAndFront = (ownMin.z < targetMax.z);
+
+		if (bFrontAndBack || bBackAndFront)
+		{
+			return true;
+		}
+	}
 
 	return false;
 }

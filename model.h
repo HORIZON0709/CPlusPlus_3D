@@ -86,6 +86,10 @@ public: /* Rot */
 	//向きを取得
 	D3DXVECTOR3 GetRot();
 
+public: /* vtx */
+	D3DXVECTOR3 GetVtxMax();	//頂点の最大値を取得
+	D3DXVECTOR3 GetVtxMin();	//頂点の最小値を取得
+
 private:
 	void DrawShadow();	//影の描画
 
