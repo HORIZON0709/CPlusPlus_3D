@@ -13,11 +13,17 @@
 #include "input.h"
 #include "game.h"
 #include "model.h"
+#include "gimmick.h"
 
 #include "debug_proc.h"
 #include "utility.h"
 
 #include <assert.h>
+
+namespace
+{
+bool bCollisionDebug = false;
+}
 
 //***************************
 //定数の定義
@@ -80,6 +86,7 @@ CPlayer* CPlayer::Create()
 //コンストラクタ
 //================================================
 CPlayer::CPlayer() :CObject::CObject(CObject::PRIORITY::PRIO_MODEL),
+	m_pTarget(nullptr),
 	m_pos(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
 	m_posOld(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
 	m_move(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
@@ -129,7 +136,7 @@ HRESULT CPlayer::Init()
 	SetVtxMaxAndMin();
 
 	//メンバ変数の初期化
-	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_pos = D3DXVECTOR3(-50.0f, 0.0f, 0.0f);
 	m_posOld = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_vec = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -161,13 +168,8 @@ void CPlayer::Update()
 	//モーション
 	Motion();
 
-	CollisionModel(
-		m_pos,
-		m_pModelTarget->GetPos(),
-		m_vtxMax,
-		m_vtxMin,
-		m_pModelTarget->GetVtxMax(),
-		m_pModelTarget->GetVtxMin());
+	//当たり判定
+	Collision();
 
 	m_apModel[1]->SetPos(D3DXVECTOR3(0.0f, 24.0f, 65.0f));
 
@@ -178,8 +180,14 @@ void CPlayer::Update()
 	CDebugProc::Print("m_rot:[%f,%f,%f]\n", m_rot.x, m_rot.y, m_rot.z);
 	CDebugProc::Print("m_vec:[%f,%f,%f]\n", m_vec.x, m_vec.y, m_vec.z);
 
-	CDebugProc::Print("m_vtxMax:[%f,%f,%f]\n", m_vtxMax.x, m_vtxMax.y, m_vtxMax.z);
-	CDebugProc::Print("m_vtxMin:[%f,%f,%f]\n", m_vtxMin.x, m_vtxMin.y, m_vtxMin.z);
+	if (bCollisionDebug)
+	{//対象のオブジェクトに当たっている場合
+		CDebugProc::Print("bCollision:[true]\n", bCollisionDebug);
+	}
+	else
+	{//当たっていない場合
+		CDebugProc::Print("bCollision:[false]\n", bCollisionDebug);
+	}
 #endif // _DEBUG
 }
 
@@ -215,12 +223,45 @@ void CPlayer::Draw()
 }
 
 //================================================
+//位置を取得
+//================================================
+D3DXVECTOR3 CPlayer::GetPos()
+{
+	return m_pos;
+}
+
+//================================================
+//頂点の最大値を取得
+//================================================
+D3DXVECTOR3 CPlayer::GetVtxMax()
+{
+	return m_vtxMax;
+}
+
+//================================================
+//頂点の最小値を取得
+//================================================
+D3DXVECTOR3 CPlayer::GetVtxMin()
+{
+	return m_vtxMin;
+}
+
+//================================================
 //移動
 //================================================
 void CPlayer::Move()
 {
 	//キーボード情報を取得
 	CInputKeyboard* pKeyboard = CApplication::GetInputKeyboard();
+
+	if (pKeyboard->GetPress(DIK_R))
+	{
+		m_pos.y += 0.5f;
+	}
+	else if (pKeyboard->GetPress(DIK_F))
+	{
+		m_pos.y -= 0.5f;
+	}
 
 	if (pKeyboard->GetPress(DIK_D))
 	{//Dキー押下中
@@ -387,6 +428,26 @@ void CPlayer::Motion()
 	{//現在のキー番号が、キーの総数に達したら
 		m_nCurrentKey = 0;	//現在のキー番号を0に戻す
 	}
+}
+
+//================================================
+//当たり判定
+//================================================
+void CPlayer::Collision()
+{
+	//ギミック情報を取得
+	m_pTarget = CGame::GetGimmick();
+
+	//モデル同士の当たり判定
+	bCollisionDebug = CollisionModel(
+		&m_pos,					//自身の現在の位置
+		m_posOld,				//自身の前回の位置
+		m_pTarget->GetPos(),	//対象の位置
+		m_vtxMax,				//自身のサイズの最大値
+		m_vtxMin,				//自身のサイズの最小値
+		m_pTarget->GetVtxMax(),	//対象のサイズの最大値
+		m_pTarget->GetVtxMin()	//対象のサイズの最小値
+	);
 }
 
 //================================================

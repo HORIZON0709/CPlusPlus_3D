@@ -10,7 +10,7 @@
 //***************************
 //インクルード
 //***************************
-#include "objectX.h"
+#include "object.h"
 
 //***************************
 //前方宣言
@@ -57,6 +57,19 @@ public: /* bool判定系 */
 	*/
 	void SetFlagOfRotation(bool bRotation);
 
+public: /* Pos */
+	/*
+		位置を設定
+		const D3DXVECTOR3 &pos ---> 任意の位置
+	*/
+	void SetPos(const D3DXVECTOR3 &pos);
+
+	//位置を取得
+	D3DXVECTOR3 GetPos();
+
+public: /* vtx */
+	D3DXVECTOR3 GetVtxMax();	//頂点の最大値を取得
+	D3DXVECTOR3 GetVtxMin();	//頂点の最小値を取得
 
 private: /* メンバ変数 */
 	CModel* m_pModel;	//モデルのポインタ
@@ -68,6 +81,8 @@ private: /* メンバ変数 */
 	D3DXVECTOR3 m_vec;		//方向ベクトル
 	D3DXVECTOR3 m_rot;		//現在の向き
 	D3DXVECTOR3 m_rotDest;	//目的の向き
+	D3DXVECTOR3 m_vtxMax;	//頂点の最大値
+	D3DXVECTOR3 m_vtxMin;	//頂点の最小値
 
 	D3DXQUATERNION m_quaternion;	//クォータニオン
 

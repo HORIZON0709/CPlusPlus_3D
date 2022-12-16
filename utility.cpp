@@ -28,69 +28,108 @@ void NormalizeAngle(float* pAngle)
 //当たり判定(モデル同士)
 //================================================
 bool CollisionModel(
-	const D3DXVECTOR3 &posOwn,
+	D3DXVECTOR3* pPosOwn,
+	const D3DXVECTOR3 &posOldOwn,
 	const D3DXVECTOR3 &posTarget,
 	const D3DXVECTOR3 &sizeMaxOwn,
 	const D3DXVECTOR3 &sizeMinOwn,
 	const D3DXVECTOR3 &sizeMaxTarget,
 	const D3DXVECTOR3 &sizeMinTarget)
 {
-	D3DXVECTOR3 ownMax = D3DXVECTOR3(	//自身の判定の最大値
-		posOwn.x + sizeMaxOwn.x,
-		posOwn.y + sizeMaxOwn.y,
-		posOwn.z + sizeMaxOwn.z
-		);
+	//********** 説明用変数 **********//
 
-	D3DXVECTOR3 ownMin = D3DXVECTOR3(	//自身の判定の最小値
-		posOwn.x + sizeMinOwn.x,
-		posOwn.y + sizeMinOwn.y,
-		posOwn.z + sizeMinOwn.z
-	);
+	//自身の判定の最大値・最小値(現在の位置)
+	D3DXVECTOR3 ownMax = (*pPosOwn + sizeMaxOwn);
+	D3DXVECTOR3 ownMin = (*pPosOwn + sizeMinOwn);
 
-	D3DXVECTOR3 targetMax = D3DXVECTOR3(	//対象の判定の最大値
-		posTarget.x + sizeMaxTarget.x,
-		posTarget.y + sizeMaxTarget.y,
-		posTarget.z + sizeMaxTarget.z
-	);
+	//自身の判定の最大値・最小値(前回の位置)
+	D3DXVECTOR3 oldOwnMax = (posOldOwn + sizeMaxOwn);
+	D3DXVECTOR3 oldOwnMin = (posOldOwn + sizeMinOwn);
 
-	D3DXVECTOR3 targetMin = D3DXVECTOR3(	//対象の判定の最小値
-		posTarget.x + sizeMinTarget.x,
-		posTarget.y + sizeMinTarget.y,
-		posTarget.z + sizeMinTarget.z
-	);
+	//対象の判定の最大値・最小値
+	D3DXVECTOR3 targetMax = (posTarget + sizeMaxTarget);
+	D3DXVECTOR3 targetMin = (posTarget + sizeMinTarget);
 
-	{//********** X軸 **********//
+	//X軸の判定式
+	bool bRightToLeft = (ownMin.x < targetMax.x);	//右から左へ
+	bool bLeftToRight = (ownMax.x > targetMin.x);	//左から右へ
 
-		bool bRightAndLeft = (ownMax.x > targetMin.x);
-		bool bLeftAndRight = (ownMin.x < targetMax.x);
+	//Y軸の判定式
+	bool bTopToBottom = (ownMin.y < targetMax.y);	//上から下へ
+	bool bBottomToTop = (ownMax.y > targetMin.y);	//下から上へ
 
-		if (bRightAndLeft || bLeftAndRight)
-		{
-			return true;
+	//Z軸の判定式
+	bool bFrontToBack = (ownMin.z < targetMax.z);	//手前から奥へ
+	bool bBackToFront = (ownMax.z > targetMin.z);	//奥から手前へ
+
+	//当たり判定の結果
+	bool bCollisionResult = false;
+
+	//********** 当たり判定 **********//
+
+	if (bTopToBottom && bBottomToTop)
+	{//Y軸で当たっている場合
+		if (bFrontToBack && bBackToFront)
+		{//Z軸で当たっている場合
+			if ((oldOwnMax.x <= targetMin.x) && (ownMax.x > targetMin.x))
+			{//自身が対象に「左から右へ向かって当たった」場合
+				//押し出す
+				pPosOwn->x = (targetMin.x - sizeMaxOwn.x);
+
+				//「当たった」判定にする
+				bCollisionResult = true;
+			}
+			else if ((oldOwnMin.x >= targetMax.x) && (ownMin.x < targetMax.x))
+			{//自身が対象に「右から左へ向かって当たった」場合
+				//押し出す
+				pPosOwn->x = (targetMax.x + sizeMinOwn.x);
+
+				//「当たった」判定にする
+				bCollisionResult = true;
+			}
+		}
+		
+		if (bLeftToRight && bRightToLeft)
+		{//X軸で当たっている場合
+			if ((oldOwnMax.z <= targetMin.z) || (ownMax.z > targetMin.z))
+			{//自身が対象に「手前から奥へ向かって当たった」場合
+				//押し出す
+				pPosOwn->z = (targetMin.z - sizeMaxOwn.z);
+
+				//「当たった」判定にする
+				bCollisionResult = true;
+			}
+			else if ((oldOwnMin.z >= targetMax.z) && (ownMin.z < targetMax.z))
+			{//自身が対象に「奥から手前へ向かって当たった」場合
+				//押し出す
+				pPosOwn->z = (targetMax.z + sizeMinOwn.z);
+
+				//「当たった」判定にする
+				bCollisionResult = true;
+			}
 		}
 	}
 
-	{//********** Y軸 **********//
+	if (bLeftToRight && bRightToLeft &&
+		bFrontToBack && bBackToFront)
+	{//X軸、Z軸で当たっている場合
+		if ((oldOwnMax.y <= targetMin.y) || (ownMax.y > targetMin.y))
+		{//自身が対象に「下から上へ向かって当たった」場合
+			//押し出す
+			pPosOwn->y = (targetMin.y - sizeMaxOwn.y);
 
-		bool bTopAndBottom = (ownMax.y > targetMin.y);
-		bool bBottomAndTop = (ownMin.y < targetMax.y);
+			//「当たった」判定にする
+			bCollisionResult = true;
+		}
+		else if ((oldOwnMin.y >= targetMax.y) || (ownMin.y < targetMax.y))
+		{//自身が対象に「上から下へ向かって当たった」場合
+			//押し出す
+			pPosOwn->y = (targetMax.y + sizeMinOwn.y);
 
-		if (bTopAndBottom || bBottomAndTop)
-		{
-			return true;
+			//「当たった」判定にする
+			bCollisionResult = true;
 		}
 	}
 
-	{//********** Z軸 **********//
-
-		bool bFrontAndBack = (ownMax.z > targetMin.z);
-		bool bBackAndFront = (ownMin.z < targetMax.z);
-
-		if (bFrontAndBack || bBackAndFront)
-		{
-			return true;
-		}
-	}
-
-	return false;
+	return bCollisionResult;	//「当たっていない」判定を返す
 }

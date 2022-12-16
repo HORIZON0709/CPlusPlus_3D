@@ -16,6 +16,7 @@
 //前方宣言
 //***************************
 class CModel;
+class CGimmick;
 
 //***************************
 //プレイヤークラスの定義
@@ -58,15 +59,20 @@ public: /* オーバーライド関数 */
 	void Update() override;		//更新
 	void Draw() override;		//描画
 
-private: /* メンバ関数 */
-	void Move();	//移動
-	void Motion();	//モーション
+public: /* メンバ関数 */
+	D3DXVECTOR3 GetPos();		//位置を取得
+	D3DXVECTOR3 GetVtxMax();	//頂点の最大値の取得
+	D3DXVECTOR3 GetVtxMin();	//頂点の最小値の取得
+private:
+	void Move();		//移動
+	void Motion();		//モーション
+	void Collision();	//当たり判定
 
 	void SetVtxMaxAndMin();	//頂点の最大値と最小値の設定
 
 private: /* メンバ変数 */
 	CModel* m_apModel[MAX_PARTS];	//モデルのポインタ
-	CModel* m_pModelTarget;			//当たり判定の対象オブジェクトのポインタ
+	CGimmick* m_pTarget;			//当たり判定の対象オブジェクトのポインタ
 
 	D3DXMATRIX m_mtxWorld;	//ワールドマトリックス
 

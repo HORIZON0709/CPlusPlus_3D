@@ -57,6 +57,8 @@ CGimmick::CGimmick() :CObject::CObject(CObject::PRIORITY::PRIO_MODEL),
 	m_vec(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
 	m_rot(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
 	m_rotDest(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
+	m_vtxMax(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
+	m_vtxMin(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
 	m_quaternion(D3DXQUATERNION(0.0f,0.0f,0.0f,1.0f)),
 	m_bPressKey(false),
 	m_bMove(false),
@@ -84,8 +86,12 @@ HRESULT CGimmick::Init()
 	//モデルの生成
 	m_pModel = CModel::Create(CModel::XFILE::Stage_Debug_Obstade);
 
+	//頂点の最大値・最小値を取得
+	m_vtxMax = m_pModel->GetVtxMax();
+	m_vtxMin = m_pModel->GetVtxMin();
+
 	//メンバ変数の初期化
-	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_pos = D3DXVECTOR3(50.0f, 0.0f, 0.0f);
 	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_vec = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -302,4 +308,36 @@ void CGimmick::SetFlagOfMove(bool bMove)
 void CGimmick::SetFlagOfRotation(bool bRotation)
 {
 	m_bRotation = bRotation;
+}
+
+//================================================
+//位置を設定
+//================================================
+void CGimmick::SetPos(const D3DXVECTOR3 &pos)
+{
+	m_pos = pos;
+}
+
+//================================================
+//位置を取得
+//================================================
+D3DXVECTOR3 CGimmick::GetPos()
+{
+	return m_pos;
+}
+
+//================================================
+//頂点の最大値を取得
+//================================================
+D3DXVECTOR3 CGimmick::GetVtxMax()
+{
+	return m_vtxMax;
+}
+
+//================================================
+//頂点の最小値を取得
+//================================================
+D3DXVECTOR3 CGimmick::GetVtxMin()
+{
+	return m_vtxMin;
 }

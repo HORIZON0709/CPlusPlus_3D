@@ -43,6 +43,7 @@ public: /* 静的メンバ関数 */
 	static CPlayer* GetPlayer();		//プレイヤーの情報を取得
 	static CObjectMesh* GetMesh();		//メッシュの情報を取得
 	static CItem* GetItem();			//アイテムの情報を取得
+	static CGimmick* GetGimmick();		//ギミックの情報を取得
 	
 public: /* コンストラクタ・デストラクタ */
 	CGame();
