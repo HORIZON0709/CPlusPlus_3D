@@ -163,6 +163,7 @@
     <ClCompile Include="inputKeyboard.cpp" />
     <ClCompile Include="item.cpp" />
     <ClCompile Include="light.cpp" />
+    <ClCompile Include="line.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="mode.cpp" />
     <ClCompile Include="model.cpp" />
@@ -191,6 +192,7 @@
     <ClInclude Include="inputKeyboard.h" />
     <ClInclude Include="item.h" />
     <ClInclude Include="light.h" />
+    <ClInclude Include="line.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="mode.h" />
     <ClInclude Include="model.h" />
