@@ -17,6 +17,7 @@
 //***************************
 class CModel;
 class CGimmick;
+class CLine;
 
 //***************************
 //プレイヤークラスの定義
@@ -29,6 +30,7 @@ private: /* 定数の定義 */
 	
 	static const int MAX_PARTS = 2;		//最大パーツ数
 	static const int NUM_KEYSET = 2;	//キーセット数
+	static const int MAX_LINE = 12;		//ラインの最大数
 
 private: /* 構造体の定義 */
 	struct KEY //キー要素
@@ -48,6 +50,8 @@ public: /* 静的メンバ関数 */
 
 private: /* 静的メンバ変数 */
 	static KEY_SET m_aKeySet[NUM_KEYSET];	//キー情報
+
+	static CLine* m_apLine[MAX_LINE];	//ラインのポインタ
 
 public: /* コンストラクタ・デストラクタ */
 	CPlayer();
@@ -69,6 +73,7 @@ private:
 	void Collision();	//当たり判定
 
 	void SetVtxMaxAndMin();	//頂点の最大値と最小値の設定
+	void SetLines();		//ラインの設定まとめ
 
 private: /* メンバ変数 */
 	CModel* m_apModel[MAX_PARTS];	//モデルのポインタ

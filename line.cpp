@@ -42,7 +42,7 @@ CLine::CLine() :
 	m_rot(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
 	m_start(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
 	m_end(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
-	m_col(D3DXCOLOR(0.0f,0.0f,0.0f,1.0f))
+	m_col(D3DXCOLOR(0.0f,0.0f,0.0f,0.0f))
 {
 	//メンバ変数のクリア
 	memset(m_mtxWorld, 0, sizeof(m_mtxWorld));
@@ -152,7 +152,7 @@ void CLine::Draw()
 	//ポリゴンの描画
 	pDevice->DrawPrimitive(
 		D3DPT_LINELIST,	//プリミティブの種類
-		2,				//描画する最初の頂点インデックス
+		0,				//描画する最初の頂点インデックス
 		1);				//描画するプリミティブ数
 
 	//ライトを有効に戻す

@@ -14,6 +14,7 @@
 #include "game.h"
 #include "model.h"
 #include "gimmick.h"
+#include "line.h"
 
 #include "debug_proc.h"
 #include "utility.h"
@@ -60,6 +61,8 @@ CPlayer::KEY_SET CPlayer::m_aKeySet[NUM_KEYSET] =
 		}
 	},
 };
+
+CLine* CPlayer::m_apLine[MAX_LINE] = {};	//ラインのポインタ
 
 //================================================
 //生成
@@ -121,11 +124,6 @@ CPlayer::~CPlayer()
 HRESULT CPlayer::Init()
 {
 	//モデルの生成
-	/*for (int i = 0; i < MAX_PARTS; i++)
-	{
-		m_apModel[i] = CModel::Create();
-	}*/
-
 	m_apModel[0] = CModel::Create(CModel::XFILE::Fish_Body);
 	m_apModel[1] = CModel::Create(CModel::XFILE::Fish_Tail);
 
@@ -147,6 +145,11 @@ HRESULT CPlayer::Init()
 	m_nCntMotion = 0;
 	m_bPressKey = false;
 
+	for (int i = 0; i < MAX_LINE; i++)
+	{
+		m_apLine[i] = CLine::Create();
+	}
+
 	return S_OK;
 }
 
@@ -155,6 +158,15 @@ HRESULT CPlayer::Init()
 //================================================
 void CPlayer::Uninit()
 {
+	for (int i = 0; i < MAX_LINE; i++)
+	{
+		if (m_apLine[i] != nullptr)
+		{
+			m_apLine[i]->Uninit();
+			delete m_apLine[i];
+			m_apLine[i] = nullptr;
+		}
+	}
 }
 
 //================================================
@@ -166,7 +178,7 @@ void CPlayer::Update()
 	Move();
 
 	//モーション
-	Motion();
+	//Motion();
 
 	//当たり判定
 	Collision();
@@ -188,6 +200,9 @@ void CPlayer::Update()
 	{//当たっていない場合
 		CDebugProc::Print("bCollision:[false]\n", bCollisionDebug);
 	}
+
+	SetLines();
+
 #endif // _DEBUG
 }
 
@@ -219,6 +234,11 @@ void CPlayer::Draw()
 	{
 		//モデルの描画
 		m_apModel[i]->Draw();
+	}
+
+	for (int i = 0; i < MAX_LINE; i++)
+	{
+		m_apLine[i]->Draw();
 	}
 }
 
@@ -455,44 +475,208 @@ void CPlayer::Collision()
 //================================================
 void CPlayer::SetVtxMaxAndMin()
 {
-	//各パーツの頂点の最大値と最小値を格納する配列
+	//頂点の最大数・最小値を初期化
+	m_vtxMax = D3DXVECTOR3(-FLT_MAX, -FLT_MAX, -FLT_MAX);
+	m_vtxMin = D3DXVECTOR3(FLT_MAX, FLT_MAX, FLT_MAX);
+
+	//各パーツの頂点の最大値・最小値を格納する配列
 	D3DXVECTOR3 aVtxMax[MAX_PARTS] = {};
 	D3DXVECTOR3 aVtxMin[MAX_PARTS] = {};
 
 	for (int i = 0; i < MAX_PARTS; i++)
 	{
-		//各パーツから、頂点の最大値と最小値を取得
+		//各パーツから頂点の最大値・最小値を取得
 		aVtxMax[i] = m_apModel[i]->GetVtxMax();
 		aVtxMin[i] = m_apModel[i]->GetVtxMin();
 	}
 
 	for (int i = 0; i < MAX_PARTS; i++)
 	{
-		if ((i + 1) >= MAX_PARTS)
-		{//パーツ数の次のカウントが、最大パーツ数を超える場合
+		if (i >= MAX_PARTS)
+		{//パーツ数のカウントが、最大パーツ数を超える場合
 			break;
 		}
 
 		//********** 最大値 **********//
 
-		if (aVtxMax[i] > aVtxMax[i + 1])
-		{//[ 現在のパーツの最大値 > 次のパーツの最大値]
-			m_vtxMax = aVtxMax[i];	//現在のパーツの最大値を設定
-		}
-		else if (aVtxMax[i] < aVtxMax[i + 1])
-		{//[ 現在のパーツの最大値 < 次のパーツの最大値]
-			m_vtxMax = aVtxMax[i + 1];	//次のパーツの最大値を設定
+		/* 各パーツの最大値が、現在の最大値より大きい場合、最大値を設定する */
+
+		if (aVtxMax[i].x > m_vtxMax.x)
+		{//X座標
+			m_vtxMax.x = aVtxMax[i].x;	//最大値を設定
 		}
 
+		if (aVtxMax[i].y > m_vtxMax.y)
+		{//Y座標
+			m_vtxMax.y = aVtxMax[i].y;	//最大値を設定
+		}
+
+		if (aVtxMax[i].z> m_vtxMax.z)
+		{//Z座標
+			m_vtxMax.z = aVtxMax[i].z;	//最大値を設定
+		}
+		
 		//********** 最小値 **********//
 
-		if (aVtxMin[i] < aVtxMin[i + 1])
-		{//[ 現在のパーツの最小値 < 次のパーツの最小値]
-			m_vtxMin = aVtxMin[i];	//現在のパーツの最小値を設定
+		/* 各パーツの最小値が、現在の最小値より小さい場合、最小値を設定する */
+
+		if (aVtxMin[i].x < m_vtxMin.x)
+		{//X座標
+			m_vtxMin.x = aVtxMin[i].x;	//最小値を設定
 		}
-		else if (aVtxMin[i] > aVtxMin[i + 1])
-		{//[ 現在のパーツの最小値 > 次のパーツの最小値]
-			m_vtxMin = aVtxMin[i + 1];	//現在のパーツの最小値を設定
+
+		if (aVtxMin[i].y < m_vtxMin.y)
+		{//Y座標
+			m_vtxMin.y = aVtxMin[i].y;	//最小値を設定
+		}
+
+		if (aVtxMin[i].z < m_vtxMin.z)
+		{//Z座標
+			m_vtxMin.z = aVtxMin[i].z;	//最小値を設定
 		}
 	}
+}
+
+//================================================
+//ラインの設定まとめ
+//================================================
+void CPlayer::SetLines()
+{
+	//色(全ての線で同じ色)
+	D3DXCOLOR col = D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f);
+
+	//何番目か
+	int nNum = 0;
+
+	//********** 上部左側 **********//
+
+	//始点・終点
+	D3DXVECTOR3 start = D3DXVECTOR3(m_vtxMin.x, m_vtxMax.y, m_vtxMax.z);
+	D3DXVECTOR3 end = D3DXVECTOR3(m_vtxMin.x, m_vtxMax.y, m_vtxMin.z);
+
+	//設定
+	m_apLine[nNum]->Set(m_pos, m_rot, start, end, col);
+
+	nNum++;	//次に進める
+
+	//********** 上部手前側 **********//
+
+	//始点・終点
+	start = D3DXVECTOR3(m_vtxMin.x, m_vtxMax.y, m_vtxMin.z);
+	end = D3DXVECTOR3(m_vtxMax.x, m_vtxMax.y, m_vtxMin.z);
+
+	//設定
+	m_apLine[nNum]->Set(m_pos, m_rot, start, end, col);
+
+	nNum++;	//次に進める
+
+	//********** 上部右側 **********//
+
+	//始点・終点
+	start = D3DXVECTOR3(m_vtxMax.x, m_vtxMax.y, m_vtxMin.z);
+	end = D3DXVECTOR3(m_vtxMax.x, m_vtxMax.y, m_vtxMax.z);
+
+	//設定
+	m_apLine[nNum]->Set(m_pos, m_rot, start, end, col);
+
+	nNum++;	//次に進める
+
+	//********** 上部奥側 **********//
+
+	//始点・終点
+	start = D3DXVECTOR3(m_vtxMax.x, m_vtxMax.y, m_vtxMax.z);
+	end = D3DXVECTOR3(m_vtxMin.x, m_vtxMax.y, m_vtxMax.z);
+
+	//設定
+	m_apLine[nNum]->Set(m_pos, m_rot, start, end, col);
+
+	nNum++;	//次に進める
+
+	//********** 下部左側 **********//
+
+	//始点・終点
+	start = D3DXVECTOR3(m_vtxMin.x, m_vtxMin.y, m_vtxMax.z);
+	end = D3DXVECTOR3(m_vtxMin.x, m_vtxMin.y, m_vtxMin.z);
+
+	//設定
+	m_apLine[nNum]->Set(m_pos, m_rot, start, end, col);
+
+	nNum++;	//次に進める
+
+	//********** 下部手前側 **********//
+
+	//始点・終点
+	start = D3DXVECTOR3(m_vtxMin.x, m_vtxMin.y, m_vtxMin.z);
+	end = D3DXVECTOR3(m_vtxMax.x, m_vtxMin.y, m_vtxMin.z);
+
+	//設定
+	m_apLine[nNum]->Set(m_pos, m_rot, start, end, col);
+
+	nNum++;	//次に進める
+
+	//********** 下部右側 **********//
+
+	//始点・終点
+	start = D3DXVECTOR3(m_vtxMax.x, m_vtxMin.y, m_vtxMin.z);
+	end = D3DXVECTOR3(m_vtxMax.x, m_vtxMin.y, m_vtxMax.z);
+
+	//設定
+	m_apLine[nNum]->Set(m_pos, m_rot, start, end, col);
+
+	nNum++;	//次に進める
+
+	//********** 下部奥側 **********//
+
+	//始点・終点
+	start = D3DXVECTOR3(m_vtxMax.x, m_vtxMin.y, m_vtxMax.z);
+	end = D3DXVECTOR3(m_vtxMin.x, m_vtxMin.y, m_vtxMax.z);
+
+	//設定
+	m_apLine[nNum]->Set(m_pos, m_rot, start, end, col);
+
+	nNum++;	//次に進める
+
+	//********** 手前左側 **********//
+
+	//始点・終点
+	start = D3DXVECTOR3(m_vtxMin.x, m_vtxMax.y, m_vtxMin.z);
+	end = D3DXVECTOR3(m_vtxMin.x, m_vtxMin.y, m_vtxMin.z);
+
+	//設定
+	m_apLine[nNum]->Set(m_pos, m_rot, start, end, col);
+
+	nNum++;	//次に進める
+
+	//********** 手前右側 **********//
+
+	//始点・終点
+	start = D3DXVECTOR3(m_vtxMax.x, m_vtxMax.y, m_vtxMin.z);
+	end = D3DXVECTOR3(m_vtxMax.x, m_vtxMin.y, m_vtxMin.z);
+
+	//設定
+	m_apLine[nNum]->Set(m_pos, m_rot, start, end, col);
+
+	nNum++;	//次に進める
+
+	//********** 奥左側 **********//
+
+	//始点・終点
+	start = D3DXVECTOR3(m_vtxMin.x, m_vtxMax.y, m_vtxMax.z);
+	end = D3DXVECTOR3(m_vtxMin.x, m_vtxMin.y, m_vtxMax.z);
+
+	//設定
+	m_apLine[nNum]->Set(m_pos, m_rot, start, end, col);
+
+	nNum++;	//次に進める
+
+	//********** 奥右側 **********//
+
+	//始点・終点
+	start = D3DXVECTOR3(m_vtxMax.x, m_vtxMax.y, m_vtxMax.z);
+	end = D3DXVECTOR3(m_vtxMax.x, m_vtxMin.y, m_vtxMax.z);
+
+	//設定
+	m_apLine[nNum]->Set(m_pos, m_rot, start, end, col);
+
+	nNum++;	//次に進める
 }
