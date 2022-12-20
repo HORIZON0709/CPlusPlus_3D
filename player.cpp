@@ -201,6 +201,7 @@ void CPlayer::Update()
 		CDebugProc::Print("bCollision:[false]\n", bCollisionDebug);
 	}
 
+	//ラインの設定まとめ
 	SetLines();
 
 #endif // _DEBUG
@@ -238,6 +239,7 @@ void CPlayer::Draw()
 
 	for (int i = 0; i < MAX_LINE; i++)
 	{
+		//ラインの描画
 		m_apLine[i]->Draw();
 	}
 }
@@ -458,15 +460,50 @@ void CPlayer::Collision()
 	//ギミック情報を取得
 	m_pTarget = CGame::GetGimmick();
 
+	D3DXMATRIX mtxRotOwn,mtxRotTarget;	//計算用マトリックス
+
+	//********** 頂点の最大値・最小値をコピー **********//
+
+	//自身
+	D3DXVECTOR3 vtxMaxOwn = m_vtxMax;	//最大値
+	D3DXVECTOR3 vtxMinOwn = m_vtxMin;	//最小値
+
+	//対象
+	D3DXVECTOR3 vtxMaxTarget = m_pTarget->GetVtxMax();	//最大値
+	D3DXVECTOR3 vtxMinTarget = m_pTarget->GetVtxMin();	//最小値
+
+	//********** 向きからヨー・ピッチ・ロールを指定し、マトリックスを作成 **********//
+
+	//自身
+	D3DXMatrixRotationYawPitchRoll(&mtxRotOwn, m_rot.y, m_rot.x, m_rot.z);
+
+	//対象
+	D3DXMatrixRotationYawPitchRoll(
+		&mtxRotTarget,
+		m_pTarget->GetRot().y,
+		m_pTarget->GetRot().x,
+		m_pTarget->GetRot().z
+	);
+
+	//********** マトリックスを変換して、頂点の最大値・最小値に設定する **********//
+
+	//自身
+	D3DXVec3TransformCoord(&vtxMaxOwn, &vtxMaxOwn, &mtxRotOwn);	//最大値
+	D3DXVec3TransformCoord(&vtxMinOwn, &vtxMinOwn, &mtxRotOwn);	//最小値
+
+	//対象
+	D3DXVec3TransformCoord(&vtxMaxTarget, &vtxMaxTarget, &mtxRotTarget);	//最大値
+	D3DXVec3TransformCoord(&vtxMinTarget, &vtxMinTarget, &mtxRotTarget);	//最小値
+
 	//モデル同士の当たり判定
 	bCollisionDebug = CollisionModel(
 		&m_pos,					//自身の現在の位置
 		m_posOld,				//自身の前回の位置
 		m_pTarget->GetPos(),	//対象の位置
-		m_vtxMax,				//自身のサイズの最大値
-		m_vtxMin,				//自身のサイズの最小値
-		m_pTarget->GetVtxMax(),	//対象のサイズの最大値
-		m_pTarget->GetVtxMin()	//対象のサイズの最小値
+		vtxMaxOwn,				//自身のサイズの最大値
+		vtxMinOwn,				//自身のサイズの最小値
+		vtxMaxTarget,			//対象のサイズの最大値
+		vtxMinTarget			//対象のサイズの最小値
 	);
 }
 

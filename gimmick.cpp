@@ -13,6 +13,7 @@
 #include "input.h"
 #include "game.h"
 #include "model.h"
+#include "line.h"
 
 #include "debug_proc.h"
 #include "utility.h"
@@ -25,6 +26,11 @@
 const float CGimmick::MOVE_SPEED = 1.5f;		//移動速度
 const float CGimmick::ROT_SMOOTHNESS = 0.5f;	//回転の滑らかさ
 const float CGimmick::ROTATION_SPEED = 0.25f;	//回転速度
+
+//***************************
+//静的メンバ変数
+//***************************
+CLine* CGimmick::m_apLine[MAX_LINE] = {};	//ラインのポインタ
 
 //================================================
 //生成
@@ -101,6 +107,11 @@ HRESULT CGimmick::Init()
 	m_bMove = false;
 	m_bRotation = false;
 
+	for (int i = 0; i < MAX_LINE; i++)
+	{
+		m_apLine[i] = CLine::Create();
+	}
+
 	return S_OK;
 }
 
@@ -109,6 +120,15 @@ HRESULT CGimmick::Init()
 //================================================
 void CGimmick::Uninit()
 {
+	for (int i = 0; i < MAX_LINE; i++)
+	{
+		if (m_apLine[i] != nullptr)
+		{
+			m_apLine[i]->Uninit();
+			delete m_apLine[i];
+			m_apLine[i] = nullptr;
+		}
+	}
 }
 
 //================================================
@@ -130,6 +150,9 @@ void CGimmick::Update()
 
 	//移動量を0にする
 	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+
+	//ラインの設定まとめ
+	SetLines();
 
 #ifdef _DEBUG
 	//各情報を表示
@@ -169,6 +192,12 @@ void CGimmick::Draw()
 
 	//モデルの描画
 	m_pModel->Draw();
+
+	for (int i = 0; i < MAX_LINE; i++)
+	{
+		//ラインの描画
+		m_apLine[i]->Draw();
+	}
 }
 
 //================================================
@@ -295,6 +324,150 @@ void CGimmick::RotationQuaternion()
 }
 
 //================================================
+//ラインの設定まとめ
+//================================================
+void CGimmick::SetLines()
+{
+	//色(全ての線で同じ色)
+	D3DXCOLOR col = D3DXCOLOR(0.0f, 1.0f, 0.0f, 1.0f);
+
+	//何番目か
+	int nNum = 0;
+
+	//********** 上部左側 **********//
+
+	//始点・終点
+	D3DXVECTOR3 start = D3DXVECTOR3(m_vtxMin.x, m_vtxMax.y, m_vtxMax.z);
+	D3DXVECTOR3 end = D3DXVECTOR3(m_vtxMin.x, m_vtxMax.y, m_vtxMin.z);
+
+	//設定
+	m_apLine[nNum]->Set(m_pos, m_rot, start, end, col);
+
+	nNum++;	//次に進める
+
+	//********** 上部手前側 **********//
+
+	//始点・終点
+	start = D3DXVECTOR3(m_vtxMin.x, m_vtxMax.y, m_vtxMin.z);
+	end = D3DXVECTOR3(m_vtxMax.x, m_vtxMax.y, m_vtxMin.z);
+
+	//設定
+	m_apLine[nNum]->Set(m_pos, m_rot, start, end, col);
+
+	nNum++;	//次に進める
+
+	//********** 上部右側 **********//
+
+	//始点・終点
+	start = D3DXVECTOR3(m_vtxMax.x, m_vtxMax.y, m_vtxMin.z);
+	end = D3DXVECTOR3(m_vtxMax.x, m_vtxMax.y, m_vtxMax.z);
+
+	//設定
+	m_apLine[nNum]->Set(m_pos, m_rot, start, end, col);
+
+	nNum++;	//次に進める
+
+	//********** 上部奥側 **********//
+
+	//始点・終点
+	start = D3DXVECTOR3(m_vtxMax.x, m_vtxMax.y, m_vtxMax.z);
+	end = D3DXVECTOR3(m_vtxMin.x, m_vtxMax.y, m_vtxMax.z);
+
+	//設定
+	m_apLine[nNum]->Set(m_pos, m_rot, start, end, col);
+
+	nNum++;	//次に進める
+
+	//********** 下部左側 **********//
+
+	//始点・終点
+	start = D3DXVECTOR3(m_vtxMin.x, m_vtxMin.y, m_vtxMax.z);
+	end = D3DXVECTOR3(m_vtxMin.x, m_vtxMin.y, m_vtxMin.z);
+
+	//設定
+	m_apLine[nNum]->Set(m_pos, m_rot, start, end, col);
+
+	nNum++;	//次に進める
+
+	//********** 下部手前側 **********//
+
+	//始点・終点
+	start = D3DXVECTOR3(m_vtxMin.x, m_vtxMin.y, m_vtxMin.z);
+	end = D3DXVECTOR3(m_vtxMax.x, m_vtxMin.y, m_vtxMin.z);
+
+	//設定
+	m_apLine[nNum]->Set(m_pos, m_rot, start, end, col);
+
+	nNum++;	//次に進める
+
+	//********** 下部右側 **********//
+
+	//始点・終点
+	start = D3DXVECTOR3(m_vtxMax.x, m_vtxMin.y, m_vtxMin.z);
+	end = D3DXVECTOR3(m_vtxMax.x, m_vtxMin.y, m_vtxMax.z);
+
+	//設定
+	m_apLine[nNum]->Set(m_pos, m_rot, start, end, col);
+
+	nNum++;	//次に進める
+
+	//********** 下部奥側 **********//
+
+	//始点・終点
+	start = D3DXVECTOR3(m_vtxMax.x, m_vtxMin.y, m_vtxMax.z);
+	end = D3DXVECTOR3(m_vtxMin.x, m_vtxMin.y, m_vtxMax.z);
+
+	//設定
+	m_apLine[nNum]->Set(m_pos, m_rot, start, end, col);
+
+	nNum++;	//次に進める
+
+	//********** 手前左側 **********//
+
+	//始点・終点
+	start = D3DXVECTOR3(m_vtxMin.x, m_vtxMax.y, m_vtxMin.z);
+	end = D3DXVECTOR3(m_vtxMin.x, m_vtxMin.y, m_vtxMin.z);
+
+	//設定
+	m_apLine[nNum]->Set(m_pos, m_rot, start, end, col);
+
+	nNum++;	//次に進める
+
+	//********** 手前右側 **********//
+
+	//始点・終点
+	start = D3DXVECTOR3(m_vtxMax.x, m_vtxMax.y, m_vtxMin.z);
+	end = D3DXVECTOR3(m_vtxMax.x, m_vtxMin.y, m_vtxMin.z);
+
+	//設定
+	m_apLine[nNum]->Set(m_pos, m_rot, start, end, col);
+
+	nNum++;	//次に進める
+
+	//********** 奥左側 **********//
+
+	//始点・終点
+	start = D3DXVECTOR3(m_vtxMin.x, m_vtxMax.y, m_vtxMax.z);
+	end = D3DXVECTOR3(m_vtxMin.x, m_vtxMin.y, m_vtxMax.z);
+
+	//設定
+	m_apLine[nNum]->Set(m_pos, m_rot, start, end, col);
+
+	nNum++;	//次に進める
+
+	//********** 奥右側 **********//
+
+	//始点・終点
+	start = D3DXVECTOR3(m_vtxMax.x, m_vtxMax.y, m_vtxMax.z);
+	end = D3DXVECTOR3(m_vtxMax.x, m_vtxMin.y, m_vtxMax.z);
+
+	//設定
+	m_apLine[nNum]->Set(m_pos, m_rot, start, end, col);
+
+	nNum++;	//次に進める
+}
+
+//================================================
 //移動の有無を設定
 //================================================
 void CGimmick::SetFlagOfMove(bool bMove)
@@ -324,6 +497,22 @@ void CGimmick::SetPos(const D3DXVECTOR3 &pos)
 D3DXVECTOR3 CGimmick::GetPos()
 {
 	return m_pos;
+}
+
+//================================================
+//向きを設定
+//================================================
+void CGimmick::SetRot(const D3DXVECTOR3 &rot)
+{
+	m_rot = rot;
+}
+
+//================================================
+//向きを取得
+//================================================
+D3DXVECTOR3 CGimmick::GetRot()
+{
+	return m_rot;
 }
 
 //================================================

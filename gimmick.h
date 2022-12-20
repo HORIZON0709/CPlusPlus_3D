@@ -16,6 +16,7 @@
 //前方宣言
 //***************************
 class CModel;
+class CLine;
 
 //***************************
 //プレイヤークラスの定義
@@ -27,8 +28,13 @@ private: /* 定数の定義 */
 	static const float ROT_SMOOTHNESS;	//回転の滑らかさ
 	static const float ROTATION_SPEED;	//回転速度
 
+	static const int MAX_LINE = 12;	//ラインの最大数
+
 public: /* 静的メンバ関数 */
 	static CGimmick* Create();	//生成
+
+public: /* 静的メンバ変巣 */
+	static CLine* m_apLine[MAX_LINE];	//ラインのポインタ
 
 public: /* コンストラクタ・デストラクタ */
 	CGimmick();
@@ -43,6 +49,7 @@ public: /* オーバーライド関数 */
 private: /* メンバ関数 */
 	void Move();				//移動
 	void RotationQuaternion();	//クォータニオンによる回転
+	void SetLines();			//ラインの設定まとめ
 
 public: /* bool判定系 */
 	/*
@@ -66,6 +73,16 @@ public: /* Pos */
 
 	//位置を取得
 	D3DXVECTOR3 GetPos();
+
+public: /* Rot */
+	/*
+		向きを設定
+		const D3DXVECTOR3 &rot ---> 任意の向き
+	*/
+	void SetRot(const D3DXVECTOR3 &rot);
+
+	//向きを取得
+	D3DXVECTOR3 GetRot();
 
 public: /* vtx */
 	D3DXVECTOR3 GetVtxMax();	//頂点の最大値を取得

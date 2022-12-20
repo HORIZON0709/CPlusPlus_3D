@@ -16,14 +16,8 @@
     <Filter Include="ソース ファイル\Mode">
       <UniqueIdentifier>{a032e43a-6dd7-4dbd-af92-125b70cf7087}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\Mode\Game">
-      <UniqueIdentifier>{ae0b0482-3182-45b5-ab23-959fb10a4449}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ヘッダー ファイル\Mode">
       <UniqueIdentifier>{c08430b5-b85c-411d-9473-ab043fe44983}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\Mode\Game">
-      <UniqueIdentifier>{ea17cc2b-138d-402b-b792-5c281900f592}</UniqueIdentifier>
     </Filter>
     <Filter Include="ヘッダー ファイル\Application">
       <UniqueIdentifier>{afc9fc5b-6600-4b73-8f1d-ae85ec1bb517}</UniqueIdentifier>
@@ -108,12 +102,6 @@
     <ClCompile Include="texture.cpp">
       <Filter>ソース ファイル\Application</Filter>
     </ClCompile>
-    <ClCompile Include="game.cpp">
-      <Filter>ソース ファイル\Mode\Game</Filter>
-    </ClCompile>
-    <ClCompile Include="light.cpp">
-      <Filter>ソース ファイル\Mode\Game</Filter>
-    </ClCompile>
     <ClCompile Include="bg.cpp">
       <Filter>ソース ファイル\2D</Filter>
     </ClCompile>
@@ -148,7 +136,13 @@
       <Filter>ソース ファイル\Model</Filter>
     </ClCompile>
     <ClCompile Include="line.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>ソース ファイル\Main</Filter>
+    </ClCompile>
+    <ClCompile Include="light.cpp">
+      <Filter>ソース ファイル\Main</Filter>
+    </ClCompile>
+    <ClCompile Include="game.cpp">
+      <Filter>ソース ファイル\Mode</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -160,12 +154,6 @@
     </ClInclude>
     <ClInclude Include="title.h">
       <Filter>ヘッダー ファイル\Mode</Filter>
-    </ClInclude>
-    <ClInclude Include="game.h">
-      <Filter>ヘッダー ファイル\Mode\Game</Filter>
-    </ClInclude>
-    <ClInclude Include="light.h">
-      <Filter>ヘッダー ファイル\Mode\Game</Filter>
     </ClInclude>
     <ClInclude Include="application.h">
       <Filter>ヘッダー ファイル\Application</Filter>
@@ -231,7 +219,13 @@
       <Filter>ヘッダー ファイル\Utility</Filter>
     </ClInclude>
     <ClInclude Include="line.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>ヘッダー ファイル\Main</Filter>
+    </ClInclude>
+    <ClInclude Include="light.h">
+      <Filter>ヘッダー ファイル\Main</Filter>
+    </ClInclude>
+    <ClInclude Include="game.h">
+      <Filter>ヘッダー ファイル\Mode</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
