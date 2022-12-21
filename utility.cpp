@@ -71,15 +71,15 @@ bool CollisionModel(
 
 	//‘ÎÛ‚Ì”»’è‚ÌÅ‘å’lEÅ¬’l
 	D3DXVECTOR3 targetMax = D3DXVECTOR3(
-		posOldOwn.x + (sizeTarget.x * 0.5f),
-		posOldOwn.y + sizeTarget.y,
-		posOldOwn.z + (sizeTarget.z * 0.5f)
+		posTarget.x + (sizeTarget.x * 0.5f),
+		posTarget.y + sizeTarget.y,
+		posTarget.z + (sizeTarget.z * 0.5f)
 	);
 
 	D3DXVECTOR3 targetMin = D3DXVECTOR3(
-		posOldOwn.x - (sizeTarget.x * 0.5f),
-		posOldOwn.y,
-		posOldOwn.z - (sizeTarget.z * 0.5f)
+		posTarget.x - (sizeTarget.x * 0.5f),
+		posTarget.y,
+		posTarget.z - (sizeTarget.z * 0.5f)
 	);;
 
 	//X²‚Ì”»’è®

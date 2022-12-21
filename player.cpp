@@ -142,15 +142,21 @@ HRESULT CPlayer::Init()
 	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_rotDest = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 
-	m_aPosVtx[0] = m_vtxMin;
-	m_aPosVtx[1] = D3DXVECTOR3(m_vtxMin.x, m_vtxMin.y, m_vtxMax.z);
-	m_aPosVtx[2] = D3DXVECTOR3(m_vtxMin.x, m_vtxMax.y, m_vtxMin.z);
-	m_aPosVtx[3] = D3DXVECTOR3(m_vtxMin.x, m_vtxMax.y, m_vtxMax.z);
+	/*
+		頂点の最大値・最小値から、モデルの範囲を表す頂点の位置を設定する
+		コメント ---> 正面から見た頂点の位置
+	*/
+	/* 左側 */
+	m_aPosVtx[0] = m_vtxMin;										//手前の下側(最小値)
+	m_aPosVtx[1] = D3DXVECTOR3(m_vtxMin.x, m_vtxMin.y, m_vtxMax.z);	//奥の下側
+	m_aPosVtx[2] = D3DXVECTOR3(m_vtxMin.x, m_vtxMax.y, m_vtxMin.z);	//手前の上側
+	m_aPosVtx[3] = D3DXVECTOR3(m_vtxMin.x, m_vtxMax.y, m_vtxMax.z);	//奥の上側
 
-	m_aPosVtx[4] = D3DXVECTOR3(m_vtxMax.x, m_vtxMin.y, m_vtxMin.z);
-	m_aPosVtx[5] = D3DXVECTOR3(m_vtxMax.x, m_vtxMin.y, m_vtxMax.z);
-	m_aPosVtx[6] = D3DXVECTOR3(m_vtxMax.x, m_vtxMax.y, m_vtxMin.z);
-	m_aPosVtx[7] = m_vtxMax;
+	/* 右側 */
+	m_aPosVtx[4] = D3DXVECTOR3(m_vtxMax.x, m_vtxMin.y, m_vtxMin.z);	//手前の下側
+	m_aPosVtx[5] = D3DXVECTOR3(m_vtxMax.x, m_vtxMin.y, m_vtxMax.z);	//奥の下側
+	m_aPosVtx[6] = D3DXVECTOR3(m_vtxMax.x, m_vtxMax.y, m_vtxMin.z);	//手前の上側
+	m_aPosVtx[7] = m_vtxMax;										//奥の上側(最大値)
 
 	m_nNumKey = NUM_KEYSET;
 	m_nCurrentKey = 0;
@@ -461,21 +467,14 @@ void CPlayer::Collision()
 	//当たり判定対象のギミック情報を取得
 	m_pTarget = CGame::GetGimmick();
 
-	//***** 向きからヨー・ピッチ・ロールを指定し、マトリックスを作成 *****//
-
 	D3DXMATRIX mtxRotOwn;	//計算用マトリックス
 
-	//自身
-	D3DXMatrixRotationYawPitchRoll(
-		&mtxRotOwn,
-		m_rot.y,
-		m_rot.x,
-		m_rot.z);
-
-	//***** マトリックスを変換して、回転後の頂点の位置を設定する *****//
+	//向きからヨー・ピッチ・ロールを指定し、マトリックスを作成
+	D3DXMatrixRotationYawPitchRoll(&mtxRotOwn, m_rot.y, m_rot.x, m_rot.z);
 
 	for (int i = 0; i < NUM_VTX_3D; i++)
 	{
+		//マトリックスを変換して、回転後の頂点の位置を設定する
 		D3DXVec3TransformCoord(&m_aPosVtx[i], &m_aPosVtx[i], &mtxRotOwn);
 	}
 
