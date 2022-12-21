@@ -21,11 +21,6 @@
 
 #include <assert.h>
 
-namespace
-{
-bool bCollisionDebug = false;
-}
-
 //***************************
 //定数の定義
 //***************************
@@ -101,11 +96,17 @@ CPlayer::CPlayer() :CObject::CObject(CObject::PRIORITY::PRIO_MODEL),
 	m_nNumKey(0),
 	m_nCurrentKey(0),
 	m_nCntMotion(0),
-	m_bPressKey(false)
+	m_bPressKey(false),
+	m_bCollision(false)
 {
 	//メンバ変数のクリア
 	memset(m_mtxWorld, 0, sizeof(m_mtxWorld));
 	memset(m_apModel, 0, sizeof(m_apModel));
+
+	for (int i = 0; i < NUM_VTX_3D; i++)
+	{
+		m_aPosVtx[i] = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	}
 
 	//タイプの設定
 	CObject::SetObjType(CObject::OBJ_TYPE::PLAYER);
@@ -140,10 +141,22 @@ HRESULT CPlayer::Init()
 	m_vec = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_rotDest = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+
+	m_aPosVtx[0] = m_vtxMin;
+	m_aPosVtx[1] = D3DXVECTOR3(m_vtxMin.x, m_vtxMin.y, m_vtxMax.z);
+	m_aPosVtx[2] = D3DXVECTOR3(m_vtxMin.x, m_vtxMax.y, m_vtxMin.z);
+	m_aPosVtx[3] = D3DXVECTOR3(m_vtxMin.x, m_vtxMax.y, m_vtxMax.z);
+
+	m_aPosVtx[4] = D3DXVECTOR3(m_vtxMax.x, m_vtxMin.y, m_vtxMin.z);
+	m_aPosVtx[5] = D3DXVECTOR3(m_vtxMax.x, m_vtxMin.y, m_vtxMax.z);
+	m_aPosVtx[6] = D3DXVECTOR3(m_vtxMax.x, m_vtxMax.y, m_vtxMin.z);
+	m_aPosVtx[7] = m_vtxMax;
+
 	m_nNumKey = NUM_KEYSET;
 	m_nCurrentKey = 0;
 	m_nCntMotion = 0;
 	m_bPressKey = false;
+	m_bCollision = false;
 
 	for (int i = 0; i < MAX_LINE; i++)
 	{
@@ -192,13 +205,17 @@ void CPlayer::Update()
 	CDebugProc::Print("m_rot:[%f,%f,%f]\n", m_rot.x, m_rot.y, m_rot.z);
 	CDebugProc::Print("m_vec:[%f,%f,%f]\n", m_vec.x, m_vec.y, m_vec.z);
 
-	if (bCollisionDebug)
+	D3DXVECTOR3 size = m_vtxMax - m_vtxMin;
+
+	CDebugProc::Print("size:[%f,%f,%f]\n", size.x, size.y, size.z);
+
+	if (m_bCollision)
 	{//対象のオブジェクトに当たっている場合
-		CDebugProc::Print("bCollision:[true]\n", bCollisionDebug);
+		CDebugProc::Print("Collision:[true]\n", m_bCollision);
 	}
 	else
 	{//当たっていない場合
-		CDebugProc::Print("bCollision:[false]\n", bCollisionDebug);
+		CDebugProc::Print("Collision:[false]\n", m_bCollision);
 	}
 
 	//ラインの設定まとめ
@@ -250,22 +267,6 @@ void CPlayer::Draw()
 D3DXVECTOR3 CPlayer::GetPos()
 {
 	return m_pos;
-}
-
-//================================================
-//頂点の最大値を取得
-//================================================
-D3DXVECTOR3 CPlayer::GetVtxMax()
-{
-	return m_vtxMax;
-}
-
-//================================================
-//頂点の最小値を取得
-//================================================
-D3DXVECTOR3 CPlayer::GetVtxMin()
-{
-	return m_vtxMin;
 }
 
 //================================================
@@ -457,53 +458,85 @@ void CPlayer::Motion()
 //================================================
 void CPlayer::Collision()
 {
-	//ギミック情報を取得
+	//当たり判定対象のギミック情報を取得
 	m_pTarget = CGame::GetGimmick();
 
-	D3DXMATRIX mtxRotOwn,mtxRotTarget;	//計算用マトリックス
+	//***** 向きからヨー・ピッチ・ロールを指定し、マトリックスを作成 *****//
 
-	//********** 頂点の最大値・最小値をコピー **********//
-
-	//自身
-	D3DXVECTOR3 vtxMaxOwn = m_vtxMax;	//最大値
-	D3DXVECTOR3 vtxMinOwn = m_vtxMin;	//最小値
-
-	//対象
-	D3DXVECTOR3 vtxMaxTarget = m_pTarget->GetVtxMax();	//最大値
-	D3DXVECTOR3 vtxMinTarget = m_pTarget->GetVtxMin();	//最小値
-
-	//********** 向きからヨー・ピッチ・ロールを指定し、マトリックスを作成 **********//
+	D3DXMATRIX mtxRotOwn;	//計算用マトリックス
 
 	//自身
-	D3DXMatrixRotationYawPitchRoll(&mtxRotOwn, m_rot.y, m_rot.x, m_rot.z);
-
-	//対象
 	D3DXMatrixRotationYawPitchRoll(
-		&mtxRotTarget,
-		m_pTarget->GetRot().y,
-		m_pTarget->GetRot().x,
-		m_pTarget->GetRot().z
-	);
+		&mtxRotOwn,
+		m_rot.y,
+		m_rot.x,
+		m_rot.z);
 
-	//********** マトリックスを変換して、頂点の最大値・最小値に設定する **********//
+	//***** マトリックスを変換して、回転後の頂点の位置を設定する *****//
+
+	for (int i = 0; i < NUM_VTX_3D; i++)
+	{
+		D3DXVec3TransformCoord(&m_aPosVtx[i], &m_aPosVtx[i], &mtxRotOwn);
+	}
+
+	//***** 回転後の各頂点の位置を比較し、最大値・最小値を設定する ******//
+
+	//頂点の最大値・最小値設定用
+	D3DXVECTOR3 vtxMax = D3DXVECTOR3(-FLT_MAX, -FLT_MAX, -FLT_MAX);
+	D3DXVECTOR3 vtxMin = D3DXVECTOR3(FLT_MAX, FLT_MAX, FLT_MAX);
+
+	for (int i = 0; i < NUM_VTX_3D; i++)
+	{
+		/* 最大値 */
+
+		if (m_aPosVtx[i].x > vtxMax.x)
+		{//X座標
+			vtxMax.x = m_aPosVtx[i].x;	//最大値を設定
+		}
+
+		if (m_aPosVtx[i].y > vtxMax.y)
+		{//Y座標
+			vtxMax.y = m_aPosVtx[i].y;	//最大値を設定
+		}
+
+		if (m_aPosVtx[i].z > vtxMax.z)
+		{//Z座標
+			vtxMax.z = m_aPosVtx[i].z;	//最大値を設定
+		}
+		
+		/* 最小値 */
+
+		if (m_aPosVtx[i].x < vtxMin.x)
+		{//X座標
+			vtxMin.x = m_aPosVtx[i].x;	//最小値を設定
+		}
+
+		if (m_aPosVtx[i].y < vtxMin.y)
+		{//Y座標
+			vtxMin.y = m_aPosVtx[i].y;	//最小値を設定
+		}
+
+		if (m_aPosVtx[i].z < vtxMin.z)
+		{//Z座標
+			vtxMin.z = m_aPosVtx[i].z;	//最小値を設定
+		}
+	}
+
+	//***** サイズを設定する *****//
 
 	//自身
-	D3DXVec3TransformCoord(&vtxMaxOwn, &vtxMaxOwn, &mtxRotOwn);	//最大値
-	D3DXVec3TransformCoord(&vtxMinOwn, &vtxMinOwn, &mtxRotOwn);	//最小値
+	D3DXVECTOR3 sizeOwn = (vtxMax - vtxMin);
 
 	//対象
-	D3DXVec3TransformCoord(&vtxMaxTarget, &vtxMaxTarget, &mtxRotTarget);	//最大値
-	D3DXVec3TransformCoord(&vtxMinTarget, &vtxMinTarget, &mtxRotTarget);	//最小値
+	D3DXVECTOR3 sizeTarget = (m_pTarget->GetVtxMax() - m_pTarget->GetVtxMin());
 
 	//モデル同士の当たり判定
-	bCollisionDebug = CollisionModel(
+	m_bCollision = CollisionModel(
 		&m_pos,					//自身の現在の位置
 		m_posOld,				//自身の前回の位置
 		m_pTarget->GetPos(),	//対象の位置
-		vtxMaxOwn,				//自身のサイズの最大値
-		vtxMinOwn,				//自身のサイズの最小値
-		vtxMaxTarget,			//対象のサイズの最大値
-		vtxMinTarget			//対象のサイズの最小値
+		sizeOwn,				//自身のサイズ
+		sizeTarget				//対象のサイズ
 	);
 }
 
@@ -529,11 +562,6 @@ void CPlayer::SetVtxMaxAndMin()
 
 	for (int i = 0; i < MAX_PARTS; i++)
 	{
-		if (i >= MAX_PARTS)
-		{//パーツ数のカウントが、最大パーツ数を超える場合
-			break;
-		}
-
 		//********** 最大値 **********//
 
 		/* 各パーツの最大値が、現在の最大値より大きい場合、最大値を設定する */

@@ -31,24 +31,56 @@ bool CollisionModel(
 	D3DXVECTOR3* pPosOwn,
 	const D3DXVECTOR3 &posOldOwn,
 	const D3DXVECTOR3 &posTarget,
-	const D3DXVECTOR3 &sizeMaxOwn,
-	const D3DXVECTOR3 &sizeMinOwn,
-	const D3DXVECTOR3 &sizeMaxTarget,
-	const D3DXVECTOR3 &sizeMinTarget)
+	const D3DXVECTOR3 &sizeOwn,
+	const D3DXVECTOR3 &sizeTarget)
 {
 	//********** 説明用変数 **********//
 
+	//自身のサイズの半分
+	D3DXVECTOR3 sizeHalfOwn = D3DXVECTOR3(
+		sizeOwn.x * 0.5f,
+		sizeOwn.y * 0.5f,
+		sizeOwn.z * 0.5f
+	);
+
 	//自身の判定の最大値・最小値(現在の位置)
-	D3DXVECTOR3 ownMax = (*pPosOwn + sizeMaxOwn);
-	D3DXVECTOR3 ownMin = (*pPosOwn + sizeMinOwn);
+	D3DXVECTOR3 ownMax = D3DXVECTOR3(
+		pPosOwn->x + sizeHalfOwn.x,
+		pPosOwn->y + sizeOwn.y,
+		pPosOwn->z + sizeHalfOwn.z
+		);
+
+	D3DXVECTOR3 ownMin = D3DXVECTOR3(
+		pPosOwn->x - sizeHalfOwn.x,
+		pPosOwn->y,
+		pPosOwn->z - sizeHalfOwn.z
+	);;
 
 	//自身の判定の最大値・最小値(前回の位置)
-	D3DXVECTOR3 oldOwnMax = (posOldOwn + sizeMaxOwn);
-	D3DXVECTOR3 oldOwnMin = (posOldOwn + sizeMinOwn);
+	D3DXVECTOR3 oldOwnMax = D3DXVECTOR3(
+		posOldOwn.x + sizeHalfOwn.x,
+		posOldOwn.y + sizeOwn.y,
+		posOldOwn.z + sizeHalfOwn.z
+	);
+
+	D3DXVECTOR3 oldOwnMin = D3DXVECTOR3(
+		posOldOwn.x - sizeHalfOwn.x,
+		posOldOwn.y,
+		posOldOwn.z - sizeHalfOwn.z
+	);
 
 	//対象の判定の最大値・最小値
-	D3DXVECTOR3 targetMax = (posTarget + sizeMaxTarget);
-	D3DXVECTOR3 targetMin = (posTarget + sizeMinTarget);
+	D3DXVECTOR3 targetMax = D3DXVECTOR3(
+		posOldOwn.x + (sizeTarget.x * 0.5f),
+		posOldOwn.y + sizeTarget.y,
+		posOldOwn.z + (sizeTarget.z * 0.5f)
+	);
+
+	D3DXVECTOR3 targetMin = D3DXVECTOR3(
+		posOldOwn.x - (sizeTarget.x * 0.5f),
+		posOldOwn.y,
+		posOldOwn.z - (sizeTarget.z * 0.5f)
+	);;
 
 	//X軸の判定式
 	bool bRightToLeft = (ownMin.x < targetMax.x);	//右から左へ
@@ -68,18 +100,18 @@ bool CollisionModel(
 	{//Y軸で当たっている場合
 		if (bFrontToBack && bBackToFront)
 		{//Z軸で当たっている場合
-			if ((oldOwnMax.x <= targetMin.x) && (ownMax.x > targetMin.x))
+			if ((oldOwnMax.x <= targetMin.x) && bLeftToRight)
 			{//自身が対象に「左から右へ向かって当たった」場合
 				//押し出す
-				pPosOwn->x = (targetMin.x - sizeMaxOwn.x);
+				pPosOwn->x = (targetMin.x - sizeHalfOwn.x);
 
 				//「当たった」判定を返す
 				return true;
 			}
-			else if ((oldOwnMin.x >= targetMax.x) && (ownMin.x < targetMax.x))
+			else if ((oldOwnMin.x >= targetMax.x) && bRightToLeft)
 			{//自身が対象に「右から左へ向かって当たった」場合
 				//押し出す
-				pPosOwn->x = (targetMax.x + sizeMinOwn.x);
+				pPosOwn->x = (targetMax.x + sizeHalfOwn.x);
 
 				//「当たった」判定を返す
 				return true;
@@ -88,18 +120,18 @@ bool CollisionModel(
 		
 		if (bLeftToRight && bRightToLeft)
 		{//X軸で当たっている場合
-			if ((oldOwnMax.z <= targetMin.z) || (ownMax.z > targetMin.z))
+			if ((oldOwnMax.z <= targetMin.z) && bFrontToBack)
 			{//自身が対象に「手前から奥へ向かって当たった」場合
 				//押し出す
-				pPosOwn->z = (targetMin.z - sizeMaxOwn.z);
+				pPosOwn->z = (targetMin.z - sizeHalfOwn.z);
 
 				//「当たった」判定を返す
 				return true;
 			}
-			else if ((oldOwnMin.z >= targetMax.z) && (ownMin.z < targetMax.z))
+			else if ((oldOwnMin.z >= targetMax.z) && bBackToFront)
 			{//自身が対象に「奥から手前へ向かって当たった」場合
 				//押し出す
-				pPosOwn->z = (targetMax.z + sizeMinOwn.z);
+				pPosOwn->z = (targetMax.z + sizeHalfOwn.z);
 
 				//「当たった」判定を返す
 				return true;
@@ -107,21 +139,20 @@ bool CollisionModel(
 		}
 	}
 
-	if (bLeftToRight && bRightToLeft &&
-		bFrontToBack && bBackToFront)
+	if ((bLeftToRight && bRightToLeft) && (bFrontToBack && bBackToFront))
 	{//X軸、Z軸で当たっている場合
-		if ((oldOwnMax.y <= targetMin.y) || (ownMax.y > targetMin.y))
+		if ((oldOwnMax.y <= targetMin.y) && bBottomToTop)
 		{//自身が対象に「下から上へ向かって当たった」場合
 			//押し出す
-			pPosOwn->y = (targetMin.y - sizeMaxOwn.y);
+			pPosOwn->y = (targetMin.y - sizeOwn.y);
 
 			//「当たった」判定を返す
 			return true;
 		}
-		else if ((oldOwnMin.y >= targetMax.y) || (ownMin.y < targetMax.y))
+		else if ((oldOwnMin.y >= targetMax.y) && bTopToBottom)
 		{//自身が対象に「上から下へ向かって当たった」場合
 			//押し出す
-			pPosOwn->y = (targetMax.y + sizeMinOwn.y);
+			pPosOwn->y = targetMax.y;
 
 			//「当たった」判定を返す
 			return true;

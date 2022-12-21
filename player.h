@@ -31,6 +31,7 @@ private: /* 定数の定義 */
 	static const int MAX_PARTS = 2;		//最大パーツ数
 	static const int NUM_KEYSET = 2;	//キーセット数
 	static const int MAX_LINE = 12;		//ラインの最大数
+	static const int NUM_VTX_3D = 8;	//立体の頂点数
 
 private: /* 構造体の定義 */
 	struct KEY //キー要素
@@ -64,9 +65,7 @@ public: /* オーバーライド関数 */
 	void Draw() override;		//描画
 
 public: /* メンバ関数 */
-	D3DXVECTOR3 GetPos();		//位置を取得
-	D3DXVECTOR3 GetVtxMax();	//頂点の最大値の取得
-	D3DXVECTOR3 GetVtxMin();	//頂点の最小値の取得
+	D3DXVECTOR3 GetPos();	//位置を取得
 private:
 	void Move();		//移動
 	void Motion();		//モーション
@@ -90,11 +89,14 @@ private: /* メンバ変数 */
 	D3DXVECTOR3 m_vtxMax;	//頂点の最大値
 	D3DXVECTOR3 m_vtxMin;	//頂点の最小値
 
+	D3DXVECTOR3 m_aPosVtx[NUM_VTX_3D];	//頂点の位置
+
 	int m_nNumKey;		//キーの総数
 	int m_nCurrentKey;	//現在のキー番号
 	int m_nCntMotion;	//モーションカウンター
 
 	bool m_bPressKey;	//キー押下中かどうか
+	bool m_bCollision;	//当たっているかどうか
 };
 
 #endif
