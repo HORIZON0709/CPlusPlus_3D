@@ -472,10 +472,12 @@ void CPlayer::Collision()
 	//向きからヨー・ピッチ・ロールを指定し、マトリックスを作成
 	D3DXMatrixRotationYawPitchRoll(&mtxRotOwn, m_rot.y, m_rot.x, m_rot.z);
 
+	D3DXVECTOR3 posVtx[NUM_VTX_3D] = {};	//保存用配列
+
 	for (int i = 0; i < NUM_VTX_3D; i++)
 	{
-		//マトリックスを変換して、回転後の頂点の位置を設定する
-		D3DXVec3TransformCoord(&m_aPosVtx[i], &m_aPosVtx[i], &mtxRotOwn);
+		//マトリックスを変換して回転させた後の頂点の位置を保存する
+		D3DXVec3TransformCoord(&posVtx[i], &m_aPosVtx[i], &mtxRotOwn);
 	}
 
 	//***** 回転後の各頂点の位置を比較し、最大値・最小値を設定する ******//
@@ -488,36 +490,36 @@ void CPlayer::Collision()
 	{
 		/* 最大値 */
 
-		if (m_aPosVtx[i].x > vtxMax.x)
+		if (posVtx[i].x > vtxMax.x)
 		{//X座標
-			vtxMax.x = m_aPosVtx[i].x;	//最大値を設定
+			vtxMax.x = posVtx[i].x;	//最大値を設定
 		}
 
-		if (m_aPosVtx[i].y > vtxMax.y)
+		if (posVtx[i].y > vtxMax.y)
 		{//Y座標
-			vtxMax.y = m_aPosVtx[i].y;	//最大値を設定
+			vtxMax.y = posVtx[i].y;	//最大値を設定
 		}
 
-		if (m_aPosVtx[i].z > vtxMax.z)
+		if (posVtx[i].z > vtxMax.z)
 		{//Z座標
-			vtxMax.z = m_aPosVtx[i].z;	//最大値を設定
+			vtxMax.z = posVtx[i].z;	//最大値を設定
 		}
 		
 		/* 最小値 */
 
-		if (m_aPosVtx[i].x < vtxMin.x)
+		if (posVtx[i].x < vtxMin.x)
 		{//X座標
-			vtxMin.x = m_aPosVtx[i].x;	//最小値を設定
+			vtxMin.x = posVtx[i].x;	//最小値を設定
 		}
 
-		if (m_aPosVtx[i].y < vtxMin.y)
+		if (posVtx[i].y < vtxMin.y)
 		{//Y座標
-			vtxMin.y = m_aPosVtx[i].y;	//最小値を設定
+			vtxMin.y = posVtx[i].y;	//最小値を設定
 		}
 
-		if (m_aPosVtx[i].z < vtxMin.z)
+		if (posVtx[i].z < vtxMin.z)
 		{//Z座標
-			vtxMin.z = m_aPosVtx[i].z;	//最小値を設定
+			vtxMin.z = posVtx[i].z;	//最小値を設定
 		}
 	}
 
@@ -615,8 +617,8 @@ void CPlayer::SetLines()
 	//********** 上部左側 **********//
 
 	//始点・終点
-	D3DXVECTOR3 start = D3DXVECTOR3(m_vtxMin.x, m_vtxMax.y, m_vtxMax.z);
-	D3DXVECTOR3 end = D3DXVECTOR3(m_vtxMin.x, m_vtxMax.y, m_vtxMin.z);
+	D3DXVECTOR3 start = m_aPosVtx[3];
+	D3DXVECTOR3 end = m_aPosVtx[2];
 
 	//設定
 	m_apLine[nNum]->Set(m_pos, m_rot, start, end, col);
@@ -626,8 +628,8 @@ void CPlayer::SetLines()
 	//********** 上部手前側 **********//
 
 	//始点・終点
-	start = D3DXVECTOR3(m_vtxMin.x, m_vtxMax.y, m_vtxMin.z);
-	end = D3DXVECTOR3(m_vtxMax.x, m_vtxMax.y, m_vtxMin.z);
+	start = m_aPosVtx[2];
+	end = m_aPosVtx[6];
 
 	//設定
 	m_apLine[nNum]->Set(m_pos, m_rot, start, end, col);
@@ -637,8 +639,8 @@ void CPlayer::SetLines()
 	//********** 上部右側 **********//
 
 	//始点・終点
-	start = D3DXVECTOR3(m_vtxMax.x, m_vtxMax.y, m_vtxMin.z);
-	end = D3DXVECTOR3(m_vtxMax.x, m_vtxMax.y, m_vtxMax.z);
+	start = m_aPosVtx[6];
+	end = m_aPosVtx[7];
 
 	//設定
 	m_apLine[nNum]->Set(m_pos, m_rot, start, end, col);
@@ -648,8 +650,8 @@ void CPlayer::SetLines()
 	//********** 上部奥側 **********//
 
 	//始点・終点
-	start = D3DXVECTOR3(m_vtxMax.x, m_vtxMax.y, m_vtxMax.z);
-	end = D3DXVECTOR3(m_vtxMin.x, m_vtxMax.y, m_vtxMax.z);
+	start = m_aPosVtx[7];
+	end = m_aPosVtx[3];
 
 	//設定
 	m_apLine[nNum]->Set(m_pos, m_rot, start, end, col);
@@ -659,8 +661,8 @@ void CPlayer::SetLines()
 	//********** 下部左側 **********//
 
 	//始点・終点
-	start = D3DXVECTOR3(m_vtxMin.x, m_vtxMin.y, m_vtxMax.z);
-	end = D3DXVECTOR3(m_vtxMin.x, m_vtxMin.y, m_vtxMin.z);
+	start = m_aPosVtx[1];
+	end = m_aPosVtx[0];
 
 	//設定
 	m_apLine[nNum]->Set(m_pos, m_rot, start, end, col);
@@ -670,8 +672,8 @@ void CPlayer::SetLines()
 	//********** 下部手前側 **********//
 
 	//始点・終点
-	start = D3DXVECTOR3(m_vtxMin.x, m_vtxMin.y, m_vtxMin.z);
-	end = D3DXVECTOR3(m_vtxMax.x, m_vtxMin.y, m_vtxMin.z);
+	start = m_aPosVtx[0];
+	end = m_aPosVtx[4];
 
 	//設定
 	m_apLine[nNum]->Set(m_pos, m_rot, start, end, col);
@@ -681,8 +683,8 @@ void CPlayer::SetLines()
 	//********** 下部右側 **********//
 
 	//始点・終点
-	start = D3DXVECTOR3(m_vtxMax.x, m_vtxMin.y, m_vtxMin.z);
-	end = D3DXVECTOR3(m_vtxMax.x, m_vtxMin.y, m_vtxMax.z);
+	start = m_aPosVtx[4];
+	end = m_aPosVtx[5];
 
 	//設定
 	m_apLine[nNum]->Set(m_pos, m_rot, start, end, col);
@@ -692,8 +694,8 @@ void CPlayer::SetLines()
 	//********** 下部奥側 **********//
 
 	//始点・終点
-	start = D3DXVECTOR3(m_vtxMax.x, m_vtxMin.y, m_vtxMax.z);
-	end = D3DXVECTOR3(m_vtxMin.x, m_vtxMin.y, m_vtxMax.z);
+	start = m_aPosVtx[5];
+	end = m_aPosVtx[1];
 
 	//設定
 	m_apLine[nNum]->Set(m_pos, m_rot, start, end, col);
@@ -703,8 +705,8 @@ void CPlayer::SetLines()
 	//********** 手前左側 **********//
 
 	//始点・終点
-	start = D3DXVECTOR3(m_vtxMin.x, m_vtxMax.y, m_vtxMin.z);
-	end = D3DXVECTOR3(m_vtxMin.x, m_vtxMin.y, m_vtxMin.z);
+	start = m_aPosVtx[2];
+	end = m_aPosVtx[0];
 
 	//設定
 	m_apLine[nNum]->Set(m_pos, m_rot, start, end, col);
@@ -714,8 +716,8 @@ void CPlayer::SetLines()
 	//********** 手前右側 **********//
 
 	//始点・終点
-	start = D3DXVECTOR3(m_vtxMax.x, m_vtxMax.y, m_vtxMin.z);
-	end = D3DXVECTOR3(m_vtxMax.x, m_vtxMin.y, m_vtxMin.z);
+	start = m_aPosVtx[6];
+	end = m_aPosVtx[4];
 
 	//設定
 	m_apLine[nNum]->Set(m_pos, m_rot, start, end, col);
@@ -725,8 +727,8 @@ void CPlayer::SetLines()
 	//********** 奥左側 **********//
 
 	//始点・終点
-	start = D3DXVECTOR3(m_vtxMin.x, m_vtxMax.y, m_vtxMax.z);
-	end = D3DXVECTOR3(m_vtxMin.x, m_vtxMin.y, m_vtxMax.z);
+	start = m_aPosVtx[3];
+	end = m_aPosVtx[1];
 
 	//設定
 	m_apLine[nNum]->Set(m_pos, m_rot, start, end, col);
@@ -736,8 +738,8 @@ void CPlayer::SetLines()
 	//********** 奥右側 **********//
 
 	//始点・終点
-	start = D3DXVECTOR3(m_vtxMax.x, m_vtxMax.y, m_vtxMax.z);
-	end = D3DXVECTOR3(m_vtxMax.x, m_vtxMin.y, m_vtxMax.z);
+	start = m_aPosVtx[7];
+	end = m_aPosVtx[5];
 
 	//設定
 	m_apLine[nNum]->Set(m_pos, m_rot, start, end, col);

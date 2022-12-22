@@ -94,6 +94,8 @@ bool CollisionModel(
 	bool bFrontToBack = (ownMax.z > targetMin.z);	//手前から奥へ
 	bool bBackToFront = (ownMin.z < targetMax.z);	//奥から手前へ
 
+	bool bCollision = false;
+
 	//********** 当たり判定 **********//
 
 	if (bTopToBottom && bBottomToTop)
@@ -106,7 +108,7 @@ bool CollisionModel(
 				pPosOwn->x = (targetMin.x - sizeHalfOwn.x);
 
 				//「当たった」判定を返す
-				return true;
+				bCollision =  true;
 			}
 			else if ((oldOwnMin.x >= targetMax.x) && bRightToLeft)
 			{//自身が対象に「右から左へ向かって当たった」場合
@@ -114,7 +116,7 @@ bool CollisionModel(
 				pPosOwn->x = (targetMax.x + sizeHalfOwn.x);
 
 				//「当たった」判定を返す
-				return true;
+				bCollision = true;
 			}
 		}
 		
@@ -126,7 +128,7 @@ bool CollisionModel(
 				pPosOwn->z = (targetMin.z - sizeHalfOwn.z);
 
 				//「当たった」判定を返す
-				return true;
+				bCollision = true;
 			}
 			else if ((oldOwnMin.z >= targetMax.z) && bBackToFront)
 			{//自身が対象に「奥から手前へ向かって当たった」場合
@@ -134,7 +136,7 @@ bool CollisionModel(
 				pPosOwn->z = (targetMax.z + sizeHalfOwn.z);
 
 				//「当たった」判定を返す
-				return true;
+				bCollision = true;
 			}
 		}
 	}
@@ -147,7 +149,7 @@ bool CollisionModel(
 			pPosOwn->y = (targetMin.y - sizeOwn.y);
 
 			//「当たった」判定を返す
-			return true;
+			bCollision = true;
 		}
 		else if ((oldOwnMin.y >= targetMax.y) && bTopToBottom)
 		{//自身が対象に「上から下へ向かって当たった」場合
@@ -155,9 +157,9 @@ bool CollisionModel(
 			pPosOwn->y = targetMax.y;
 
 			//「当たった」判定を返す
-			return true;
+			bCollision = true;
 		}
 	}
 
-	return false;	//「当たっていない」判定を返す
+	return bCollision;	//「当たっていない」判定を返す
 }
