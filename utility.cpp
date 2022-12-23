@@ -94,7 +94,7 @@ bool CollisionModel(
 	bool bFrontToBack = (ownMax.z > targetMin.z);	//Žè‘O‚©‚ç‰œ‚Ö
 	bool bBackToFront = (ownMin.z < targetMax.z);	//‰œ‚©‚çŽè‘O‚Ö
 
-	bool bCollision = false;
+	bool bCollision = false;	//“–‚½‚Á‚½‚©‚Ç‚¤‚©
 
 	//********** “–‚½‚è”»’è **********//
 

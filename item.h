@@ -16,6 +16,7 @@
 //前方宣言
 //***************************
 class CModel;
+class CLine;
 
 //***************************
 //アイテムクラスの定義
@@ -25,8 +26,13 @@ class CItem : public CObject
 private: /* 定数の定義 */
 	static const float ROTATION_SPEED;	//回転速度
 
+	static const int MAX_LINE = 12;	//ラインの最大数
+
 public: /* 静的メンバ関数 */
 	static CItem* Create();	//生成
+
+public: /* 静的メンバ変巣 */
+	static CLine* m_apLine[MAX_LINE];	//ラインのポインタ
 
 public: /* コンストラクタ・デストラクタ */
 	CItem();
@@ -38,6 +44,13 @@ public: /* オーバーライド関数 */
 	void Update() override;		//更新
 	void Draw() override;		//描画
 
+public: /* メンバ関数 */
+	void SetLines();	//ラインの設定まとめ
+
+	D3DXVECTOR3 GetPos();		//位置を取得
+	D3DXVECTOR3 GetVtxMax();	//頂点の最大値を取得
+	D3DXVECTOR3 GetVtxMin();	//頂点の最小値を取得
+
 private: /* メンバ変数 */
 	CModel* m_pModel;	//モデルのポインタ
 
@@ -46,6 +59,8 @@ private: /* メンバ変数 */
 	D3DXVECTOR3 m_pos;		//位置
 	D3DXVECTOR3 m_rot;		//現在の向き
 	D3DXVECTOR3 m_rotDest;	//目的の向き
+	D3DXVECTOR3 m_vtxMax;	//頂点の最大値
+	D3DXVECTOR3 m_vtxMin;	//頂点の最小値
 
 	bool m_bPressKey;	//キー押下中かどうか
 };

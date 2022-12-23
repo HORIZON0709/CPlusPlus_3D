@@ -18,6 +18,7 @@
 class CModel;
 class CGimmick;
 class CLine;
+class CItem;
 
 //***************************
 //プレイヤークラスの定義
@@ -76,7 +77,8 @@ private:
 
 private: /* メンバ変数 */
 	CModel* m_apModel[MAX_PARTS];	//モデルのポインタ
-	CGimmick* m_pTarget;			//当たり判定の対象オブジェクトのポインタ
+	CGimmick* m_pTargetGimmick;		//ギミックのポインタ(当たり判定の対象)
+	CItem* m_pTargetItem;			//アイテムのポインタ(当たり判定の対象)
 
 	D3DXMATRIX m_mtxWorld;	//ワールドマトリックス
 
@@ -97,6 +99,7 @@ private: /* メンバ変数 */
 
 	bool m_bPressKey;	//キー押下中かどうか
 	bool m_bCollision;	//当たっているかどうか
+	bool m_bGetItem;	//アイテムを取得したかどうか
 };
 
 #endif

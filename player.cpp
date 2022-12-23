@@ -15,6 +15,7 @@
 #include "model.h"
 #include "gimmick.h"
 #include "line.h"
+#include "item.h"
 
 #include "debug_proc.h"
 #include "utility.h"
@@ -84,7 +85,8 @@ CPlayer* CPlayer::Create()
 //コンストラクタ
 //================================================
 CPlayer::CPlayer() :CObject::CObject(CObject::PRIORITY::PRIO_MODEL),
-	m_pTarget(nullptr),
+	m_pTargetGimmick(nullptr),
+	m_pTargetItem(nullptr),
 	m_pos(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
 	m_posOld(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
 	m_move(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
@@ -97,7 +99,8 @@ CPlayer::CPlayer() :CObject::CObject(CObject::PRIORITY::PRIO_MODEL),
 	m_nCurrentKey(0),
 	m_nCntMotion(0),
 	m_bPressKey(false),
-	m_bCollision(false)
+	m_bCollision(false),
+	m_bGetItem(false)
 {
 	//メンバ変数のクリア
 	memset(m_mtxWorld, 0, sizeof(m_mtxWorld));
@@ -163,6 +166,7 @@ HRESULT CPlayer::Init()
 	m_nCntMotion = 0;
 	m_bPressKey = false;
 	m_bCollision = false;
+	m_bGetItem = false;
 
 	for (int i = 0; i < MAX_LINE; i++)
 	{
@@ -197,12 +201,18 @@ void CPlayer::Update()
 	Move();
 
 	//モーション
-	//Motion();
+	Motion();
 
 	//当たり判定
 	Collision();
 
 	m_apModel[1]->SetPos(D3DXVECTOR3(0.0f, 24.0f, 65.0f));
+
+	if (m_bGetItem)
+	{
+		m_pTargetItem->Release();
+		m_pTargetItem = nullptr;
+	}
 
 #ifdef _DEBUG
 	//各情報を表示
@@ -465,7 +475,7 @@ void CPlayer::Motion()
 void CPlayer::Collision()
 {
 	//当たり判定対象のギミック情報を取得
-	m_pTarget = CGame::GetGimmick();
+	m_pTargetGimmick = CGame::GetGimmick();
 
 	D3DXMATRIX mtxRotOwn;	//計算用マトリックス
 
@@ -529,13 +539,33 @@ void CPlayer::Collision()
 	D3DXVECTOR3 sizeOwn = (vtxMax - vtxMin);
 
 	//対象
-	D3DXVECTOR3 sizeTarget = (m_pTarget->GetVtxMax() - m_pTarget->GetVtxMin());
+	D3DXVECTOR3 sizeTarget = (m_pTargetGimmick->GetVtxMax() - m_pTargetGimmick->GetVtxMin());
 
 	//モデル同士の当たり判定
 	m_bCollision = CollisionModel(
 		&m_pos,					//自身の現在の位置
 		m_posOld,				//自身の前回の位置
-		m_pTarget->GetPos(),	//対象の位置
+		m_pTargetGimmick->GetPos(),	//対象の位置
+		sizeOwn,				//自身のサイズ
+		sizeTarget				//対象のサイズ
+	);
+
+	if (m_bGetItem)
+	{
+		return;
+	}
+
+	//アイテム所法を取得
+	m_pTargetItem = CGame::GetItem();
+
+	//サイズを設定
+	sizeTarget = (m_pTargetItem->GetVtxMax() - m_pTargetItem->GetVtxMin());
+
+	//当たり判定
+	m_bGetItem = CollisionModel(
+		&m_pos,					//自身の現在の位置
+		m_posOld,				//自身の前回の位置
+		m_pTargetItem->GetPos(),	//対象の位置
 		sizeOwn,				//自身のサイズ
 		sizeTarget				//対象のサイズ
 	);
