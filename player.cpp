@@ -28,35 +28,14 @@
 const float CPlayer::MOVE_SPEED = 1.5f;		//移動速度
 const float CPlayer::ROT_SMOOTHNESS = 0.5f;	//回転の滑らかさ
 
+const int CPlayer::MAX_WORD = 256;	//最大文字数
+
+const char* CPlayer::FILE_NAME = "data/TEXT/motion.txt";	//ファイル名
+
 //***************************
 //静的メンバ変数
 //***************************
-CPlayer::KEY_SET CPlayer::m_aKeySet[NUM_KEYSET] =
-{
-	/* KEY : 0 / 2 */
-	{ 45,	//フレーム数
-		{//[0]
-		D3DXVECTOR3(0.0f,0.0f,0.0f),	//位置(POS)
-		D3DXVECTOR3(0.0f,0.18f,0.0f),	//向き(ROT)
-
-		//[1]
-		D3DXVECTOR3(0.0f,0.0f,0.0f),	//位置(POS)
-		D3DXVECTOR3(0.0f,-1.82f,0.0f),	//向き(ROT)
-		}
-	},
-	
-	/* KEY : 1 / 2 */
-	{ 45,	//フレーム数
-		{//[0]
-		D3DXVECTOR3(0.0f,0.0f,0.0f),	//位置(POS)
-		D3DXVECTOR3(0.0f,-0.18f,0.0f),	//向き(ROT)
-
-		//[1]
-		D3DXVECTOR3(0.0f,0.0f,0.0f),	//位置(POS)
-		D3DXVECTOR3(0.0f,1.82f,0.0f),	//向き(ROT)
-		}
-	},
-};
+CPlayer::MOTION_SET CPlayer::m_aMotion[MOTION_TYPE::MAX] ={};
 
 CLine* CPlayer::m_apLine[MAX_LINE] = {};	//ラインのポインタ
 
@@ -95,9 +74,12 @@ CPlayer::CPlayer() :CObject::CObject(CObject::PRIORITY::PRIO_MODEL),
 	m_rotDest(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
 	m_vtxMax(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
 	m_vtxMin(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
-	m_nNumKey(0),
+	m_motionType(MOTION_TYPE::NONE),
 	m_nCurrentKey(0),
 	m_nCntMotion(0),
+	m_nNumMotion(0),
+	m_nNumKeySet(0),
+	m_nNumKey(0),
 	m_bPressKey(false),
 	m_bCollision(false),
 	m_bGetItem(false)
@@ -134,8 +116,13 @@ HRESULT CPlayer::Init()
 	//親モデルの設定
 	m_apModel[1]->SetParent(m_apModel[0]);
 
+	m_apModel[1]->SetPos(D3DXVECTOR3(0.0f, 24.0f, 65.0f));
+
 	//頂点の最大値と最小値を設定
 	SetVtxMaxAndMin();
+
+	//読み込み
+	Load();
 
 	//メンバ変数の初期化
 	m_pos = D3DXVECTOR3(-50.0f, 0.0f, 0.0f);
@@ -161,9 +148,13 @@ HRESULT CPlayer::Init()
 	m_aPosVtx[6] = D3DXVECTOR3(m_vtxMax.x, m_vtxMax.y, m_vtxMin.z);	//手前の上側
 	m_aPosVtx[7] = m_vtxMax;										//奥の上側(最大値)
 
-	m_nNumKey = NUM_KEYSET;
+	m_motionType = MOTION_TYPE::NEUTRAL;
+
 	m_nCurrentKey = 0;
 	m_nCntMotion = 0;
+	m_nNumMotion = 0;
+	m_nNumKeySet = 0;
+	m_nNumKey = 0;
 	m_bPressKey = false;
 	m_bCollision = false;
 	m_bGetItem = false;
@@ -206,7 +197,7 @@ void CPlayer::Update()
 	//当たり判定
 	Collision();
 
-	m_apModel[1]->SetPos(D3DXVECTOR3(0.0f, 24.0f, 65.0f));
+	//m_apModel[1]->SetPos(D3DXVECTOR3(0.0f, 24.0f, 65.0f));
 
 	if (m_bGetItem)
 	{
@@ -412,15 +403,18 @@ void CPlayer::Motion()
 
 		/* nullptrではない場合 */
 
+		//モーション情報
+		MOTION_SET motion = m_aMotion[m_motionType];
+
 		//相対値を計算(モーションカウンター / 再生フレーム数)
-		float fRelativeValue = (float)m_nCntMotion / (float)m_aKeySet[m_nCurrentKey].nFrame;
+		float fRelativeValue = (float)m_nCntMotion / (float)motion.aKeySet[m_nCurrentKey].nFrame;
 
 		//次のキー番号(計算用)
-		int nNextKey = (m_nCurrentKey + 1) % m_nNumKey;
+		int nNextKey = (m_nCurrentKey + 1) % motion.nNumKey;
 
 		//差分(終了値 - 開始値)
-		D3DXVECTOR3 posDif = (m_aKeySet[nNextKey].aKey[i].pos - m_aKeySet[m_nCurrentKey].aKey[i].pos);
-		D3DXVECTOR3 rotDif = (m_aKeySet[nNextKey].aKey[i].rot - m_aKeySet[m_nCurrentKey].aKey[i].rot);
+		D3DXVECTOR3 posDif = (motion.aKeySet[nNextKey].aKey[i].pos - motion.aKeySet[m_nCurrentKey].aKey[i].pos);
+		D3DXVECTOR3 rotDif = (motion.aKeySet[nNextKey].aKey[i].rot - motion.aKeySet[m_nCurrentKey].aKey[i].rot);
 
 		//差分 * 相対値
 		D3DXVECTOR3 pos = D3DXVECTOR3(	//位置
@@ -438,8 +432,8 @@ void CPlayer::Motion()
 		D3DXVECTOR3 rotPre = m_apModel[i]->GetRot();
 
 		//現在値に代入(開始値 + (差分 * 相対値))
-		posPre = m_aKeySet[m_nCurrentKey].aKey[i].pos + pos;
-		rotPre = m_aKeySet[m_nCurrentKey].aKey[i].rot + rot;
+		posPre = motion.aKeySet[m_nCurrentKey].aKey[i].pos + pos;
+		rotPre = motion.aKeySet[m_nCurrentKey].aKey[i].rot + rot;
 
 		//角度の正規化
 		NormalizeAngle(&rotPre.x);	
@@ -453,7 +447,7 @@ void CPlayer::Motion()
 
 	m_nCntMotion++;	//モーションカウンターを進める
 
-	if (m_nCntMotion < m_aKeySet[m_nCurrentKey].nFrame)
+	if (m_nCntMotion < m_aMotion[m_motionType].aKeySet[m_nCurrentKey].nFrame)
 	{//モーションカウンターが再生フレーム数に達していない場合
 		return;
 	}
@@ -463,7 +457,7 @@ void CPlayer::Motion()
 	m_nCurrentKey++;	//現在のキー番号を一つ進める
 	m_nCntMotion = 0;	//モーションカウンターを初期化
 
-	if (m_nCurrentKey == m_nNumKey)
+	if (m_nCurrentKey == m_aMotion[m_motionType].nNumKey)
 	{//現在のキー番号が、キーの総数に達したら
 		m_nCurrentKey = 0;	//現在のキー番号を0に戻す
 	}
@@ -474,69 +468,13 @@ void CPlayer::Motion()
 //================================================
 void CPlayer::Collision()
 {
-	//当たり判定対象のギミック情報を取得
-	m_pTargetGimmick = CGame::GetGimmick();
-
-	D3DXMATRIX mtxRotOwn;	//計算用マトリックス
-
-	//向きからヨー・ピッチ・ロールを指定し、マトリックスを作成
-	D3DXMatrixRotationYawPitchRoll(&mtxRotOwn, m_rot.y, m_rot.x, m_rot.z);
-
-	D3DXVECTOR3 posVtx[NUM_VTX_3D] = {};	//保存用配列
-
-	for (int i = 0; i < NUM_VTX_3D; i++)
-	{
-		//マトリックスを変換して回転させた後の頂点の位置を保存する
-		D3DXVec3TransformCoord(&posVtx[i], &m_aPosVtx[i], &mtxRotOwn);
-	}
-
-	//***** 回転後の各頂点の位置を比較し、最大値・最小値を設定する ******//
-
-	//頂点の最大値・最小値設定用
-	D3DXVECTOR3 vtxMax = D3DXVECTOR3(-FLT_MAX, -FLT_MAX, -FLT_MAX);
-	D3DXVECTOR3 vtxMin = D3DXVECTOR3(FLT_MAX, FLT_MAX, FLT_MAX);
-
-	for (int i = 0; i < NUM_VTX_3D; i++)
-	{
-		/* 最大値 */
-
-		if (posVtx[i].x > vtxMax.x)
-		{//X座標
-			vtxMax.x = posVtx[i].x;	//最大値を設定
-		}
-
-		if (posVtx[i].y > vtxMax.y)
-		{//Y座標
-			vtxMax.y = posVtx[i].y;	//最大値を設定
-		}
-
-		if (posVtx[i].z > vtxMax.z)
-		{//Z座標
-			vtxMax.z = posVtx[i].z;	//最大値を設定
-		}
-		
-		/* 最小値 */
-
-		if (posVtx[i].x < vtxMin.x)
-		{//X座標
-			vtxMin.x = posVtx[i].x;	//最小値を設定
-		}
-
-		if (posVtx[i].y < vtxMin.y)
-		{//Y座標
-			vtxMin.y = posVtx[i].y;	//最小値を設定
-		}
-
-		if (posVtx[i].z < vtxMin.z)
-		{//Z座標
-			vtxMin.z = posVtx[i].z;	//最小値を設定
-		}
-	}
-
 	//***** サイズを設定する *****//
 
 	//自身
-	D3DXVECTOR3 sizeOwn = (vtxMax - vtxMin);
+	D3DXVECTOR3 sizeOwn = (m_vtxMax - m_vtxMin);
+
+	//当たり判定対象のギミック情報を取得
+	m_pTargetGimmick = CGame::GetGimmick();
 
 	//対象
 	D3DXVECTOR3 sizeTarget = (m_pTargetGimmick->GetVtxMax() - m_pTargetGimmick->GetVtxMin());
@@ -638,6 +576,9 @@ void CPlayer::SetVtxMaxAndMin()
 //================================================
 void CPlayer::SetLines()
 {
+	//向き(固定)
+	D3DXVECTOR3 rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+
 	//色(全ての線で同じ色)
 	D3DXCOLOR col = D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f);
 
@@ -651,7 +592,7 @@ void CPlayer::SetLines()
 	D3DXVECTOR3 end = m_aPosVtx[2];
 
 	//設定
-	m_apLine[nNum]->Set(m_pos, m_rot, start, end, col);
+	m_apLine[nNum]->Set(m_pos, rot, start, end, col);
 
 	nNum++;	//次に進める
 
@@ -662,7 +603,7 @@ void CPlayer::SetLines()
 	end = m_aPosVtx[6];
 
 	//設定
-	m_apLine[nNum]->Set(m_pos, m_rot, start, end, col);
+	m_apLine[nNum]->Set(m_pos, rot, start, end, col);
 
 	nNum++;	//次に進める
 
@@ -673,7 +614,7 @@ void CPlayer::SetLines()
 	end = m_aPosVtx[7];
 
 	//設定
-	m_apLine[nNum]->Set(m_pos, m_rot, start, end, col);
+	m_apLine[nNum]->Set(m_pos, rot, start, end, col);
 
 	nNum++;	//次に進める
 
@@ -684,7 +625,7 @@ void CPlayer::SetLines()
 	end = m_aPosVtx[3];
 
 	//設定
-	m_apLine[nNum]->Set(m_pos, m_rot, start, end, col);
+	m_apLine[nNum]->Set(m_pos, rot, start, end, col);
 
 	nNum++;	//次に進める
 
@@ -695,7 +636,7 @@ void CPlayer::SetLines()
 	end = m_aPosVtx[0];
 
 	//設定
-	m_apLine[nNum]->Set(m_pos, m_rot, start, end, col);
+	m_apLine[nNum]->Set(m_pos, rot, start, end, col);
 
 	nNum++;	//次に進める
 
@@ -706,7 +647,7 @@ void CPlayer::SetLines()
 	end = m_aPosVtx[4];
 
 	//設定
-	m_apLine[nNum]->Set(m_pos, m_rot, start, end, col);
+	m_apLine[nNum]->Set(m_pos, rot, start, end, col);
 
 	nNum++;	//次に進める
 
@@ -717,7 +658,7 @@ void CPlayer::SetLines()
 	end = m_aPosVtx[5];
 
 	//設定
-	m_apLine[nNum]->Set(m_pos, m_rot, start, end, col);
+	m_apLine[nNum]->Set(m_pos, rot, start, end, col);
 
 	nNum++;	//次に進める
 
@@ -728,7 +669,7 @@ void CPlayer::SetLines()
 	end = m_aPosVtx[1];
 
 	//設定
-	m_apLine[nNum]->Set(m_pos, m_rot, start, end, col);
+	m_apLine[nNum]->Set(m_pos, rot, start, end, col);
 
 	nNum++;	//次に進める
 
@@ -739,7 +680,7 @@ void CPlayer::SetLines()
 	end = m_aPosVtx[0];
 
 	//設定
-	m_apLine[nNum]->Set(m_pos, m_rot, start, end, col);
+	m_apLine[nNum]->Set(m_pos, rot, start, end, col);
 
 	nNum++;	//次に進める
 
@@ -750,7 +691,7 @@ void CPlayer::SetLines()
 	end = m_aPosVtx[4];
 
 	//設定
-	m_apLine[nNum]->Set(m_pos, m_rot, start, end, col);
+	m_apLine[nNum]->Set(m_pos, rot, start, end, col);
 
 	nNum++;	//次に進める
 
@@ -761,7 +702,7 @@ void CPlayer::SetLines()
 	end = m_aPosVtx[1];
 
 	//設定
-	m_apLine[nNum]->Set(m_pos, m_rot, start, end, col);
+	m_apLine[nNum]->Set(m_pos, rot, start, end, col);
 
 	nNum++;	//次に進める
 
@@ -772,7 +713,204 @@ void CPlayer::SetLines()
 	end = m_aPosVtx[5];
 
 	//設定
-	m_apLine[nNum]->Set(m_pos, m_rot, start, end, col);
+	m_apLine[nNum]->Set(m_pos, rot, start, end, col);
 
 	nNum++;	//次に進める
+}
+
+//================================================
+//読み込み
+//================================================
+void CPlayer::Load()
+{
+	//ファイルを開く
+	FILE* pFile = fopen(FILE_NAME, "r");
+	
+	if (pFile == nullptr)
+	{//ファイルが開けなかった場合
+		assert(false);
+	}
+
+	/* ファイルが開けた場合 */
+
+	char aText[MAX_WORD];	//テキスト格納用
+
+	while (strncmp(&aText[0], "SCRIPT", 6) != 0)
+	{//テキストの最初の行を読み込むまで繰り返す
+		fgets(aText, MAX_WORD, pFile);	//1行丸ごと読み込む
+	}
+
+	while (strcmp(&aText[0], "END_SCRIPT") != 0)
+	{//テキストの最終行を読み込むまで繰り返す
+		//文字を読み込む
+		fscanf(pFile, "%s", &aText[0]);
+
+		if (strncmp(&aText[0], "#-", 2) == 0)
+		{//ブロックコメント
+			continue;
+		}
+		else if (strncmp(&aText[0], "#", 1) == 0)
+		{//コメント
+			//1行全て読み込む
+			fgets(aText, MAX_WORD, pFile);
+			continue;
+		}
+
+		if (strcmp(&aText[0], "MOTIONSET") == 0)
+		{//モーションセット
+			//モーション設定
+			Set_Motion(pFile, &aText[0]);
+
+			//モーション数を増やす
+			m_nNumMotion++;
+		}
+	}
+
+	//ファイルを閉じる
+	fclose(pFile);
+}
+
+//================================================
+//モーション設定
+//================================================
+void CPlayer::Set_Motion(FILE* pFile, char aText[])
+{
+	while (strcmp(&aText[0], "END_MOTIONSET") != 0)
+	{//モーションセットが終わるまで繰り返す
+		//文字を読み込む
+		fscanf(pFile, "%s", &aText[0]);
+
+		if (strncmp(&aText[0], "#-", 2) == 0)
+		{//ブロックコメント
+			continue;
+		}
+		else if (strncmp(&aText[0], "#", 1) == 0)
+		{//コメント
+			//1行全て読み込む
+			fgets(aText, MAX_WORD, pFile);
+			continue;
+		}
+
+		if (strcmp(&aText[0], "LOOP") == 0)
+		{//ループするかどうか
+			//「＝」を読み込む
+			fscanf(pFile, "%s", &aText[0]);
+
+			int nLoop = 0;	//読み込み用
+
+			//ループの有無を読み込む
+			fscanf(pFile, "%d", &nLoop);
+
+			if (nLoop == 0)
+			{
+				//ループ無し
+				m_aMotion[m_nNumMotion].bLoop = false;
+			}
+			else
+			{
+				//ループ有り
+				m_aMotion[m_nNumMotion].bLoop = true;
+			}
+		}
+		else if (strcmp(&aText[0], "NUM_KEY") == 0)
+		{//キー数
+			//「＝」を読み込む
+			fscanf(pFile, "%s", &aText[0]);
+
+			//キー数を読み込む
+			fscanf(pFile, "%d", &m_aMotion[m_nNumMotion].nNumKey);
+		}
+		else if (strcmp(&aText[0], "KEYSET") == 0)
+		{//キーセット
+			//キーセット設定
+			Set_KeySet(pFile, &aText[0]);
+
+			//キーセット数を増やす
+			m_nNumKeySet++;
+		}
+	}
+}
+
+//================================================
+//キーセット設定
+//================================================
+void CPlayer::Set_KeySet(FILE* pFile, char aText[])
+{
+	while (strcmp(&aText[0], "END_KEYSET") != 0)
+	{//キーセットが終わるまで繰り返す
+		//文字を読み込む
+		fscanf(pFile, "%s", &aText[0]);
+
+		if (strncmp(&aText[0], "#-", 2) == 0)
+		{//ブロックコメント
+			continue;
+		}
+		else if (strncmp(&aText[0], "#", 1) == 0)
+		{//コメント
+			//1行全て読み込む
+			fgets(aText, MAX_WORD, pFile);
+			continue;
+		}
+
+		if (strcmp(&aText[0], "FRAME") == 0)
+		{//フレーム数
+			//「＝」を読み込む
+			fscanf(pFile, "%s", &aText[0]);
+
+			//フレーム数を読み込む
+			fscanf(pFile, "%d", &m_aMotion[m_nNumMotion].aKeySet[m_nNumKeySet].nFrame);
+		}
+		else if (strcmp(&aText[0], "KEY") == 0)
+		{//キー
+			//キー設定
+			Set_Key(pFile, &aText[0]);
+
+			//キー数を増やす
+			m_nNumKey++;
+		}
+	}
+}
+
+//================================================
+//キー設定
+//================================================
+void CPlayer::Set_Key(FILE* pFile, char aText[])
+{
+	while (strcmp(&aText[0], "END_KEY") != 0)
+	{//キーが終わるまで繰り返す
+		//文字を読み込む
+		fscanf(pFile, "%s", &aText[0]);
+
+		if (strncmp(&aText[0], "#-", 2) == 0)
+		{//ブロックコメント
+			continue;
+		}
+		else if (strncmp(&aText[0], "#", 1) == 0)
+		{//コメント
+			//1行全て読み込む
+			fgets(aText, MAX_WORD, pFile);
+			continue;
+		}
+
+		if (strcmp(&aText[0], "POS") == 0)
+		{//位置
+			//「＝」を読み込む
+			fscanf(pFile, "%s", &aText[0]);
+
+			//位置を読み込む
+			fscanf(pFile, "%f", &m_aMotion[m_nNumMotion].aKeySet[m_nNumKeySet].aKey[m_nNumKey].pos.x);	//X軸
+			fscanf(pFile, "%f", &m_aMotion[m_nNumMotion].aKeySet[m_nNumKeySet].aKey[m_nNumKey].pos.y);	//Y軸
+			fscanf(pFile, "%f", &m_aMotion[m_nNumMotion].aKeySet[m_nNumKeySet].aKey[m_nNumKey].pos.z);	//Z軸
+		}
+		else if (strcmp(&aText[0], "ROT") == 0)
+		{//向き
+			//「＝」を読み込む
+			fscanf(pFile, "%s", &aText[0]);
+
+			//向きを読み込む
+			fscanf(pFile, "%f", &m_aMotion[m_nNumMotion].aKeySet[m_nNumKeySet].aKey[m_nNumKey].rot.x);	//X軸
+			fscanf(pFile, "%f", &m_aMotion[m_nNumMotion].aKeySet[m_nNumKeySet].aKey[m_nNumKey].rot.y);	//Y軸
+			fscanf(pFile, "%f", &m_aMotion[m_nNumMotion].aKeySet[m_nNumKeySet].aKey[m_nNumKey].rot.z);	//Z軸
+		}
+	}
 }
