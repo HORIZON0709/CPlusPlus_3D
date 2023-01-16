@@ -18,46 +18,44 @@
 //***************************
 class CModel
 {/* 基本クラス */
-public: /* 列挙型の定義 */
-	enum XFILE //Xファイルのパス
-	{
-		NONE = -1,
-
-		/* デバッグ */
-		chair = 0,				//椅子
-		table,					//机
-		Stage_Debug_Obstade,	//ステージデバッグ用の障害物(立方体)
-		Coin01,					//コイン
-		Fish_Body,				//魚の胴体
-		Fish_Tail,				//魚の尾ひれ
-
-		MAX
-	};
-
 public: /* 定数の定義 */
 	static const char* s_apFileName[];	//ファイルパス
 private:
-	static const int MAX_WORD;		//最大文字数
+	static const int MAX_WORD;	//最大文字数
+
+
+	static const char* FILE_NAME;	//ファイル名
+
+private: /* 構造体の定義 */
+	struct PARTS_SET	//パーツ情報
+	{
+		int nIndex;			//インデックス数
+		int nParent;		//親パーツ番号
+		D3DXVECTOR3 pos;	//位置
+		D3DXVECTOR3 rot;	//向き
+	};
+
+	struct CHARACTER_SET	//キャラクター情報
+	{
+		int nNumParts;		//パーツ数
+		PARTS_SET partsSet;	//パーツ情報
+	};
 
 public: /* 静的メンバ関数 */
-	/*
-		生成
-		XFILE xFile ---> 読み込むXファイル
-	*/
-	static CModel* Create(XFILE xFile);
+	static CModel* Create();	//生成
+
+public: /* 静的メンバ変数 */
+	static CHARACTER_SET m_characterSet;	//キャラクター情報
 
 public: /* コンストラクタ・デストラクタ */
 	CModel();
 	~CModel();
 
 public: /* メンバ関数 */
-	HRESULT Init(XFILE xFile);	//初期化
+	HRESULT Init();	//初期化
 	void Uninit();	//終了
 	void Update();	//更新
 	void Draw();	//描画
- 
-	void LoadAll();			//全ての読み込み
-	void Load(XFILE xFile);	//指定の読み込み
 
 	/*
 		親の設定
@@ -92,6 +90,21 @@ public: /* vtx */
 
 private:
 	void DrawShadow();	//影の描画
+	void Load();		//読み込み
+
+	/*
+		キャラクター設定
+		FILE* pFile ---> ファイルポインタ
+		char aText[] ---> テキスト格納用
+	*/
+	void Set_CharacterSet(FILE* pFile, char aText[]);
+
+	/*
+		パーツ設定
+		FILE* pFile ---> ファイルポインタ
+		char aText[] ---> テキスト格納用
+	*/
+	void Set_PartsSet(FILE* pFile, char aText[]);
 
 private: /* メンバ変数 */
 	D3DXVECTOR3 m_pos;		//位置
@@ -104,8 +117,6 @@ private: /* メンバ変数 */
 	LPD3DXBUFFER m_pBuffMat;	//マテリアル情報のポインタ
 
 	DWORD m_numMat;	//マテリアル情報の数
-
-	int m_nIdx;	//インデックス数
 
 	CModel* m_pParent;	//親モデルへのポインタ
 };
