@@ -64,6 +64,7 @@ CPlayer* CPlayer::Create()
 //コンストラクタ
 //================================================
 CPlayer::CPlayer() :CObject::CObject(CObject::PRIORITY::PRIO_MODEL),
+	m_pModel(nullptr),
 	m_pTargetGimmick(nullptr),
 	m_pTargetItem(nullptr),
 	m_pos(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
@@ -86,7 +87,6 @@ CPlayer::CPlayer() :CObject::CObject(CObject::PRIORITY::PRIO_MODEL),
 {
 	//メンバ変数のクリア
 	memset(m_mtxWorld, 0, sizeof(m_mtxWorld));
-	memset(m_apModel, 0, sizeof(m_apModel));
 
 	for (int i = 0; i < NUM_VTX_3D; i++)
 	{
@@ -110,13 +110,7 @@ CPlayer::~CPlayer()
 HRESULT CPlayer::Init()
 {
 	//モデルの生成
-	m_apModel[0] = CModel::Create(CModel::XFILE::Fish_Body);
-	m_apModel[1] = CModel::Create(CModel::XFILE::Fish_Tail);
-
-	//親モデルの設定
-	m_apModel[1]->SetParent(m_apModel[0]);
-
-	m_apModel[1]->SetPos(D3DXVECTOR3(0.0f, 24.0f, 65.0f));
+	m_pModel = CModel::Create();
 
 	//頂点の最大値と最小値を設定
 	SetVtxMaxAndMin();
@@ -255,11 +249,8 @@ void CPlayer::Draw()
 	//ワールドマトリックスの設定
 	pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
 
-	for (int i = 0; i < MAX_PARTS; i++)
-	{
-		//モデルの描画
-		m_apModel[i]->Draw();
-	}
+	//モデルの描画
+	m_pModel->Draw();
 
 	for (int i = 0; i < MAX_LINE; i++)
 	{
@@ -396,7 +387,7 @@ void CPlayer::Motion()
 {
 	for (int i = 0; i < MAX_PARTS; i++)
 	{
-		if (m_apModel[i] == nullptr)
+		if (m_pModel == nullptr)
 		{//NULLチェック
 			continue;
 		}

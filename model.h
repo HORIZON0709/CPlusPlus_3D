@@ -21,8 +21,8 @@ class CModel
 public: /* 定数の定義 */
 	static const char* s_apFileName[];	//ファイルパス
 private:
-	static const int MAX_WORD;	//最大文字数
-
+	static const int MAX_WORD;		//最大文字数
+	static const int NUM_PARTS = 2;	//パーツ数
 
 	static const char* FILE_NAME;	//ファイル名
 
@@ -37,8 +37,8 @@ private: /* 構造体の定義 */
 
 	struct CHARACTER_SET	//キャラクター情報
 	{
-		int nNumParts;		//パーツ数
-		PARTS_SET partsSet;	//パーツ情報
+		int nNumParts;					//パーツ数
+		PARTS_SET aPartsSet[NUM_PARTS];	//パーツ情報
 	};
 
 public: /* 静的メンバ関数 */
@@ -57,32 +57,7 @@ public: /* メンバ関数 */
 	void Update();	//更新
 	void Draw();	//描画
 
-	/*
-		親の設定
-		CModel* pModel ---> モデルのポインタ
-	*/
-	void SetParent(CModel* pModel);
-
 	D3DXMATRIX GetMtxWorld();	//ワールドマトリックスの取得
-public: /* Pos */
-	/*
-		位置を設定
-		const D3DXVECTOR3 &pos ---> 任意の位置
-	*/
-	void SetPos(const D3DXVECTOR3 &pos);
-
-	//位置を取得
-	D3DXVECTOR3 GetPos();
-
-public: /* Rot */
-	/*
-		向きを設定
-		const D3DXVECTOR3 &rot ---> 任意の向き
-	*/
-	void SetRot(const D3DXVECTOR3 &rot);
-
-	//向きを取得
-	D3DXVECTOR3 GetRot();
 
 public: /* vtx */
 	D3DXVECTOR3 GetVtxMax();	//頂点の最大値を取得
@@ -107,8 +82,6 @@ private:
 	void Set_PartsSet(FILE* pFile, char aText[]);
 
 private: /* メンバ変数 */
-	D3DXVECTOR3 m_pos;		//位置
-	D3DXVECTOR3 m_rot;		//現在の向き
 	D3DXVECTOR3 m_vtxMax;	//最大値
 	D3DXVECTOR3 m_vtxMin;	//最小値
 
@@ -118,7 +91,7 @@ private: /* メンバ変数 */
 
 	DWORD m_numMat;	//マテリアル情報の数
 
-	CModel* m_pParent;	//親モデルへのポインタ
+	int m_nNumModel;	//モデル数
 };
 
 #endif

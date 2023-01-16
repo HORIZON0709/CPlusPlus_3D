@@ -50,14 +50,12 @@ CModel* CModel::Create()
 //コンストラクタ
 //================================================
 CModel::CModel():
-	m_pos(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
-	m_rot(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
 	m_vtxMax(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
 	m_vtxMin(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
 	m_pMesh(nullptr),
 	m_pBuffMat(nullptr),
 	m_numMat(0),
-	m_pParent(nullptr)
+	m_nNumModel(0)
 {
 	//メンバ変数のクリア
 	memset(m_mtxWorld, 0, sizeof(m_mtxWorld));
@@ -76,16 +74,14 @@ CModel::~CModel()
 HRESULT CModel::Init()
 {
 	//メンバ変数の初期設定
-	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_vtxMax = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_vtxMin = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_pMesh = nullptr;
 	m_pBuffMat = nullptr;
 	m_numMat = 0;
-	m_pParent = nullptr;
+	m_nNumModel = 0;
 
-	//Xファイルの読み込み
+	//ファイル読み込み
 	Load();
 
 	//頂点数の取得
@@ -180,70 +176,64 @@ void CModel::Update()
 //================================================
 void CModel::Draw()
 {
-	D3DXMATRIX mtxRot, mtxTrans, mtxParent;	//計算用マトリックス
-
-	D3DMATERIAL9 matDef;	//現在のマテリアル保存用
-	D3DXMATERIAL* pMat;		//マテリアルデータへのポインタ
-
-	//デバイスの取得
-	LPDIRECT3DDEVICE9 pDevice = CApplication::GetRenderer()->GetDevice();
-
-	//ワールドマトリックスの初期化
-	D3DXMatrixIdentity(&m_mtxWorld);
-
-	//向きを反映
-	D3DXMatrixRotationYawPitchRoll(&mtxRot, m_rot.y, m_rot.x, m_rot.z);
-	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);
-
-	//位置を反映
-	D3DXMatrixTranslation(&mtxTrans, m_pos.x, m_pos.y, m_pos.z);
-	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);
-
-	//モデルの影を描画
-	//DrawShadow();
-
-	if (m_pParent != nullptr)
-	{//自身に親モデルが存在するとき
-		//親モデルのワールドマトリックスを取得
-		mtxParent = m_pParent->GetMtxWorld();
-	}
-	else
-	{//自身が親モデルの場合
-		//現在のマトリックスを取得
-		pDevice->GetTransform(D3DTS_WORLD, &mtxParent);
-	}
-
-	//ワールドマトリックスと親のマトリックスを掛け合わせる
-	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxParent);
-
-	//ワールドマトリックスの設定
-	pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
-
-	//現在のマテリアルを保持
-	pDevice->GetMaterial(&matDef);
-
-	//マテリアルデータへのポインタを保持
-	pMat = (D3DXMATERIAL*)m_pBuffMat->GetBufferPointer();
-
-	for (int i = 0; i < (int)m_numMat; i++)
+	for (int i = 0; i < NUM_PARTS; i++)
 	{
-		//マテリアルの設定
-		pDevice->SetMaterial(&pMat[i].MatD3D);
+		//キャラクター設定の情報
+		D3DXVECTOR3 pos = m_characterSet.aPartsSet[i].pos;	//位置
+		D3DXVECTOR3 rot = m_characterSet.aPartsSet[i].rot;	//向き
 
-		//モデルパーツの描画
-		m_pMesh->DrawSubset(i);
+		D3DXMATRIX mtxRot, mtxTrans, mtxParent;	//計算用マトリックス
+
+		//ワールドマトリックスの初期化
+		D3DXMatrixIdentity(&m_mtxWorld);
+
+		//向きを反映
+		D3DXMatrixRotationYawPitchRoll(&mtxRot, rot.y, rot.x, rot.z);
+		D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);
+
+		//位置を反映
+		D3DXMatrixTranslation(&mtxTrans, pos.x, pos.y, pos.z);
+		D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);
+
+		//モデルの影を描画
+		//DrawShadow();
+
+		//デバイスの取得
+		LPDIRECT3DDEVICE9 pDevice = CApplication::GetRenderer()->GetDevice();
+
+		if(m_characterSet.aPartsSet[i].nParent == -1)
+		{//自身が親モデルの場合
+			//現在のマトリックスを取得
+			pDevice->GetTransform(D3DTS_WORLD, &mtxParent);
+		}
+
+		//ワールドマトリックスと親のマトリックスを掛け合わせる
+		D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxParent);
+
+		//ワールドマトリックスの設定
+		pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
+
+		D3DMATERIAL9 matDef;	//現在のマテリアル保存用
+		D3DXMATERIAL* pMat;		//マテリアルデータへのポインタ
+
+		//現在のマテリアルを保持
+		pDevice->GetMaterial(&matDef);
+
+		//マテリアルデータへのポインタを保持
+		pMat = (D3DXMATERIAL*)m_pBuffMat->GetBufferPointer();
+
+		for (int i = 0; i < (int)m_numMat; i++)
+		{
+			//マテリアルの設定
+			pDevice->SetMaterial(&pMat[i].MatD3D);
+
+			//モデルパーツの描画
+			m_pMesh->DrawSubset(i);
+		}
+
+		//保持していたマテリアルを戻す
+		pDevice->SetMaterial(&matDef);
 	}
-
-	//保持していたマテリアルを戻す
-	pDevice->SetMaterial(&matDef);
-}
-
-//================================================
-//親の設定
-//================================================
-void CModel::SetParent(CModel* pModel)
-{
-	m_pParent = pModel;
 }
 
 //================================================
@@ -252,38 +242,6 @@ void CModel::SetParent(CModel* pModel)
 D3DXMATRIX CModel::GetMtxWorld()
 {
 	return m_mtxWorld;
-}
-
-//================================================
-//位置を設定
-//================================================
-void CModel::SetPos(const D3DXVECTOR3 &pos)
-{
-	m_pos = pos;
-}
-
-//================================================
-//位置を取得
-//================================================
-D3DXVECTOR3 CModel::GetPos()
-{
-	return m_pos;
-}
-
-//================================================
-//向きを設定
-//================================================
-void CModel::SetRot(const D3DXVECTOR3 &rot)
-{
-	m_rot = rot;
-}
-
-//================================================
-//向きを取得
-//================================================
-D3DXVECTOR3 CModel::GetRot()
-{
-	return m_rot;
 }
 
 //================================================
@@ -388,8 +346,6 @@ void CModel::Load()
 		fgets(aText, MAX_WORD, pFile);	//1行丸ごと読み込む
 	}
 
-	int nNumXFile = 0;	//Xファイルの数
-
 	while (strcmp(&aText[0], "END_SCRIPT") != 0)
 	{//テキストの最終行を読み込むまで繰り返す
 		//文字を読み込む
@@ -406,16 +362,21 @@ void CModel::Load()
 			continue;
 		}
 
-		if (strcmp(&aText[0], "MODEL_FILENAME") == 0)
+		if (strcmp(&aText[0], "NUM_MODEL") == 0)
+		{//モデル数
+			//「＝」を読み込む
+			fscanf(pFile, "%s", &aText[0]);
+
+			//モデル数を読み込む
+			fscanf(pFile, "%d", &m_nNumModel);
+		}
+		else if (strcmp(&aText[0], "MODEL_FILENAME") == 0)
 		{//ファイル名
 			//「＝」を読み込む
 			fscanf(pFile, "%s", &aText[0]);
 
 			//Xファイルのパスを読み込む
-			fscanf(pFile, "%s", &s_apFileName[nNumXFile]);
-
-			//Xファイルの数を増やす
-			nNumXFile++;
+			fscanf(pFile, "%s", &s_apFileName[m_nNumModel]);
 		}
 		else if (strcmp(&aText[0], "CHARACTERSET") == 0)
 		{//キャラクターセット
@@ -427,7 +388,7 @@ void CModel::Load()
 	//デバイスの取得
 	LPDIRECT3DDEVICE9 pDevice = CApplication::GetRenderer()->GetDevice();
 
-	for (int i = 0; i < nNumXFile; i++)
+	for (int i = 0; i < m_nNumModel; i++)
 	{
 		//Xファイルの読み込み
 		D3DXLoadMeshFromX(
@@ -450,7 +411,7 @@ void CModel::Load()
 //================================================
 void CModel::Set_CharacterSet(FILE* pFile, char aText[])
 {
-	while (strcmp(&aText[0], "CHARACTERSET") != 0)
+	while (strcmp(&aText[0], "END_CHARACTERSET") != 0)
 	{//キャラクターセットが終わるまで繰り返す
 		//文字を読み込む
 		fscanf(pFile, "%s", &aText[0]);
@@ -487,7 +448,9 @@ void CModel::Set_CharacterSet(FILE* pFile, char aText[])
 //================================================
 void CModel::Set_PartsSet(FILE* pFile, char aText[])
 {
-	while (strcmp(&aText[0], "PARTSSET") != 0)
+	int nCntParts = 0;	//パーツ数カウント用
+
+	while (strcmp(&aText[0], "END_PARTSSET") != 0)
 	{//キャラクターセットが終わるまで繰り返す
 		//文字を読み込む
 		fscanf(pFile, "%s", &aText[0]);
@@ -509,7 +472,7 @@ void CModel::Set_PartsSet(FILE* pFile, char aText[])
 			fscanf(pFile, "%s", &aText[0]);
 
 			//インデックス数を読み込む
-			fscanf(pFile, "%d", &m_characterSet.partsSet.nIndex);
+			fscanf(pFile, "%d", &m_characterSet.aPartsSet[nCntParts].nIndex);
 		}
 		else if (strcmp(&aText[0], "PARENT") == 0)
 		{//親パーツ番号
@@ -517,7 +480,7 @@ void CModel::Set_PartsSet(FILE* pFile, char aText[])
 			fscanf(pFile, "%s", &aText[0]);
 
 			//親パーツ番号を読み込む
-			fscanf(pFile, "%d", &m_characterSet.partsSet.nParent);
+			fscanf(pFile, "%d", &m_characterSet.aPartsSet[nCntParts].nParent);
 		}
 		else if (strcmp(&aText[0], "POS") == 0)
 		{//位置
@@ -525,9 +488,9 @@ void CModel::Set_PartsSet(FILE* pFile, char aText[])
 			fscanf(pFile, "%s", &aText[0]);
 
 			//位置を読み込む
-			fscanf(pFile, "%d", &m_characterSet.partsSet.pos.x);
-			fscanf(pFile, "%d", &m_characterSet.partsSet.pos.y);
-			fscanf(pFile, "%d", &m_characterSet.partsSet.pos.z);
+			fscanf(pFile, "%d", &m_characterSet.aPartsSet[nCntParts].pos.x);
+			fscanf(pFile, "%d", &m_characterSet.aPartsSet[nCntParts].pos.y);
+			fscanf(pFile, "%d", &m_characterSet.aPartsSet[nCntParts].pos.z);
 		}
 		else if (strcmp(&aText[0], "ROT") == 0)
 		{//向き
@@ -535,9 +498,13 @@ void CModel::Set_PartsSet(FILE* pFile, char aText[])
 			fscanf(pFile, "%s", &aText[0]);
 
 			//向きを読み込む
-			fscanf(pFile, "%d", &m_characterSet.partsSet.rot.x);
-			fscanf(pFile, "%d", &m_characterSet.partsSet.rot.y);
-			fscanf(pFile, "%d", &m_characterSet.partsSet.rot.z);
+			fscanf(pFile, "%d", &m_characterSet.aPartsSet[nCntParts].rot.x);
+			fscanf(pFile, "%d", &m_characterSet.aPartsSet[nCntParts].rot.y);
+			fscanf(pFile, "%d", &m_characterSet.aPartsSet[nCntParts].rot.z);
+		}
+		else if (strcmp(&aText[0], "END_PARTSSET") == 0)
+		{//パーツセット終了
+			nCntParts++;	//パーツ数をカウント
 		}
 	}
 }

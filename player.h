@@ -32,6 +32,8 @@ private: /* 列挙型の定義 */
 	{
 		NONE = -1,
 		NEUTRAL = 0,	//ニュートラル
+		MOVE,			//移動
+		ATTACK,			//攻撃
 		MAX
 	};
 
@@ -102,7 +104,7 @@ private:
 	void Set_Key(FILE* pFile, char aText[]);	//キー設定
 
 private: /* メンバ変数 */
-	CModel* m_apModel[MAX_PARTS];	//モデルのポインタ
+	CModel* m_pModel;				//モデルのポインタ
 	CGimmick* m_pTargetGimmick;		//ギミックのポインタ(当たり判定の対象)
 	CItem* m_pTargetItem;			//アイテムのポインタ(当たり判定の対象)
 
