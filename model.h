@@ -18,9 +18,7 @@
 //***************************
 class CModel
 {/* 基本クラス */
-public: /* 定数の定義 */
-	static const char* s_apFileName[];	//ファイルパス
-private:
+private: /* 定数の定義 */
 	static const int MAX_WORD;		//最大文字数
 	static const int NUM_PARTS = 2;	//パーツ数
 
@@ -41,11 +39,24 @@ private: /* 構造体の定義 */
 		PARTS_SET aPartsSet[NUM_PARTS];	//パーツ情報
 	};
 
+	struct MODEL_INFO	//モデルの各情報
+	{
+		LPD3DXMESH pMesh;		//メッシュ情報のポインタ
+		LPD3DXBUFFER pBuffMat;	//マテリアル情報のポインタ
+		DWORD numMat;			//マテリアル情報の数
+		D3DXVECTOR3 pos;		//位置
+		D3DXVECTOR3 rot;		//向き
+	};
+
 public: /* 静的メンバ関数 */
 	static CModel* Create();	//生成
 
 public: /* 静的メンバ変数 */
 	static CHARACTER_SET m_characterSet;	//キャラクター情報
+
+	static char* m_apFileName[];	//ファイルパス
+
+	static int m_nNumParts;	//パーツ数
 
 public: /* コンストラクタ・デストラクタ */
 	CModel();
@@ -85,11 +96,11 @@ private: /* メンバ変数 */
 	D3DXVECTOR3 m_vtxMax;	//最大値
 	D3DXVECTOR3 m_vtxMin;	//最小値
 
-	D3DXMATRIX m_mtxWorld;		//ワールドマトリックス
-	LPD3DXMESH m_pMesh;			//メッシュ情報のポインタ
-	LPD3DXBUFFER m_pBuffMat;	//マテリアル情報のポインタ
+	D3DXMATRIX m_mtxWorld;					//ワールドマトリックス
+	LPD3DXMESH m_apMesh[NUM_PARTS];			//メッシュ情報のポインタ
+	LPD3DXBUFFER m_apBuffMat[NUM_PARTS];	//マテリアル情報のポインタ
 
-	DWORD m_numMat;	//マテリアル情報の数
+	DWORD m_aNumMat[NUM_PARTS];	//マテリアル情報の数
 
 	int m_nNumModel;	//モデル数
 };

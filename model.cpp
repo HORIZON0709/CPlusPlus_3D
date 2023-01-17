@@ -52,13 +52,13 @@ CModel* CModel::Create()
 CModel::CModel():
 	m_vtxMax(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
 	m_vtxMin(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
-	m_pMesh(nullptr),
-	m_pBuffMat(nullptr),
-	m_numMat(0),
 	m_nNumModel(0)
 {
 	//メンバ変数のクリア
 	memset(m_mtxWorld, 0, sizeof(m_mtxWorld));
+	memset(m_apMesh, 0, sizeof(m_apMesh));
+	memset(m_apBuffMat, 0, sizeof(m_apBuffMat));
+	memset(m_aNumMat, 0, sizeof(m_aNumMat));
 }
 
 //================================================
@@ -76,72 +76,72 @@ HRESULT CModel::Init()
 	//メンバ変数の初期設定
 	m_vtxMax = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_vtxMin = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	m_pMesh = nullptr;
-	m_pBuffMat = nullptr;
-	m_numMat = 0;
 	m_nNumModel = 0;
 
 	//ファイル読み込み
 	Load();
 
-	//頂点数の取得
-	int nNumVtx = m_pMesh->GetNumVertices();
-
-	//頂点フォーマットのサイズを取得
-	DWORD sizeFVF = D3DXGetFVFVertexSize(m_pMesh->GetFVF());
-
-	BYTE *pVtxBuff;	//頂点バッファへのポインタ
-
-	//頂点バッファのロック
-	m_pMesh->LockVertexBuffer(D3DLOCK_READONLY, (void**)&pVtxBuff);
-
-	for (int j = 0; j < nNumVtx; j++)
+	for (int i = 0; i < m_nNumModel; i++)
 	{
-		//頂点座標の代入
-		D3DXVECTOR3 vtx = *(D3DXVECTOR3*)pVtxBuff;
+		//頂点数の取得
+		int nNumVtx = m_apMesh[i]->GetNumVertices();
 
-		/* 頂点座標を比較し、モデルの最大値・最小値を取得 */
+		//頂点フォーマットのサイズを取得
+		DWORD sizeFVF = D3DXGetFVFVertexSize(m_apMesh[i]->GetFVF());
 
-		//***** 最大 *****//
+		BYTE *pVtxBuff;	//頂点バッファへのポインタ
 
-		if (vtx.x > m_vtxMax.x)
-		{//X
-			m_vtxMax.x = vtx.x;
+		//頂点バッファのロック
+		m_apMesh[i]->LockVertexBuffer(D3DLOCK_READONLY, (void**)&pVtxBuff);
+
+		for (int j = 0; j < nNumVtx; j++)
+		{
+			//頂点座標の代入
+			D3DXVECTOR3 vtx = *(D3DXVECTOR3*)pVtxBuff;
+
+			/* 頂点座標を比較し、モデルの最大値・最小値を取得 */
+
+			//***** 最大 *****//
+
+			if (vtx.x > m_vtxMax.x)
+			{//X
+				m_vtxMax.x = vtx.x;
+			}
+
+			if (vtx.y > m_vtxMax.y)
+			{//Y
+				m_vtxMax.y = vtx.y;
+			}
+
+			if (vtx.z > m_vtxMax.z)
+			{//Z
+				m_vtxMax.z = vtx.z;
+			}
+
+			//***** 最小 *****//
+
+			if (vtx.x < m_vtxMin.x)
+			{//X
+				m_vtxMin.x = vtx.x;
+			}
+
+			if (vtx.y < m_vtxMin.y)
+			{//Y
+				m_vtxMin.y = vtx.y;
+			}
+
+			if (vtx.z < m_vtxMin.z)
+			{//Z
+				m_vtxMin.z = vtx.z;
+			}
+
+			//頂点フォーマットのサイズ分ポインタを進める
+			pVtxBuff += sizeFVF;
 		}
 
-		if (vtx.y > m_vtxMax.y)
-		{//Y
-			m_vtxMax.y = vtx.y;
-		}
-
-		if (vtx.z > m_vtxMax.z)
-		{//Z
-			m_vtxMax.z = vtx.z;
-		}
-
-		//***** 最小 *****//
-
-		if (vtx.x < m_vtxMin.x)
-		{//X
-			m_vtxMin.x = vtx.x;
-		}
-
-		if (vtx.y < m_vtxMin.y)
-		{//Y
-			m_vtxMin.y = vtx.y;
-		}
-
-		if (vtx.z < m_vtxMin.z)
-		{//Z
-			m_vtxMin.z = vtx.z;
-		}
-
-		//頂点フォーマットのサイズ分ポインタを進める
-		pVtxBuff += sizeFVF;
+		//頂点バッファのアンロック
+		m_apMesh[i]->UnlockVertexBuffer();
 	}
-
-	//頂点バッファのアンロック
-	m_pMesh->UnlockVertexBuffer();
 
 	return S_OK;
 }
@@ -151,16 +151,19 @@ HRESULT CModel::Init()
 //================================================
 void CModel::Uninit()
 {
-	//メッシュの解放
-	if (m_pMesh != nullptr)
+	for (int i = 0; i < m_nNumModel; i++)
 	{
-		m_pMesh = nullptr;
-	}
+		//メッシュの解放
+		if (m_apMesh[i] != nullptr)
+		{
+			m_apMesh[i] = nullptr;
+		}
 
-	//マテリアルの解放
-	if (m_pBuffMat != nullptr)
-	{
-		m_pBuffMat = nullptr;
+		//マテリアルの解放
+		if (m_apBuffMat[i] != nullptr)
+		{
+			m_apBuffMat[i] = nullptr;
+		}
 	}
 }
 
@@ -176,7 +179,7 @@ void CModel::Update()
 //================================================
 void CModel::Draw()
 {
-	for (int i = 0; i < NUM_PARTS; i++)
+	for (int i = 0; i < m_nNumModel; i++)
 	{
 		//キャラクター設定の情報
 		D3DXVECTOR3 pos = m_characterSet.aPartsSet[i].pos;	//位置
@@ -220,15 +223,15 @@ void CModel::Draw()
 		pDevice->GetMaterial(&matDef);
 
 		//マテリアルデータへのポインタを保持
-		pMat = (D3DXMATERIAL*)m_pBuffMat->GetBufferPointer();
+		pMat = (D3DXMATERIAL*)m_apBuffMat[i]->GetBufferPointer();
 
-		for (int i = 0; i < (int)m_numMat; i++)
+		for (int i = 0; i < (int)m_aNumMat[i]; i++)
 		{
 			//マテリアルの設定
 			pDevice->SetMaterial(&pMat[i].MatD3D);
 
 			//モデルパーツの描画
-			m_pMesh->DrawSubset(i);
+			m_apMesh[i]->DrawSubset(i);
 		}
 
 		//保持していたマテリアルを戻す
@@ -270,12 +273,6 @@ void CModel::DrawShadow()
 	D3DXVECTOR4 vecLight;
 	D3DXVECTOR3 pos, nor;
 
-	D3DMATERIAL9 matDef;	//現在のマテリアル保存用
-	D3DXMATERIAL* pMat;		//マテリアルデータへのポインタ
-
-	//デバイスの取得
-	LPDIRECT3DDEVICE9 pDevice = CApplication::GetRenderer()->GetDevice();
-
 	//シャドウマトリックスの初期化
 	D3DXMatrixIdentity(&mtxShadow);
 
@@ -297,31 +294,40 @@ void CModel::DrawShadow()
 	//ワールドマトリックスとシャドウマトリックスを掛け合わせる
 	D3DXMatrixMultiply(&mtxShadow, &mtxShadow, &m_mtxWorld);
 
-	//ワールドマトリックスの設定
-	pDevice->SetTransform(D3DTS_WORLD, &mtxShadow);
+	//デバイスの取得
+	LPDIRECT3DDEVICE9 pDevice = CApplication::GetRenderer()->GetDevice();
 
-	//現在のマテリアルを保持
-	pDevice->GetMaterial(&matDef);
-
-	//マテリアルデータへのポインタを保持
-	pMat = (D3DXMATERIAL*)m_pBuffMat->GetBufferPointer();
-	D3DMATERIAL9 mat = pMat->MatD3D;
-
-	//色を黒に設定
-	mat.Diffuse = D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f);
-	mat.Ambient = D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f);
-
-	//マテリアルの設定
-	pDevice->SetMaterial(&mat);
-
-	for (int i = 0; i < (int)m_numMat; i++)
+	for (int i = 0; i < m_nNumModel; i++)
 	{
-		//モデルパーツの描画
-		m_pMesh->DrawSubset(i);
-	}
+		//ワールドマトリックスの設定
+		pDevice->SetTransform(D3DTS_WORLD, &mtxShadow);
 
-	//保持していたマテリアルを戻す
-	pDevice->SetMaterial(&matDef);
+		D3DMATERIAL9 matDef;	//現在のマテリアル保存用
+		D3DXMATERIAL* pMat;		//マテリアルデータへのポインタ
+
+		//現在のマテリアルを保持
+		pDevice->GetMaterial(&matDef);
+
+		//マテリアルデータへのポインタを保持
+		pMat = (D3DXMATERIAL*)m_apBuffMat[i]->GetBufferPointer();
+		D3DMATERIAL9 mat = pMat->MatD3D;
+
+		//色を黒に設定
+		mat.Diffuse = D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f);
+		mat.Ambient = D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f);
+
+		//マテリアルの設定
+		pDevice->SetMaterial(&mat);
+
+		for (int i = 0; i < (int)m_aNumMat[i]; i++)
+		{
+			//モデルパーツの描画
+			m_apMesh[i]->DrawSubset(i);
+		}
+
+		//保持していたマテリアルを戻す
+		pDevice->SetMaterial(&matDef);
+	}
 }
 
 //================================================
@@ -376,7 +382,7 @@ void CModel::Load()
 			fscanf(pFile, "%s", &aText[0]);
 
 			//Xファイルのパスを読み込む
-			fscanf(pFile, "%s", &s_apFileName[m_nNumModel]);
+			fscanf(pFile, "%s", m_apFileName[m_nNumModel]);
 		}
 		else if (strcmp(&aText[0], "CHARACTERSET") == 0)
 		{//キャラクターセット
@@ -392,14 +398,14 @@ void CModel::Load()
 	{
 		//Xファイルの読み込み
 		D3DXLoadMeshFromX(
-			s_apFileName[i],
+			m_apFileName[i],
 			D3DXMESH_SYSTEMMEM,
 			pDevice,
 			NULL,
-			&m_pBuffMat,
+			&m_apBuffMat[i],
 			NULL,
-			&m_numMat,
-			&m_pMesh);
+			&m_aNumMat[i],
+			&m_apMesh[i]);
 	}
 
 	//ファイルを閉じる
@@ -488,9 +494,9 @@ void CModel::Set_PartsSet(FILE* pFile, char aText[])
 			fscanf(pFile, "%s", &aText[0]);
 
 			//位置を読み込む
-			fscanf(pFile, "%d", &m_characterSet.aPartsSet[nCntParts].pos.x);
-			fscanf(pFile, "%d", &m_characterSet.aPartsSet[nCntParts].pos.y);
-			fscanf(pFile, "%d", &m_characterSet.aPartsSet[nCntParts].pos.z);
+			fscanf(pFile, "%f", &m_characterSet.aPartsSet[nCntParts].pos.x);
+			fscanf(pFile, "%f", &m_characterSet.aPartsSet[nCntParts].pos.y);
+			fscanf(pFile, "%f", &m_characterSet.aPartsSet[nCntParts].pos.z);
 		}
 		else if (strcmp(&aText[0], "ROT") == 0)
 		{//向き
@@ -498,9 +504,9 @@ void CModel::Set_PartsSet(FILE* pFile, char aText[])
 			fscanf(pFile, "%s", &aText[0]);
 
 			//向きを読み込む
-			fscanf(pFile, "%d", &m_characterSet.aPartsSet[nCntParts].rot.x);
-			fscanf(pFile, "%d", &m_characterSet.aPartsSet[nCntParts].rot.y);
-			fscanf(pFile, "%d", &m_characterSet.aPartsSet[nCntParts].rot.z);
+			fscanf(pFile, "%f", &m_characterSet.aPartsSet[nCntParts].rot.x);
+			fscanf(pFile, "%f", &m_characterSet.aPartsSet[nCntParts].rot.y);
+			fscanf(pFile, "%f", &m_characterSet.aPartsSet[nCntParts].rot.z);
 		}
 		else if (strcmp(&aText[0], "END_PARTSSET") == 0)
 		{//パーツセット終了
