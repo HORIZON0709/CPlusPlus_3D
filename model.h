@@ -39,6 +39,7 @@ private: /* 構造体の定義 */
 		PARTS_SET aPartsSet[NUM_PARTS];	//パーツ情報
 	};
 
+public:
 	struct MODEL_INFO	//モデルの各情報
 	{
 		LPD3DXMESH pMesh;		//メッシュ情報のポインタ
@@ -46,17 +47,26 @@ private: /* 構造体の定義 */
 		DWORD numMat;			//マテリアル情報の数
 		D3DXVECTOR3 pos;		//位置
 		D3DXVECTOR3 rot;		//向き
+		D3DXVECTOR3 vtxMax;		//最大値
+		D3DXVECTOR3 vtxMin;		//最小値
 	};
 
 public: /* 静的メンバ関数 */
 	static CModel* Create();	//生成
 
+	/*
+		モデルの各情報の取得
+		int nNum ---> 番号
+	*/
+	static MODEL_INFO GetModelInfo(int nNum);
+
+
 public: /* 静的メンバ変数 */
 	static CHARACTER_SET m_characterSet;	//キャラクター情報
 
-	static char* m_apFileName[];	//ファイルパス
+	static MODEL_INFO m_aModelInfo[NUM_PARTS];	//モデルの各情報
 
-	static int m_nNumParts;	//パーツ数
+	static char* m_apFileName[];	//ファイルパス
 
 public: /* コンストラクタ・デストラクタ */
 	CModel();
@@ -69,10 +79,6 @@ public: /* メンバ関数 */
 	void Draw();	//描画
 
 	D3DXMATRIX GetMtxWorld();	//ワールドマトリックスの取得
-
-public: /* vtx */
-	D3DXVECTOR3 GetVtxMax();	//頂点の最大値を取得
-	D3DXVECTOR3 GetVtxMin();	//頂点の最小値を取得
 
 private:
 	void DrawShadow();	//影の描画
@@ -93,15 +99,10 @@ private:
 	void Set_PartsSet(FILE* pFile, char aText[]);
 
 private: /* メンバ変数 */
-	D3DXVECTOR3 m_vtxMax;	//最大値
-	D3DXVECTOR3 m_vtxMin;	//最小値
+	
 
-	D3DXMATRIX m_mtxWorld;					//ワールドマトリックス
-	LPD3DXMESH m_apMesh[NUM_PARTS];			//メッシュ情報のポインタ
-	LPD3DXBUFFER m_apBuffMat[NUM_PARTS];	//マテリアル情報のポインタ
-
-	DWORD m_aNumMat[NUM_PARTS];	//マテリアル情報の数
-
+	D3DXMATRIX m_mtxWorld;	//ワールドマトリックス
+	
 	int m_nNumModel;	//モデル数
 };
 

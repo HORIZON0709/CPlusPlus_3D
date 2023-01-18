@@ -19,8 +19,16 @@
 //***************************
 class CObjectX : public CObject
 {/* CObjectの派生クラス */
+private: /* 定数の定義 */
+	static const int MAX_WORD;	//最大文字数
+
+	static const char* FILE_NAME;	//ファイル名
+
 public: /* 静的メンバ関数 */
 	static CObjectX* Create();	//生成
+
+public: /* 静的メンバ変数 */
+	static char* m_apFileName[];	//ファイルパス
 
 public: /* コンストラクタ・デストラクタ */
 	CObjectX();
@@ -62,11 +70,20 @@ public: /* Rot */
 	//向きを取得
 	D3DXVECTOR3 GetRot();
 
+private:
+	void Load();	//読み込み
+
 private: /* メンバ変数 */
-	D3DXVECTOR3 m_pos;	//位置
-	D3DXVECTOR3 m_move;	//移動量
-	D3DXVECTOR3 m_rot;	//向き
+	D3DXVECTOR3 m_pos;		//位置
+	D3DXVECTOR3 m_move;		//移動量
+	D3DXVECTOR3 m_rot;		//向き
+	D3DXVECTOR3 m_vtxMax;	//頂点の最大値
+	D3DXVECTOR3 m_vtxMin;	//頂点の最小値
 	
+	LPD3DXMESH m_pMesh;			//メッシュ情報のポインタ
+	LPD3DXBUFFER m_pBuffMat;	//マテリアル情報のポインタ
+	DWORD m_numMat;				//マテリアル情報の数
+
 	D3DXMATRIX m_mtxWorld;	//ワールドマトリックス
 };
 

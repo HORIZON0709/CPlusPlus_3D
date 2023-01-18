@@ -50,15 +50,10 @@ CModel* CModel::Create()
 //コンストラクタ
 //================================================
 CModel::CModel():
-	m_vtxMax(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
-	m_vtxMin(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
 	m_nNumModel(0)
 {
 	//メンバ変数のクリア
 	memset(m_mtxWorld, 0, sizeof(m_mtxWorld));
-	memset(m_apMesh, 0, sizeof(m_apMesh));
-	memset(m_apBuffMat, 0, sizeof(m_apBuffMat));
-	memset(m_aNumMat, 0, sizeof(m_aNumMat));
 }
 
 //================================================
@@ -74,8 +69,6 @@ CModel::~CModel()
 HRESULT CModel::Init()
 {
 	//メンバ変数の初期設定
-	m_vtxMax = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	m_vtxMin = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_nNumModel = 0;
 
 	//ファイル読み込み
@@ -84,15 +77,15 @@ HRESULT CModel::Init()
 	for (int i = 0; i < m_nNumModel; i++)
 	{
 		//頂点数の取得
-		int nNumVtx = m_apMesh[i]->GetNumVertices();
+		int nNumVtx = m_aModelInfo[i].pMesh->GetNumVertices();
 
 		//頂点フォーマットのサイズを取得
-		DWORD sizeFVF = D3DXGetFVFVertexSize(m_apMesh[i]->GetFVF());
+		DWORD sizeFVF = D3DXGetFVFVertexSize(m_aModelInfo[i].pMesh->GetFVF());
 
 		BYTE *pVtxBuff;	//頂点バッファへのポインタ
 
 		//頂点バッファのロック
-		m_apMesh[i]->LockVertexBuffer(D3DLOCK_READONLY, (void**)&pVtxBuff);
+		m_aModelInfo[i].pMesh->LockVertexBuffer(D3DLOCK_READONLY, (void**)&pVtxBuff);
 
 		for (int j = 0; j < nNumVtx; j++)
 		{
@@ -103,36 +96,36 @@ HRESULT CModel::Init()
 
 			//***** 最大 *****//
 
-			if (vtx.x > m_vtxMax.x)
+			if (vtx.x > m_aModelInfo[i].vtxMax.x)
 			{//X
-				m_vtxMax.x = vtx.x;
+				m_aModelInfo[i].vtxMax.x = vtx.x;
 			}
 
-			if (vtx.y > m_vtxMax.y)
+			if (vtx.y > m_aModelInfo[i].vtxMax.y)
 			{//Y
-				m_vtxMax.y = vtx.y;
+				m_aModelInfo[i].vtxMax.y = vtx.y;
 			}
 
-			if (vtx.z > m_vtxMax.z)
+			if (vtx.z > m_aModelInfo[i].vtxMax.z)
 			{//Z
-				m_vtxMax.z = vtx.z;
+				m_aModelInfo[i].vtxMax.z = vtx.z;
 			}
 
 			//***** 最小 *****//
 
-			if (vtx.x < m_vtxMin.x)
+			if (vtx.x < m_aModelInfo[i].vtxMin.x)
 			{//X
-				m_vtxMin.x = vtx.x;
+				m_aModelInfo[i].vtxMin.x = vtx.x;
 			}
 
-			if (vtx.y < m_vtxMin.y)
+			if (vtx.y < m_aModelInfo[i].vtxMin.y)
 			{//Y
-				m_vtxMin.y = vtx.y;
+				m_aModelInfo[i].vtxMin.y = vtx.y;
 			}
 
-			if (vtx.z < m_vtxMin.z)
+			if (vtx.z < m_aModelInfo[i].vtxMin.z)
 			{//Z
-				m_vtxMin.z = vtx.z;
+				m_aModelInfo[i].vtxMin.z = vtx.z;
 			}
 
 			//頂点フォーマットのサイズ分ポインタを進める
@@ -140,7 +133,7 @@ HRESULT CModel::Init()
 		}
 
 		//頂点バッファのアンロック
-		m_apMesh[i]->UnlockVertexBuffer();
+		m_aModelInfo[i].pMesh->UnlockVertexBuffer();
 	}
 
 	return S_OK;
@@ -154,15 +147,15 @@ void CModel::Uninit()
 	for (int i = 0; i < m_nNumModel; i++)
 	{
 		//メッシュの解放
-		if (m_apMesh[i] != nullptr)
+		if (m_aModelInfo[i].pMesh != nullptr)
 		{
-			m_apMesh[i] = nullptr;
+			m_aModelInfo[i].pMesh = nullptr;
 		}
 
 		//マテリアルの解放
-		if (m_apBuffMat[i] != nullptr)
+		if (m_aModelInfo[i].pBuffMat != nullptr)
 		{
-			m_apBuffMat[i] = nullptr;
+			m_aModelInfo[i].pBuffMat = nullptr;
 		}
 	}
 }
@@ -223,15 +216,15 @@ void CModel::Draw()
 		pDevice->GetMaterial(&matDef);
 
 		//マテリアルデータへのポインタを保持
-		pMat = (D3DXMATERIAL*)m_apBuffMat[i]->GetBufferPointer();
+		pMat = (D3DXMATERIAL*)m_aModelInfo[i].pBuffMat->GetBufferPointer();
 
-		for (int i = 0; i < (int)m_aNumMat[i]; i++)
+		for (int i = 0; i < (int)m_aModelInfo[i].numMat; i++)
 		{
 			//マテリアルの設定
 			pDevice->SetMaterial(&pMat[i].MatD3D);
 
 			//モデルパーツの描画
-			m_apMesh[i]->DrawSubset(i);
+			m_aModelInfo[i].pMesh->DrawSubset(i);
 		}
 
 		//保持していたマテリアルを戻す
@@ -248,19 +241,11 @@ D3DXMATRIX CModel::GetMtxWorld()
 }
 
 //================================================
-//頂点の最大値を取得
+//モデルの各情報の取得
 //================================================
-D3DXVECTOR3 CModel::GetVtxMax()
+CModel::MODEL_INFO CModel::GetModelInfo(int nNum)
 {
-	return m_vtxMax;
-}
-
-//================================================
-//頂点の最小値を取得
-//================================================
-D3DXVECTOR3 CModel::GetVtxMin()
-{
-	return m_vtxMin;
+	return m_aModelInfo[nNum];
 }
 
 //================================================
@@ -309,7 +294,7 @@ void CModel::DrawShadow()
 		pDevice->GetMaterial(&matDef);
 
 		//マテリアルデータへのポインタを保持
-		pMat = (D3DXMATERIAL*)m_apBuffMat[i]->GetBufferPointer();
+		pMat = (D3DXMATERIAL*)m_aModelInfo[i].pBuffMat->GetBufferPointer();
 		D3DMATERIAL9 mat = pMat->MatD3D;
 
 		//色を黒に設定
@@ -319,10 +304,10 @@ void CModel::DrawShadow()
 		//マテリアルの設定
 		pDevice->SetMaterial(&mat);
 
-		for (int i = 0; i < (int)m_aNumMat[i]; i++)
+		for (int i = 0; i < (int)m_aModelInfo[i].numMat; i++)
 		{
 			//モデルパーツの描画
-			m_apMesh[i]->DrawSubset(i);
+			m_aModelInfo[i].pMesh->DrawSubset(i);
 		}
 
 		//保持していたマテリアルを戻す
@@ -402,10 +387,10 @@ void CModel::Load()
 			D3DXMESH_SYSTEMMEM,
 			pDevice,
 			NULL,
-			&m_apBuffMat[i],
+			&m_aModelInfo[i].pBuffMat,
 			NULL,
-			&m_aNumMat[i],
-			&m_apMesh[i]);
+			&m_aModelInfo[i].numMat,
+			&m_aModelInfo[i].pMesh);
 	}
 
 	//ファイルを閉じる
