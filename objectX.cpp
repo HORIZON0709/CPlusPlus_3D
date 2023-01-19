@@ -305,6 +305,9 @@ void CObjectX::Load()
 
 			//Xファイルのパスを読み込む
 			fscanf(pFile, "%s", m_apFileName[nNumModel]);
+
+			//モデル数カウントを増加
+			nNumModel++;
 		}
 		else if (strcmp(&aText[0], "MODELSET") == 0)
 		{//モデルセット
@@ -316,16 +319,19 @@ void CObjectX::Load()
 	//デバイスの取得
 	LPDIRECT3DDEVICE9 pDevice = CApplication::GetRenderer()->GetDevice();
 
-	//Xファイルの読み込み
-	D3DXLoadMeshFromX(
-		m_apFileName[i],
-		D3DXMESH_SYSTEMMEM,
-		pDevice,
-		NULL,
-		&m_pBuffMat,
-		NULL,
-		&m_numMat,
-		&m_pMesh);
+	for (int i = 0; i < nNumModel; i++)
+	{
+		//Xファイルの読み込み
+		D3DXLoadMeshFromX(
+			m_apFileName[i],
+			D3DXMESH_SYSTEMMEM,
+			pDevice,
+			NULL,
+			&m_pBuffMat,
+			NULL,
+			&m_numMat,
+			&m_pMesh);
+	}
 
 	//ファイルを閉じる
 	fclose(pFile);
