@@ -19,16 +19,21 @@
 //***************************
 class CObjectX : public CObject
 {/* CObjectの派生クラス */
-private: /* 定数の定義 */
-	static const int MAX_WORD;	//最大文字数
-
-	static const char* FILE_NAME;	//ファイル名
-
 public: /* 静的メンバ関数 */
-	static CObjectX* Create();	//生成
+	/*
+		生成
+		char* pFileName ---> ファイル名
+	*/
+	static CObjectX* Create(char* pFileName);
+private:
+	/*
+		ファイル名の設定
+		char* pFileName ---> ファイル名
+	*/
+	static void SetFileName(char* pFileName);
 
-public: /* 静的メンバ変数 */
-	static char* m_apFileName[];	//ファイルパス
+private: /* 静的メンバ変数 */
+	static char* m_pFileName;	//ファイル名
 
 public: /* コンストラクタ・デストラクタ */
 	CObjectX();
@@ -69,9 +74,6 @@ public: /* Rot */
 
 	//向きを取得
 	D3DXVECTOR3 GetRot();
-
-private:
-	void Load();	//読み込み
 
 private: /* メンバ変数 */
 	D3DXVECTOR3 m_pos;		//位置
