@@ -15,8 +15,8 @@
 //***************************
 //前方宣言
 //***************************
-class CModel;
 class CLine;
+class CObjectX;
 
 //***************************
 //プレイヤークラスの定義
@@ -89,7 +89,7 @@ public: /* vtx */
 	D3DXVECTOR3 GetVtxMin();	//頂点の最小値を取得
 
 private: /* メンバ変数 */
-	CModel* m_pModel;	//モデルのポインタ
+	CObjectX* m_pModel;	//モデルのポインタ
 
 	D3DXMATRIX m_mtxWorld;	//ワールドマトリックス
 

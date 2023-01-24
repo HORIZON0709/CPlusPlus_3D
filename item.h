@@ -15,8 +15,8 @@
 //***************************
 //前方宣言
 //***************************
-class CModel;
 class CLine;
+class CObjectX;
 
 //***************************
 //アイテムクラスの定義
@@ -52,7 +52,7 @@ public: /* メンバ関数 */
 	D3DXVECTOR3 GetVtxMin();	//頂点の最小値を取得
 
 private: /* メンバ変数 */
-	CModel* m_pModel;	//モデルのポインタ
+	CObjectX* m_pModel;	//モデルのポインタ
 
 	D3DXMATRIX m_mtxWorld;	//ワールドマトリックス
 

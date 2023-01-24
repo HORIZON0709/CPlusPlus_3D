@@ -14,13 +14,14 @@
 #include <stdio.h>
 
 //***************************
-//プレイヤークラスの定義
+//モデルクラスの定義
 //***************************
 class CModel
 {/* 基本クラス */
 private: /* 定数の定義 */
-	static const int MAX_WORD;		//最大文字数
-	static const int NUM_PARTS = 2;	//パーツ数
+	static const int MAX_WORD;			//最大文字数
+	static const int MAX_PARTS = 16;	//最大パーツ数
+	static const int NUM_PARTS = 2;		//パーツ数
 
 	static const char* FILE_NAME;	//ファイル名
 
@@ -38,7 +39,6 @@ private: /* 構造体の定義 */
 		int nNumParts;					//パーツ数
 		PARTS_SET aPartsSet[NUM_PARTS];	//パーツ情報
 	};
-
 public:
 	struct MODEL_INFO	//モデルの各情報
 	{
@@ -99,8 +99,6 @@ private:
 	void Set_PartsSet(FILE* pFile, char aText[]);
 
 private: /* メンバ変数 */
-	
-
 	D3DXMATRIX m_mtxWorld;	//ワールドマトリックス
 	
 	int m_nNumModel;	//モデル数

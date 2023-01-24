@@ -46,7 +46,8 @@ CStage* CStage::Create(char* pFileName)
 //================================================
 CStage::CStage() :
 	m_pFloar(nullptr),
-	m_nNumModel(0)
+	m_nNumModel(0),
+	m_nCnt(0)
 {
 	//メンバ変数のクリア
 	memset(m_apWall, 0, sizeof(m_apWall));
@@ -131,7 +132,7 @@ void CStage::Load()
 			fscanf(pFile, "%s", &aText[0]);
 
 			//モデル数を読み込む
-			fscanf(pFile, "%d", m_nNumModel);
+			fscanf(pFile, "%d", &m_nNumModel);
 		}
 		else if (strcmp(&aText[0], "MODEL_FILENAME") == 0)
 		{//ファイル名
@@ -148,6 +149,9 @@ void CStage::Load()
 		{//モデルセット
 			//モデル設定
 			Set_ModelSet(pFile, &aText[0]);
+
+			//カウントアップ
+			m_nCnt++;
 		}
 	}
 
@@ -182,9 +186,9 @@ void CStage::Set_ModelSet(FILE* pFile, char aText[])
 			fscanf(pFile, "%s", &aText[0]);
 
 			//位置を読み込む
-			fscanf(pFile, "%f", &m_aModelSetInfo[nNumModel].pos.x);
-			fscanf(pFile, "%f", &m_aModelSetInfo[nNumModel].pos.y);
-			fscanf(pFile, "%f", &m_aModelSetInfo[nNumModel].pos.z);
+			fscanf(pFile, "%f", &m_aModelSetInfo[m_nCnt].pos.x);
+			fscanf(pFile, "%f", &m_aModelSetInfo[m_nCnt].pos.y);
+			fscanf(pFile, "%f", &m_aModelSetInfo[m_nCnt].pos.z);
 		}
 		else if (strcmp(&aText[0], "ROT") == 0)
 		{//向き
@@ -192,9 +196,9 @@ void CStage::Set_ModelSet(FILE* pFile, char aText[])
 			fscanf(pFile, "%s", &aText[0]);
 
 			//向きを読み込む
-			fscanf(pFile, "%f", &m_aModelSetInfo[nNumModel].rot.x);
-			fscanf(pFile, "%f", &m_aModelSetInfo[nNumModel].rot.y);
-			fscanf(pFile, "%f", &m_aModelSetInfo[nNumModel].rot.z);
+			fscanf(pFile, "%f", &m_aModelSetInfo[m_nCnt].rot.x);
+			fscanf(pFile, "%f", &m_aModelSetInfo[m_nCnt].rot.y);
+			fscanf(pFile, "%f", &m_aModelSetInfo[m_nCnt].rot.z);
 		}
 	}
 }

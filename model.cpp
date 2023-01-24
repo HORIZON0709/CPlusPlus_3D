@@ -25,6 +25,10 @@ const char* CModel::FILE_NAME = "data/TEXT/motion.txt";	//ファイル名
 //***************************
 CModel::CHARACTER_SET CModel::m_characterSet = {};	//キャラクター情報
 
+CModel::MODEL_INFO CModel::m_aModelInfo[NUM_PARTS] = {};	//モデル情報
+
+char* CModel::m_apFileName[MAX_PARTS] = {};	//ファイル名
+
 //================================================
 //生成
 //================================================
@@ -70,6 +74,11 @@ HRESULT CModel::Init()
 {
 	//メンバ変数の初期設定
 	m_nNumModel = 0;
+
+	for (int i = 0; i < MAX_PARTS; i++)
+	{
+		m_apFileName[i] = nullptr;
+	}
 
 	//ファイル読み込み
 	Load();
@@ -337,6 +346,8 @@ void CModel::Load()
 		fgets(aText, MAX_WORD, pFile);	//1行丸ごと読み込む
 	}
 
+	int nCnt = 0;	//カウント用
+
 	while (strcmp(&aText[0], "END_SCRIPT") != 0)
 	{//テキストの最終行を読み込むまで繰り返す
 		//文字を読み込む
@@ -367,7 +378,10 @@ void CModel::Load()
 			fscanf(pFile, "%s", &aText[0]);
 
 			//Xファイルのパスを読み込む
-			fscanf(pFile, "%s", m_apFileName[m_nNumModel]);
+			fscanf(pFile, "%s", m_apFileName[nCnt]);
+
+			//カウントアップ
+			nCnt++;
 		}
 		else if (strcmp(&aText[0], "CHARACTERSET") == 0)
 		{//キャラクターセット

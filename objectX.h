@@ -75,6 +75,10 @@ public: /* Rot */
 	//向きを取得
 	D3DXVECTOR3 GetRot();
 
+public: /* vtxMax,vtxMin */
+	D3DXVECTOR3 GetVtxMax();	//頂点の最大値の取得
+	D3DXVECTOR3 GetVtxMin();	//頂点の最小値の取得
+
 private: /* メンバ変数 */
 	D3DXVECTOR3 m_pos;		//位置
 	D3DXVECTOR3 m_move;		//移動量

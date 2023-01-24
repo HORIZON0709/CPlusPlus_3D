@@ -12,8 +12,8 @@
 #include "renderer.h"
 #include "input.h"
 #include "game.h"
-#include "model.h"
 #include "line.h"
+#include "objectX.h"
 
 #include "debug_proc.h"
 #include "utility.h"
@@ -90,7 +90,7 @@ CGimmick::~CGimmick()
 HRESULT CGimmick::Init()
 {
 	//モデルの生成
-	m_pModel = CModel::Create(CModel::XFILE::Stage_Debug_Obstade);
+	m_pModel = CObjectX::Create("data/MODEL/Stage_Debug_Obstade.x");
 
 	//頂点の最大値・最小値を取得
 	m_vtxMax = m_pModel->GetVtxMax();

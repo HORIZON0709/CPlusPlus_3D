@@ -74,6 +74,7 @@ private: /* メンバ変数 */
 	CObjectX* m_apModel[MAX_MODEL];	//モデルのポインタ
 
 	int m_nNumModel;	//モデル数
+	int m_nCnt;			//カウント用
 };
 
 #endif

@@ -11,8 +11,8 @@
 #include "application.h"
 #include "renderer.h"
 #include "game.h"
-#include "model.h"
 #include "line.h"
+#include "objectX.h"
 
 #include "debug_proc.h"
 #include "utility.h"
@@ -80,7 +80,7 @@ CItem::~CItem()
 HRESULT CItem::Init()
 {
 	//モデルの生成
-	m_pModel = CModel::Create(CModel::XFILE::Coin01);
+	m_pModel = CObjectX::Create("data/MODEL/Coin01.x");
 
 	//頂点の最大値・最小値を設定
 	m_vtxMax = m_pModel->GetVtxMax();
