@@ -52,8 +52,7 @@ CModel* CModel::Create()
 //コンストラクタ
 //================================================
 CModel::CModel():
-	m_nNumModel(0),
-	m_nCntParts(0)
+	m_nNumModel(0)
 {
 	//メンバ変数のクリア
 	memset(m_mtxWorld, 0, sizeof(m_mtxWorld));
@@ -73,7 +72,6 @@ HRESULT CModel::Init()
 {
 	//メンバ変数の初期設定
 	m_nNumModel = 0;
-	m_nCntParts = 0;
 
 	//ファイル読み込み
 	Load();
@@ -222,13 +220,13 @@ void CModel::Draw()
 		//マテリアルデータへのポインタを保持
 		pMat = (D3DXMATERIAL*)m_aModelInfo[i].pBuffMat->GetBufferPointer();
 
-		for (int i = 0; i < (int)m_aModelInfo[i].numMat; i++)
+		for (int j = 0; j < (int)m_aModelInfo[i].numMat; j++)
 		{
 			//マテリアルの設定
-			pDevice->SetMaterial(&pMat[i].MatD3D);
+			pDevice->SetMaterial(&pMat[j].MatD3D);
 
 			//モデルパーツの描画
-			m_aModelInfo[i].pMesh->DrawSubset(i);
+			m_aModelInfo[i].pMesh->DrawSubset(j);
 		}
 
 		//保持していたマテリアルを戻す
@@ -382,7 +380,7 @@ void CModel::Load()
 		else if (strcmp(&aText[0], "CHARACTERSET") == 0)
 		{//キャラクターセット
 			//キャラクター設定
-			Set_CharacterSet(pFile, &aText[0]);
+			Set_CharacterSet(pFile);
 		}
 	}
 
@@ -410,8 +408,11 @@ void CModel::Load()
 //================================================
 //キャラクター設定
 //================================================
-void CModel::Set_CharacterSet(FILE* pFile, char aText[])
+void CModel::Set_CharacterSet(FILE* pFile)
 {
+	int nCnt = 0;
+	char aText[MAX_WORD];	//テキスト格納用
+
 	while (strcmp(&aText[0], "END_CHARACTERSET") != 0)
 	{//キャラクターセットが終わるまで繰り返す
 		//文字を読み込む
@@ -439,10 +440,10 @@ void CModel::Set_CharacterSet(FILE* pFile, char aText[])
 		else if (strcmp(&aText[0], "PARTSSET") == 0)
 		{//パーツセット
 			//パーツセット設定
-			Set_PartsSet(pFile, &aText[0]);
+			Set_PartsSet(pFile, &m_characterSet.aPartsSet[nCnt]);
 
 			//パーツ数カウントを増加
-			m_nCntParts++;
+			nCnt++;
 		}
 	}
 }
@@ -450,8 +451,10 @@ void CModel::Set_CharacterSet(FILE* pFile, char aText[])
 //================================================
 //パーツ設定
 //================================================
-void CModel::Set_PartsSet(FILE* pFile, char aText[])
+void CModel::Set_PartsSet(FILE* pFile, PARTS_SET* pParts)
 {
+	char aText[MAX_WORD];	//テキスト格納用
+
 	while (strcmp(&aText[0], "END_PARTSSET") != 0)
 	{//キャラクターセットが終わるまで繰り返す
 		//文字を読み込む
@@ -474,7 +477,7 @@ void CModel::Set_PartsSet(FILE* pFile, char aText[])
 			fscanf(pFile, "%s", &aText[0]);
 
 			//インデックス数を読み込む
-			fscanf(pFile, "%d", &m_characterSet.aPartsSet[m_nCntParts].nIndex);
+			fscanf(pFile, "%d", &pParts->nIndex);
 		}
 		else if (strcmp(&aText[0], "PARENT") == 0)
 		{//親パーツ番号
@@ -482,7 +485,7 @@ void CModel::Set_PartsSet(FILE* pFile, char aText[])
 			fscanf(pFile, "%s", &aText[0]);
 
 			//親パーツ番号を読み込む
-			fscanf(pFile, "%d", &m_characterSet.aPartsSet[m_nCntParts].nParent);
+			fscanf(pFile, "%d", &pParts->nParent);
 		}
 		else if (strcmp(&aText[0], "POS") == 0)
 		{//位置
@@ -490,9 +493,9 @@ void CModel::Set_PartsSet(FILE* pFile, char aText[])
 			fscanf(pFile, "%s", &aText[0]);
 
 			//位置を読み込む
-			fscanf(pFile, "%f", &m_characterSet.aPartsSet[m_nCntParts].pos.x);
-			fscanf(pFile, "%f", &m_characterSet.aPartsSet[m_nCntParts].pos.y);
-			fscanf(pFile, "%f", &m_characterSet.aPartsSet[m_nCntParts].pos.z);
+			fscanf(pFile, "%f", &pParts->pos.x);
+			fscanf(pFile, "%f", &pParts->pos.y);
+			fscanf(pFile, "%f", &pParts->pos.z);
 		}
 		else if (strcmp(&aText[0], "ROT") == 0)
 		{//向き
@@ -500,13 +503,9 @@ void CModel::Set_PartsSet(FILE* pFile, char aText[])
 			fscanf(pFile, "%s", &aText[0]);
 
 			//向きを読み込む
-			fscanf(pFile, "%f", &m_characterSet.aPartsSet[m_nCntParts].rot.x);
-			fscanf(pFile, "%f", &m_characterSet.aPartsSet[m_nCntParts].rot.y);
-			fscanf(pFile, "%f", &m_characterSet.aPartsSet[m_nCntParts].rot.z);
-		}
-		else if (strcmp(&aText[0], "END_PARTSSET") == 0)
-		{//パーツセット終了
-			m_nCntParts++;	//パーツ数をカウント
+			fscanf(pFile, "%f", &pParts->rot.x);
+			fscanf(pFile, "%f", &pParts->rot.y);
+			fscanf(pFile, "%f", &pParts->rot.z);
 		}
 	}
 }

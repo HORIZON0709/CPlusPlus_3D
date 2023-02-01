@@ -87,20 +87,19 @@ private:
 		FILE* pFile ---> ファイルポインタ
 		char aText[] ---> テキスト格納用
 	*/
-	void Set_CharacterSet(FILE* pFile, char aText[]);
+	void Set_CharacterSet(FILE* pFile);
 
 	/*
 		パーツ設定
 		FILE* pFile ---> ファイルポインタ
 		char aText[] ---> テキスト格納用
 	*/
-	void Set_PartsSet(FILE* pFile, char aText[]);
+	void Set_PartsSet(FILE* pFile, PARTS_SET* pParts);
 
 private: /* メンバ変数 */
 	D3DXMATRIX m_mtxWorld;	//ワールドマトリックス
 	
 	int m_nNumModel;	//モデル数
-	int m_nCntParts;	//パーツ数カウント
 };
 
 #endif
