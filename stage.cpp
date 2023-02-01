@@ -47,7 +47,7 @@ CStage* CStage::Create(char* pFileName)
 CStage::CStage() :
 	m_pFloar(nullptr),
 	m_nNumModel(0),
-	m_nCnt(0)
+	m_nCntSet(0)
 {
 	//メンバ変数のクリア
 	memset(m_apWall, 0, sizeof(m_apWall));
@@ -101,14 +101,16 @@ void CStage::Load()
 
 	/* ファイルが開けた場合 */
 
-	char aText[MAX_WORD];	//テキスト格納用
+	char aText[MAX_WORD] = {};	//テキスト格納用
 
 	while (strncmp(&aText[0], "SCRIPT", 6) != 0)
 	{//テキストの最初の行を読み込むまで繰り返す
 		fgets(aText, MAX_WORD, pFile);	//1行丸ごと読み込む
 	}
 
-	int nNumModel = 0;	//モデル数
+	char aFileName[MAX_MODEL][MAX_WORD] = {};	//ファイルパス読み込み用
+
+	int nCntFile = 0;	//ファイル数カウント
 
 	while (strcmp(&aText[0], "END_SCRIPT") != 0)
 	{//テキストの最終行を読み込むまで繰り返す
@@ -140,18 +142,18 @@ void CStage::Load()
 			fscanf(pFile, "%s", &aText[0]);
 
 			//Xファイルのパスを読み込む
-			fscanf(pFile, "%s", m_aModelSetInfo[nNumModel].pFileName);
+			fscanf(pFile, "%s", &aFileName[nCntFile][0]);
 
-			//モデル数カウントを増加
-			nNumModel++;
+			//カウントを増加
+			nCntFile++;
 		}
 		else if (strcmp(&aText[0], "MODELSET") == 0)
 		{//モデルセット
 			//モデル設定
-			Set_ModelSet(pFile, &aText[0]);
+			Set_ModelSet(pFile);
 
 			//カウントアップ
-			m_nCnt++;
+			m_nCntSet++;
 		}
 	}
 
@@ -162,8 +164,13 @@ void CStage::Load()
 //================================================
 //モデルセット設定
 //================================================
-void CStage::Set_ModelSet(FILE* pFile, char aText[])
+void CStage::Set_ModelSet(FILE* pFile)
 {
+	char aText[MAX_WORD] = {};	//テキスト格納用
+
+	//ポインタに代入
+	MODELSET_INFO* pInfo = &m_aModelSetInfo[m_nCntSet];
+
 	while (strcmp(&aText[0], "END_MODELSET") != 0)
 	{//モデルセットが終わるまで繰り返す
 		//文字を読み込む
@@ -180,15 +187,23 @@ void CStage::Set_ModelSet(FILE* pFile, char aText[])
 			continue;
 		}
 
-		if (strcmp(&aText[0], "POS") == 0)
+		if (strcmp(&aText[0], "INDEX") == 0)
+		{//インデックス数
+			//「＝」を読み込む
+			fscanf(pFile, "%s", &aText[0]);
+
+			//インデックス数を読み込む
+			fscanf(pFile, "%d", &pInfo->nIndex);
+		}
+		else if (strcmp(&aText[0], "POS") == 0)
 		{//位置
 			//「＝」を読み込む
 			fscanf(pFile, "%s", &aText[0]);
 
 			//位置を読み込む
-			fscanf(pFile, "%f", &m_aModelSetInfo[m_nCnt].pos.x);
-			fscanf(pFile, "%f", &m_aModelSetInfo[m_nCnt].pos.y);
-			fscanf(pFile, "%f", &m_aModelSetInfo[m_nCnt].pos.z);
+			fscanf(pFile, "%f", &pInfo->pos.x);
+			fscanf(pFile, "%f", &pInfo->pos.y);
+			fscanf(pFile, "%f", &pInfo->pos.z);
 		}
 		else if (strcmp(&aText[0], "ROT") == 0)
 		{//向き
@@ -196,9 +211,9 @@ void CStage::Set_ModelSet(FILE* pFile, char aText[])
 			fscanf(pFile, "%s", &aText[0]);
 
 			//向きを読み込む
-			fscanf(pFile, "%f", &m_aModelSetInfo[m_nCnt].rot.x);
-			fscanf(pFile, "%f", &m_aModelSetInfo[m_nCnt].rot.y);
-			fscanf(pFile, "%f", &m_aModelSetInfo[m_nCnt].rot.z);
+			fscanf(pFile, "%f", &pInfo->rot.x);
+			fscanf(pFile, "%f", &pInfo->rot.y);
+			fscanf(pFile, "%f", &pInfo->rot.z);
 		}
 	}
 }

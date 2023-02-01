@@ -251,6 +251,22 @@ CModel::MODEL_INFO CModel::GetModelInfo(int nNum)
 }
 
 //================================================
+//ƒ‚ƒfƒ‹‚ÌˆÊ’uî•ñ‚ğİ’è
+//================================================
+void CModel::SetModelInfo_Pos(int nNum, const D3DXVECTOR3 &pos)
+{
+	m_aModelInfo[nNum].pos = pos;
+}
+
+//================================================
+//ƒ‚ƒfƒ‹‚ÌŒü‚«î•ñ‚ğİ’è
+//================================================
+void CModel::SetModelInfo_Rot(int nNum, const D3DXVECTOR3 &rot)
+{
+	m_aModelInfo[nNum].rot = rot;
+}
+
+//================================================
 //‰e‚Ì•`‰æ
 //================================================
 void CModel::DrawShadow()

@@ -35,7 +35,7 @@ private: /* 定数の定義 */
 private: /* 構造体の定義 */
 	struct MODELSET_INFO	//モデル配置に必要な情報
 	{
-		char* pFileName;	//ファイル名
+		int nIndex;			//インデックス数
 		D3DXVECTOR3 pos;	//位置
 		D3DXVECTOR3 rot;	//向き
 	};
@@ -62,9 +62,8 @@ private:
 	/*
 		モデルセット設定
 		FILE* pFile ---> ファイルポインタ
-		char aText[] ---> テキスト格納用
 	*/
-	void Set_ModelSet(FILE* pFile, char aText[]);
+	void Set_ModelSet(FILE* pFile);
 
 private: /* メンバ変数 */
 	MODELSET_INFO m_aModelSetInfo[MAX_MODEL];	//モデル設置に必要な情報
@@ -74,7 +73,7 @@ private: /* メンバ変数 */
 	CObjectX* m_apModel[MAX_MODEL];	//モデルのポインタ
 
 	int m_nNumModel;	//モデル数
-	int m_nCnt;			//カウント用
+	int m_nCntSet;		//セット済モデル数カウント用
 };
 
 #endif

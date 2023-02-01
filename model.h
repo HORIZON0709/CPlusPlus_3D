@@ -60,6 +60,19 @@ public: /* 静的メンバ関数 */
 	*/
 	static MODEL_INFO GetModelInfo(int nNum);
 
+	/*
+		モデルの位置情報を設定
+		int nNum ---> 番号
+		const D3DXVECTOR3 &pos ---> 位置
+	*/
+	static void SetModelInfo_Pos(int nNum, const D3DXVECTOR3 &pos);
+
+	/*
+		モデルの向き情報を設定
+		int nNum ---> 番号
+		const D3DXVECTOR3 &rot ---> 向き
+	*/
+	static void SetModelInfo_Rot(int nNum, const D3DXVECTOR3 &rot);
 
 public: /* 静的メンバ変数 */
 	static CHARACTER_SET m_characterSet;	//キャラクター情報
@@ -85,14 +98,13 @@ private:
 	/*
 		キャラクター設定
 		FILE* pFile ---> ファイルポインタ
-		char aText[] ---> テキスト格納用
 	*/
 	void Set_CharacterSet(FILE* pFile);
 
 	/*
 		パーツ設定
 		FILE* pFile ---> ファイルポインタ
-		char aText[] ---> テキスト格納用
+		PARTS_SET* pParts ---> パーツ情報のポインタ
 	*/
 	void Set_PartsSet(FILE* pFile, PARTS_SET* pParts);
 

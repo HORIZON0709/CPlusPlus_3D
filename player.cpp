@@ -191,8 +191,6 @@ void CPlayer::Update()
 	//当たり判定
 	Collision();
 
-	//m_apModel[1]->SetPos(D3DXVECTOR3(0.0f, 24.0f, 65.0f));
-
 	if (m_bGetItem)
 	{
 		m_pTargetItem->Release();
@@ -418,22 +416,22 @@ void CPlayer::Motion()
 			rotDif.y * fRelativeValue,
 			rotDif.z * fRelativeValue);
 
-		////位置・向きの現在値を取得
-		//D3DXVECTOR3 posPre = m_apModel[i]->GetPos();
-		//D3DXVECTOR3 rotPre = m_apModel[i]->GetRot();
+		//位置・向きの現在値を取得
+		D3DXVECTOR3 posPre = m_pModel->GetModelInfo(i).pos;
+		D3DXVECTOR3 rotPre = m_pModel->GetModelInfo(i).rot;
 
-		////現在値に代入(開始値 + (差分 * 相対値))
-		//posPre = motion.aKeySet[m_nCurrentKey].aKey[i].pos + pos;
-		//rotPre = motion.aKeySet[m_nCurrentKey].aKey[i].rot + rot;
+		//現在値に代入(開始値 + (差分 * 相対値))
+		posPre = motion.aKeySet[m_nCurrentKey].aKey[i].pos + pos;
+		rotPre = motion.aKeySet[m_nCurrentKey].aKey[i].rot + rot;
 
-		////角度の正規化
-		//NormalizeAngle(&rotPre.x);	
-		//NormalizeAngle(&rotPre.y);
-		//NormalizeAngle(&rotPre.z);
+		//角度の正規化
+		NormalizeAngle(&rotPre.x);	
+		NormalizeAngle(&rotPre.y);
+		NormalizeAngle(&rotPre.z);
 
-		////位置・向きを反映
-		//m_apModel[i]->SetPos(posPre);
-		//m_apModel[i]->SetRot(rotPre);
+		//位置・向きを反映
+		m_pModel->SetModelInfo_Pos(i, posPre);
+		m_pModel->SetModelInfo_Rot(i, rotPre);
 	}
 
 	m_nCntMotion++;	//モーションカウンターを進める
