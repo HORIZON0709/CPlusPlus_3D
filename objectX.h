@@ -70,7 +70,7 @@ public: /* Rot */
 		Œü‚«‚ðÝ’è
 		const D3DXVECTOR3 &rot ---> ”CˆÓ‚ÌŒü‚«
 	*/
-	void Setrot(const D3DXVECTOR3 &rot);
+	void SetRot(const D3DXVECTOR3 &rot);
 
 	//Œü‚«‚ðŽæ“¾
 	D3DXVECTOR3 GetRot();

@@ -61,6 +61,12 @@
     <Filter Include="ヘッダー ファイル\Utility">
       <UniqueIdentifier>{3ed0517a-90bc-4d36-8123-19dfc7ed3618}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\Stage">
+      <UniqueIdentifier>{6ab15b05-05f6-4de4-84c9-2b4378127ad2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Stage">
+      <UniqueIdentifier>{e460d2f0-2d86-46d0-a95c-61018f975d65}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="mode.cpp">
@@ -145,7 +151,7 @@
       <Filter>ソース ファイル\Mode</Filter>
     </ClCompile>
     <ClCompile Include="stage.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>ソース ファイル\Stage</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -231,7 +237,7 @@
       <Filter>ヘッダー ファイル\Mode</Filter>
     </ClInclude>
     <ClInclude Include="stage.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>ヘッダー ファイル\Stage</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

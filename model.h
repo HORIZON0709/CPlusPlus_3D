@@ -19,7 +19,7 @@
 class CModel
 {/* 基本クラス */
 private: /* 定数の定義 */
-	static const int MAX_WORD;			//最大文字数
+	static const int MAX_WORD;	//最大文字数
 	static const int MAX_PARTS = 16;	//最大パーツ数
 	static const int NUM_PARTS = 2;		//パーツ数
 
@@ -66,8 +66,6 @@ public: /* 静的メンバ変数 */
 
 	static MODEL_INFO m_aModelInfo[NUM_PARTS];	//モデルの各情報
 
-	static char* m_apFileName[];	//ファイルパス
-
 public: /* コンストラクタ・デストラクタ */
 	CModel();
 	~CModel();
@@ -102,6 +100,7 @@ private: /* メンバ変数 */
 	D3DXMATRIX m_mtxWorld;	//ワールドマトリックス
 	
 	int m_nNumModel;	//モデル数
+	int m_nCntParts;	//パーツ数カウント
 };
 
 #endif

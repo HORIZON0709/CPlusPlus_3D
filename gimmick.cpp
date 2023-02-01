@@ -107,6 +107,8 @@ HRESULT CGimmick::Init()
 	m_bMove = false;
 	m_bRotation = false;
 
+	m_pModel->SetPos(m_pos);
+
 	for (int i = 0; i < MAX_LINE; i++)
 	{
 		m_apLine[i] = CLine::Create();
@@ -147,6 +149,9 @@ void CGimmick::Update()
 			RotationQuaternion();
 		}
 	}
+
+	m_pModel->SetPos(m_pos);
+	m_pModel->SetRot(m_rot);
 
 	//ˆÚ“®—Ê‚ð0‚É‚·‚é
 	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);

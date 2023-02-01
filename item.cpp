@@ -92,6 +92,8 @@ HRESULT CItem::Init()
 	m_rotDest = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_bPressKey = false;
 
+	m_pModel->SetPos(m_pos);
+
 	for (int i = 0; i < MAX_LINE; i++)
 	{
 		m_apLine[i] = CLine::Create();
@@ -126,6 +128,9 @@ void CItem::Update()
 
 	//Šp“x‚Ì³‹K‰»
 	NormalizeAngle(&m_rot.y);
+
+	m_pModel->SetPos(m_pos);
+	m_pModel->SetRot(m_rot);
 
 #ifdef _DEBUG
 	//Šeî•ñ‚ğ•\¦

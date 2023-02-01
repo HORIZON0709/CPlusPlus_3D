@@ -264,7 +264,7 @@ D3DXVECTOR3 CObjectX::GetMove()
 //================================================
 //å¸Ç´Çê›íË
 //================================================
-void CObjectX::Setrot(const D3DXVECTOR3 &rot)
+void CObjectX::SetRot(const D3DXVECTOR3 &rot)
 {
 	m_rot = rot;
 }
