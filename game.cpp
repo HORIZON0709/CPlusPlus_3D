@@ -14,9 +14,6 @@
 #include "input.h"
 
 #include "object2D.h"
-#include "object3D.h"
-//#include "objectMesh.h"
-#include "objectX.h"
 
 #include "camera.h"
 #include "light.h"
@@ -24,6 +21,7 @@
 #include "player.h"
 #include "item.h"
 #include "gimmick.h"
+#include "stage.h"
 
 #include <assert.h>
 #include <time.h>
@@ -40,12 +38,10 @@ const int CGame::FADE_INTERVAL_GAMECLEAR = 180;	//ƒtƒF[ƒh‚Ü‚Å‚ÌŠÔŠu(ƒQ[ƒ€ƒNƒŠƒ
 //***************************
 CCamera* CGame::m_pCamera = nullptr;		//ƒJƒƒ‰
 CLight* CGame::m_pLight = nullptr;			//ƒ‰ƒCƒg
-CPolygon3D* CGame::m_pPolygon3D = nullptr;	//3Dƒ|ƒŠƒSƒ“
 CPlayer* CGame::m_pPlayer = nullptr;		//ƒvƒŒƒCƒ„[
-CObjectMesh* CGame::m_pMesh = nullptr;		//ƒƒbƒVƒ…
-CObjectX* CGame::m_pObjX = nullptr;			//Xƒ‚ƒfƒ‹
 CItem* CGame::m_pItem = nullptr;			//ƒAƒCƒeƒ€
 CGimmick* CGame::m_pGimmick = nullptr;		//ƒMƒ~ƒbƒN
+CStage* CGame::m_pStage = nullptr;			//ƒXƒe[ƒW
 
 //================================================
 //ƒJƒƒ‰î•ñ‚ğæ“¾
@@ -64,27 +60,11 @@ CLight* CGame::GetLight()
 }
 
 //================================================
-//3Dƒ|ƒŠƒSƒ“î•ñ‚ğæ“¾
-//================================================
-CPolygon3D* CGame::GetPolygon3D()
-{
-	return m_pPolygon3D;
-}
-
-//================================================
 //ƒvƒŒƒCƒ„[î•ñ‚ğæ“¾
 //================================================
 CPlayer* CGame::GetPlayer()
 {
 	return m_pPlayer;
-}
-
-//================================================
-//ƒƒbƒVƒ…î•ñ‚ğæ“¾
-//================================================
-CObjectMesh* CGame::GetMesh()
-{
-	return m_pMesh;
 }
 
 //================================================
@@ -101,6 +81,14 @@ CItem* CGame::GetItem()
 CGimmick* CGame::GetGimmick()
 {
 	return m_pGimmick;
+}
+
+//================================================
+//ƒXƒe[ƒWî•ñ‚ğæ“¾
+//================================================
+CStage* CGame::GetStage()
+{
+	return m_pStage;
 }
 
 //================================================
@@ -151,33 +139,12 @@ HRESULT CGame::Init()
 		m_pLight->Init();		//‰Šú‰»
 	}
 
-	/* 3Dƒ|ƒŠƒSƒ“ */
-
-	if (m_pPolygon3D == nullptr)
-	{//NULLƒ`ƒFƒbƒN
-		m_pPolygon3D = CPolygon3D::Create();	//¶¬
-	}
-
 	/* ƒvƒŒƒCƒ„[ */
 
 	if (m_pPlayer == nullptr)
 	{//NULLƒ`ƒFƒbƒN
 		m_pPlayer = CPlayer::Create();	//¶¬
 	}
-
-	/* ƒƒbƒVƒ… */
-
-	/*if (m_pMesh == nullptr)
-	{
-		m_pMesh = CObjectMesh::Create();
-	}*/
-
-	/* Xƒ‚ƒfƒ‹ */
-
-	//if (m_pObjX== nullptr)
-	//{//NULLƒ`ƒFƒbƒN
-	//	m_pObjX = CObjectX::Create();	//¶¬
-	//}
 
 	/* ƒAƒCƒeƒ€ */
 
@@ -192,6 +159,13 @@ HRESULT CGame::Init()
 	{//NULLƒ`ƒFƒbƒN
 		m_pGimmick = CGimmick::Create();	//¶¬
 		m_pGimmick->SetFlagOfMove(true);
+	}
+
+	/* ƒXƒe[ƒW */
+
+	if (m_pStage == nullptr)
+	{//NULLƒ`ƒFƒbƒN
+		m_pStage = CStage::Create("data/TEXT/model.txt");	//¶¬
 	}
 
 	//–¾“]
@@ -209,8 +183,6 @@ void CGame::Uninit()
 
 	CObject2D::ReleaseAll();	//‘S‚Ä‚Ì‰ğ•ú(2D)
 	CObject3D::ReleaseAll();	//‘S‚Ä‚Ì‰ğ•ú(3D)
-	CObjectX::ReleaseAll();		//‘S‚Ä‚Ì‰ğ•ú(X)
-	//CObjectMesh::ReleaseAll();		//‘S‚Ä‚Ì‰ğ•ú(Mesh)
 
 	/* ƒJƒƒ‰ */
 
@@ -230,21 +202,9 @@ void CGame::Uninit()
 		m_pLight = nullptr;	//nullptr‚É‚·‚é
 	}
 
-	/* 3Dƒ|ƒŠƒSƒ“ */
-
-	m_pPolygon3D = nullptr;	//nullptr‚É‚·‚é
-
 	/* ƒvƒŒƒCƒ„[ */
 
 	m_pPlayer = nullptr;	//nullptr‚É‚·‚é
-
-	/* ƒƒbƒVƒ… */
-
-	m_pMesh = nullptr;	//nullptr‚É‚·‚é
-
-	/* Xƒ‚ƒfƒ‹ */
-
-	m_pObjX = nullptr;	//nullptr‚É‚·‚é
 
 	/* ƒAƒCƒeƒ€ */
 
@@ -253,6 +213,10 @@ void CGame::Uninit()
 	/* ƒMƒ~ƒbƒN */
 
 	m_pGimmick = nullptr;	//nullptr‚É‚·‚é
+
+	/* ƒXƒe[ƒW */
+
+	m_pStage = nullptr;	//nullptr‚É‚·‚é
 }
 
 //================================================
@@ -270,6 +234,11 @@ void CGame::Update()
 	if (m_pLight != nullptr)
 	{//NULLƒ`ƒFƒbƒN
 		m_pLight->Update();	//ƒ‰ƒCƒg
+	}
+
+	if (m_pStage != nullptr)
+	{//NULLƒ`ƒFƒbƒN
+		m_pStage->Update();	//ƒXƒe[ƒW
 	}
 
 	//ƒƒCƒ„[ƒtƒŒ[ƒ€‚ÌØ‚è‘Ö‚¦

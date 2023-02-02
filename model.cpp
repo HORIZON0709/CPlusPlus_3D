@@ -78,6 +78,10 @@ HRESULT CModel::Init()
 
 	for (int i = 0; i < m_nNumModel; i++)
 	{
+		//モデル情報の位置と向きに、キャラクター設定の位置と向きを代入
+		m_aModelInfo[i].pos = m_characterSet.aPartsSet[i].pos;
+		m_aModelInfo[i].rot = m_characterSet.aPartsSet[i].rot;
+
 		//頂点数の取得
 		int nNumVtx = m_aModelInfo[i].pMesh->GetNumVertices();
 

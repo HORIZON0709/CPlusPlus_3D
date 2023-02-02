@@ -10,6 +10,8 @@
 #include "stage.h"
 #include "application.h"
 #include "renderer.h"
+#include "objectX.h"
+#include "object3D.h"
 
 #include <assert.h>
 
@@ -66,9 +68,54 @@ CStage::~CStage()
 //================================================
 HRESULT CStage::Init()
 {
+	//床の生成
+	m_pFloar = CObject3D::Create();
+
+	D3DXVECTOR3 sizeFloar = D3DXVECTOR3(200.0f, 0.0f, 200.0f);
+	m_pFloar->SetSize(sizeFloar);
+	m_pFloar->SetCol(D3DXCOLOR(0.0f, 1.0f, 0.0f, 1.0f));
+
+	for (int i = 0; i < NUM_WALL; i++)
+	{
+		//壁の生成
+		m_apWall[i] = CObject3D::Create();
+	}
+
+	D3DXVECTOR3 posWall = D3DXVECTOR3(
+		m_pFloar->GetPos().x - (200.0f * 0.5f),
+		m_pFloar->GetPos().y,
+		0.0f);
+
+	m_apWall[0]->SetPos(posWall);
+	m_apWall[0]->SetSize(D3DXVECTOR3(100.0f, 100.0f, 0.0f));
+
+	posWall = D3DXVECTOR3(
+		0.0f,
+		m_pFloar->GetPos().y,
+		m_pFloar->GetPos().z + (200.0f * 0.5f));
+
+	m_apWall[1]->SetPos(posWall);
+	m_apWall[1]->SetSize(D3DXVECTOR3(100.0f, 100.0f, 0.0f));
+
+	posWall = D3DXVECTOR3(
+		m_pFloar->GetPos().x + (200.0f * 0.5f),
+		m_pFloar->GetPos().y,
+		0.0f);
+
+	m_apWall[2]->SetPos(posWall);
+	m_apWall[2]->SetSize(D3DXVECTOR3(100.0f, 100.0f, 0.0f));
+
+	posWall = D3DXVECTOR3(
+		0.0f,
+		m_pFloar->GetPos().y,
+		m_pFloar->GetPos().z - (200.0f * 0.5f));
+
+	m_apWall[3]->SetPos(posWall);
+	m_apWall[3]->SetSize(D3DXVECTOR3(100.0f, 100.0f, 0.0f));
+
 	//読み込み
 	Load();
-	
+
 	return S_OK;
 }
 
@@ -77,6 +124,32 @@ HRESULT CStage::Init()
 //================================================
 void CStage::Uninit()
 {
+	if (m_pFloar != nullptr)
+	{//NULLチェック
+		m_pFloar->Uninit();	//終了処理
+		delete m_pFloar;	//メモリの解放
+		m_pFloar = nullptr;	//nullptrにする
+	}
+
+	for (int i = 0; i < NUM_WALL; i++)
+	{
+		if (m_apWall[i] != nullptr)
+		{//NULLチェック
+			m_apWall[i]->Uninit();	//終了処理
+			delete m_apWall[i];		//メモリの解放
+			m_apWall[i] = nullptr;	//nullptrにする
+		}
+	}
+
+	for (int i = 0; i < m_nNumModel; i++)
+	{
+		if (m_apModel[i] != nullptr)
+		{//NULLチェック
+			m_apModel[i]->Uninit();	//終了処理
+			delete m_apModel[i];	//メモリの解放
+			m_apModel[i] = nullptr;	//nullptrにする
+		}
+	}
 }
 
 //================================================
@@ -159,6 +232,16 @@ void CStage::Load()
 
 	//ファイルを閉じる
 	fclose(pFile);
+
+	for (int i = 0; i < m_nNumModel; i++)
+	{
+		m_apModel[i] = CObjectX::Create(&aFileName[i][0]);
+
+		int nIndex = m_aModelSetInfo[i].nIndex;
+
+		m_apModel[i]->SetPos(m_aModelSetInfo[nIndex].pos);
+		m_apModel[i]->SetRot(m_aModelSetInfo[nIndex].rot);
+	}
 }
 
 //================================================

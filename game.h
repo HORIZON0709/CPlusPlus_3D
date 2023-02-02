@@ -19,12 +19,10 @@
 //***************************
 class CCamera;
 class CLight;
-class CPolygon3D;
 class CPlayer;
-class CObjectMesh;
-class CObjectX;
 class CItem;
 class CGimmick;
+class CStage;
 
 //***************************
 //ゲームクラスの定義
@@ -39,11 +37,10 @@ private: /* 定数の定義 */
 public: /* 静的メンバ関数 */
 	static CCamera* GetCamera();		//カメラの情報を取得
 	static CLight* GetLight();			//ライトの情報を取得
-	static CPolygon3D* GetPolygon3D();	//3Dポリゴンの情報を取得
 	static CPlayer* GetPlayer();		//プレイヤーの情報を取得
-	static CObjectMesh* GetMesh();		//メッシュの情報を取得
 	static CItem* GetItem();			//アイテムの情報を取得
 	static CGimmick* GetGimmick();		//ギミックの情報を取得
+	static CStage* GetStage();			//ステージの情報を取得
 	
 public: /* コンストラクタ・デストラクタ */
 	CGame();
@@ -58,13 +55,11 @@ public: /* オーバーライド関数 */
 private: /* 静的メンバ変数 */
 	static CCamera* m_pCamera;			//カメラ
 	static CLight* m_pLight;			//ライト
-	static CPolygon3D* m_pPolygon3D;	//3Dポリゴン
 	static CPlayer* m_pPlayer;			//プレイヤー
-	static CObjectMesh* m_pMesh;		//メッシュ
-	static CObjectX* m_pObjX;			//Xモデル
 	static CItem* m_pItem;				//アイテム
 	static CGimmick* m_pGimmick;		//ギミック
-	
+	static CStage* m_pStage;			//ステージ
+
 private: /* メンバ変数 */
 	int m_nCntIntervalFade;	//フェードするまでの間隔カウント用
 

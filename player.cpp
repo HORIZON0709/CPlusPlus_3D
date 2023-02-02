@@ -186,7 +186,7 @@ void CPlayer::Update()
 	Move();
 
 	//ƒ‚[ƒVƒ‡ƒ“
-	Motion();
+	//Motion();
 
 	//“–‚½‚è”»’è
 	Collision();
