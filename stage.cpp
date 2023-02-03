@@ -18,6 +18,10 @@
 //***************************
 //定数の定義
 //***************************
+const float CStage::FLOAR_SIZE = 200.0f;				//床のサイズ
+const float CStage::WALL_WIDTH = FLOAR_SIZE;			//壁の幅
+const float CStage::WALL_HEIGHT = FLOAR_SIZE * 0.5f;	//壁の高さ
+
 const int CStage::MAX_WORD = 256;	//最大文字数
 
 const char* CStage::FILE_NAME = "data/TEXT/model.txt";	//ファイル名
@@ -71,9 +75,9 @@ HRESULT CStage::Init()
 	//床の生成
 	m_pFloar = CObject3D::Create();
 
-	D3DXVECTOR3 sizeFloar = D3DXVECTOR3(200.0f, 0.0f, 200.0f);
+	D3DXVECTOR3 sizeFloar = D3DXVECTOR3(FLOAR_SIZE, 0.0f, FLOAR_SIZE);
 	m_pFloar->SetSize(sizeFloar);
-	m_pFloar->SetCol(D3DXCOLOR(0.0f, 1.0f, 0.0f, 1.0f));
+	m_pFloar->SetCol(D3DXCOLOR(0.0f, 1.0f, 0.0f, 0.5f));
 
 	for (int i = 0; i < NUM_WALL; i++)
 	{
@@ -81,15 +85,9 @@ HRESULT CStage::Init()
 		m_apWall[i] = CObject3D::Create();
 	}
 
-	D3DXVECTOR3 posWall = D3DXVECTOR3(
-		m_pFloar->GetPos().x - (200.0f * 0.5f),
-		m_pFloar->GetPos().y,
-		0.0f);
+	SetWall();
 
-	m_apWall[0]->SetPos(posWall);
-	m_apWall[0]->SetSize(D3DXVECTOR3(100.0f, 100.0f, 0.0f));
-
-	posWall = D3DXVECTOR3(
+	/*posWall = D3DXVECTOR3(
 		0.0f,
 		m_pFloar->GetPos().y,
 		m_pFloar->GetPos().z + (200.0f * 0.5f));
@@ -111,7 +109,7 @@ HRESULT CStage::Init()
 		m_pFloar->GetPos().z - (200.0f * 0.5f));
 
 	m_apWall[3]->SetPos(posWall);
-	m_apWall[3]->SetSize(D3DXVECTOR3(100.0f, 100.0f, 0.0f));
+	m_apWall[3]->SetSize(D3DXVECTOR3(100.0f, 100.0f, 0.0f));*/
 
 	//読み込み
 	Load();
@@ -299,4 +297,83 @@ void CStage::Set_ModelSet(FILE* pFile)
 			fscanf(pFile, "%f", &pInfo->rot.z);
 		}
 	}
+}
+
+//================================================
+//壁の設定
+//================================================
+void CStage::SetWall()
+{
+	//説明用変数
+	float fFloarSizeHalf = (FLOAR_SIZE * 0.5f);		//床サイズの半分
+	float fWallHeightHalf = (WALL_HEIGHT * 0.5f);	//壁の高さの半分
+
+	//********** 左 **********//
+
+	DIRECTION dir = DIRECTION::LEFT;
+
+	//サイズ
+	D3DXVECTOR3 size = D3DXVECTOR3(WALL_HEIGHT, 0.0f, WALL_WIDTH);
+	m_apWall[dir]->SetSize(size);
+
+	//位置
+	D3DXVECTOR3 pos = D3DXVECTOR3(
+		m_pFloar->GetPos().x - fFloarSizeHalf,
+		m_pFloar->GetPos().y + fWallHeightHalf,
+		0.0f);
+	m_apWall[dir]->SetPos(pos);
+
+	//向き
+	D3DXVECTOR3 rot = D3DXVECTOR3(0.0f, 0.0f, -D3DX_PI * 0.5f);
+	m_apWall[dir]->SetRot(rot);
+
+	//色
+	D3DXCOLOR col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f);
+	m_apWall[dir]->SetCol(col);
+
+	//********** 奥 **********//
+
+	dir = DIRECTION::BACK;
+
+	//サイズ
+	size = D3DXVECTOR3(WALL_WIDTH, 0.0f, WALL_HEIGHT);
+	m_apWall[dir]->SetSize(size);
+
+	//位置
+	pos = D3DXVECTOR3(
+		0.0f,
+		m_pFloar->GetPos().y + fWallHeightHalf,
+		m_pFloar->GetPos().z + fFloarSizeHalf);
+	m_apWall[dir]->SetPos(pos);
+
+	//向き
+	rot = D3DXVECTOR3(-D3DX_PI * 0.5f, 0.0f, 0.0f);
+	m_apWall[dir]->SetRot(rot);
+
+	//色
+	col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f);
+	m_apWall[dir]->SetCol(col);
+
+	//********** 右 **********//
+
+	dir = DIRECTION::RIGHT;
+
+	//サイズ
+	size = D3DXVECTOR3(WALL_HEIGHT, 0.0f, WALL_WIDTH);
+	m_apWall[dir]->SetSize(size);
+
+	//位置
+	pos = D3DXVECTOR3(
+		m_pFloar->GetPos().x + fFloarSizeHalf,
+		m_pFloar->GetPos().y + fWallHeightHalf,
+		0.0f);
+	m_apWall[dir]->SetPos(pos);
+
+	//向き
+	rot = D3DXVECTOR3(0.0f, 0.0f, D3DX_PI * 0.5f);
+	m_apWall[dir]->SetRot(rot);
+
+	//色
+	col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f);
+	m_apWall[dir]->SetCol(col);
 }

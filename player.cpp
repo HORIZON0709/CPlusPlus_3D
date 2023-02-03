@@ -16,6 +16,7 @@
 #include "gimmick.h"
 #include "line.h"
 #include "item.h"
+#include "fade.h"
 
 #include "debug_proc.h"
 #include "utility.h"
@@ -195,6 +196,8 @@ void CPlayer::Update()
 	{
 		m_pTargetItem->Release();
 		m_pTargetItem = nullptr;
+
+		CApplication::GetMode()->Change(CMode::MODE::RESULT);
 	}
 
 #ifdef _DEBUG

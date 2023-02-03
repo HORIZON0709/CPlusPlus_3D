@@ -24,7 +24,21 @@ class CObjectX;
 //***************************
 class CStage
 {/* 基本クラス */
+private: /* 列挙型の定義 */
+	enum DIRECTION	//方向
+	{
+		LEFT = 0,	//左
+		BACK,		//奥
+		RIGHT,		//右
+		FRONT,		//手前
+		MAX
+	};
+
 private: /* 定数の定義 */
+	static const float FLOAR_SIZE;	//床のサイズ
+	static const float WALL_WIDTH;	//壁の幅
+	static const float WALL_HEIGHT;	//壁の高さ
+
 	static const int NUM_WALL = 4;		//壁の数
 	static const int MAX_MODEL = 16;	//モデルの最大数
 
@@ -64,6 +78,8 @@ private:
 		FILE* pFile ---> ファイルポインタ
 	*/
 	void Set_ModelSet(FILE* pFile);
+
+	void SetWall();
 
 private: /* メンバ変数 */
 	MODELSET_INFO m_aModelSetInfo[MAX_MODEL];	//モデル設置に必要な情報

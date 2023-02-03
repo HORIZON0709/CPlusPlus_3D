@@ -57,6 +57,16 @@ public: /* Pos */
 	//位置を取得
 	D3DXVECTOR3 GetPos();
 
+public: /* Rot */
+	/*
+		向きを設定
+		const D3DXVECTOR3 &rot ---> 任意の向き
+	*/
+	void SetRot(const D3DXVECTOR3 &rot);
+
+	//向きを取得
+	D3DXVECTOR3 GetRot();
+
 public: /* Size */
 	/*
 		サイズを設定
