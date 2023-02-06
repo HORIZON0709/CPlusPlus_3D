@@ -39,7 +39,6 @@ private: /* 定数の定義 */
 	static const float WALL_WIDTH;	//壁の幅
 	static const float WALL_HEIGHT;	//壁の高さ
 
-	static const int NUM_WALL = 4;		//壁の数
 	static const int MAX_MODEL = 16;	//モデルの最大数
 
 	static const int MAX_WORD;	//最大文字数
@@ -84,12 +83,12 @@ private:
 private: /* メンバ変数 */
 	MODELSET_INFO m_aModelSetInfo[MAX_MODEL];	//モデル設置に必要な情報
 
-	CObject3D* m_pFloar;			//3Dポリゴンの床のポインタ
-	CObject3D* m_apWall[NUM_WALL];	//3Dポリゴンの壁(四方)のポインタ
-	CObjectX* m_apModel[MAX_MODEL];	//モデルのポインタ
+	CObject3D* m_pFloar;					//3Dポリゴンの床のポインタ
+	CObject3D* m_apWall[DIRECTION::MAX];	//3Dポリゴンの壁(四方)のポインタ
+	CObjectX* m_apModel[MAX_MODEL];			//モデルのポインタ
 
 	int m_nNumModel;	//モデル数
-	int m_nCntSet;		//セット済モデル数カウント用
+	int m_nCntModelSet;	//セット済モデル数カウント用
 };
 
 #endif
