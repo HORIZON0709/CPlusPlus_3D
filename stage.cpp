@@ -256,6 +256,35 @@ void CStage::Set_ModelSet(FILE* pFile)
 			//インデックス数を読み込む
 			fscanf(pFile, "%d", &pInfo->nIndex);
 		}
+		else if (strcmp(&aText[0], "MODEL_TYPE") == 0)
+		{//モデルタイプ
+			//「＝」を読み込む
+			fscanf(pFile, "%s", &aText[0]);
+
+			int nType = 0;	//タイプ読み込み用
+
+			//モデルタイプを読み込む
+			fscanf(pFile, "%d", &nType);
+
+			switch (nType)
+			{
+			case 0:	//オブジェクト
+				pInfo->type = MODEL_TYPE::TYPE_OBJECT;
+				break;
+
+			case 1:	//ギミック
+				pInfo->type = MODEL_TYPE::TYPE_GIMMICK;
+				break;
+
+			case 2:	//アイテム
+				pInfo->type = MODEL_TYPE::TYPE_ITEM;
+				break;
+
+			default:	//その他
+				assert(false);
+				break;
+			}
+		}
 		else if (strcmp(&aText[0], "POS") == 0)
 		{//位置
 			//「＝」を読み込む

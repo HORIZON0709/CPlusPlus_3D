@@ -34,14 +34,22 @@ private: /* 列挙型の定義 */
 		MAX
 	};
 
+	enum MODEL_TYPE	//モデルタイプ
+	{
+		TYPE_NONE = -1,
+		TYPE_OBJECT = 0,	//オブジェクト
+		TYPE_GIMMICK,		//ギミック
+		TYPE_ITEM,			//アイテム
+		TYPE_MAX
+	};
+
 private: /* 定数の定義 */
 	static const float FLOAR_SIZE;	//床のサイズ
 	static const float WALL_WIDTH;	//壁の幅
 	static const float WALL_HEIGHT;	//壁の高さ
 
 	static const int MAX_MODEL = 16;	//モデルの最大数
-
-	static const int MAX_WORD;	//最大文字数
+	static const int MAX_WORD;			//最大文字数
 
 	static const char* FILE_NAME;	//ファイル名
 
@@ -49,6 +57,7 @@ private: /* 構造体の定義 */
 	struct MODELSET_INFO	//モデル配置に必要な情報
 	{
 		int nIndex;			//インデックス数
+		MODEL_TYPE type;	//モデルタイプ
 		D3DXVECTOR3 pos;	//位置
 		D3DXVECTOR3 rot;	//向き
 	};
@@ -78,7 +87,7 @@ private:
 	*/
 	void Set_ModelSet(FILE* pFile);
 
-	void SetWall();
+	void SetWall();	//壁の設定
 
 private: /* メンバ変数 */
 	MODELSET_INFO m_aModelSetInfo[MAX_MODEL];	//モデル設置に必要な情報

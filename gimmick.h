@@ -33,7 +33,7 @@ private: /* 定数の定義 */
 public: /* 静的メンバ関数 */
 	static CGimmick* Create();	//生成
 
-public: /* 静的メンバ変巣 */
+public: /* 静的メンバ変数 */
 	static CLine* m_apLine[MAX_LINE];	//ラインのポインタ
 
 public: /* コンストラクタ・デストラクタ */
