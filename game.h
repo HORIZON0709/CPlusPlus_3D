@@ -21,7 +21,6 @@ class CCamera;
 class CLight;
 class CPlayer;
 class CItem;
-class CGimmick;
 class CStage;
 
 //***************************
@@ -39,7 +38,6 @@ public: /* 静的メンバ関数 */
 	static CLight* GetLight();			//ライトの情報を取得
 	static CPlayer* GetPlayer();		//プレイヤーの情報を取得
 	static CItem* GetItem();			//アイテムの情報を取得
-	static CGimmick* GetGimmick();		//ギミックの情報を取得
 	static CStage* GetStage();			//ステージの情報を取得
 	
 public: /* コンストラクタ・デストラクタ */
@@ -57,7 +55,6 @@ private: /* 静的メンバ変数 */
 	static CLight* m_pLight;			//ライト
 	static CPlayer* m_pPlayer;			//プレイヤー
 	static CItem* m_pItem;				//アイテム
-	static CGimmick* m_pGimmick;		//ギミック
 	static CStage* m_pStage;			//ステージ
 
 private: /* メンバ変数 */

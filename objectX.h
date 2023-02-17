@@ -25,7 +25,7 @@ public: /* 静的メンバ関数 */
 		char* pFileName ---> ファイル名
 	*/
 	static CObjectX* Create(char* pFileName);
-private:
+
 	/*
 		ファイル名の設定
 		char* pFileName ---> ファイル名

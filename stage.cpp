@@ -12,6 +12,8 @@
 #include "renderer.h"
 #include "objectX.h"
 #include "object3D.h"
+#include "gimmick.h"
+#include "item.h"
 
 #include <assert.h>
 
@@ -48,16 +50,26 @@ CStage* CStage::Create(char* pFileName)
 }
 
 //================================================
+//ギミック情報の取得
+//================================================
+CGimmick* CStage::GetGimmick(int nIdx)
+{
+	return m_apGimmick[nIdx];
+}
+
+//================================================
 //コンストラクタ
 //================================================
 CStage::CStage() :
 	m_pFloar(nullptr),
+	m_pItem(nullptr),
 	m_nNumModel(0),
 	m_nCntModelSet(0)
 {
 	//メンバ変数のクリア
 	memset(m_apWall, 0, sizeof(m_apWall));
 	memset(m_apModel, 0, sizeof(m_apModel));
+	memset(m_apGimmick, 0, sizeof(m_apGimmick));
 }
 
 //================================================
@@ -208,10 +220,39 @@ void CStage::Load()
 	//ファイルを閉じる
 	fclose(pFile);
 
-	for (int i = 0; i < m_nCntModelSet; i++)
+	for (int i = 0, nNumModel = 0, nNumGimmick = 0; i < m_nCntModelSet; i++)
 	{
 		//インデックス数
 		int nIndex = m_aModelSetInfo[i].nIndex;
+
+		switch (m_aModelSetInfo[i].type)
+		{
+		case MODEL_TYPE::TYPE_OBJECT:	//オブジェクト
+			//生成
+			m_apModel[nNumModel] = CObjectX::Create(&aFileName[nIndex][0]);
+
+			//カウントアップ
+			nNumModel++;
+			break;
+
+		case MODEL_TYPE::TYPE_GIMMICK:	//ギミック
+			//生成
+			m_apGimmick[nNumGimmick] = CGimmick::Create(&aFileName[nIndex][0]);
+
+			//カウントアップ
+			nNumGimmick++;
+			break;
+
+		case MODEL_TYPE::TYPE_ITEM:	//アイテム
+			m_pItem = CItem::Create();
+			break;
+
+		case MODEL_TYPE::TYPE_NONE:	//その他
+		case MODEL_TYPE::TYPE_MAX:
+		default:
+			assert(false);
+			break;
+		}
 
 		//読み込んだファイルパスからモデルを生成
 		m_apModel[i] = CObjectX::Create(&aFileName[nIndex][0]);

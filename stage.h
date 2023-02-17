@@ -18,6 +18,8 @@
 //***************************
 class CObject3D;
 class CObjectX;
+class CGimmick;
+class CItem;
 
 //***************************
 //ステージクラスの定義
@@ -49,6 +51,7 @@ private: /* 定数の定義 */
 	static const float WALL_HEIGHT;	//壁の高さ
 
 	static const int MAX_MODEL = 16;	//モデルの最大数
+	static const int MAX_GIMMICK = 8;	//ギミックの最大数
 	static const int MAX_WORD;			//最大文字数
 
 	static const char* FILE_NAME;	//ファイル名
@@ -69,6 +72,8 @@ public: /* 静的メンバ関数 */
 	*/
 	static CStage* Create(char* pFileName);	//生成
 
+	static CGimmick* GetGimmick(int nIdx);	//ギミック情報の取得
+
 public: /* コンストラクタ・デストラクタ */
 	CStage();
 	~CStage();
@@ -78,7 +83,7 @@ public: /* オーバーライド関数 */
 	void Uninit();	//終了
 	void Update();	//更新
 
-private:
+private: /* メンバ関数 */
 	void Load();	//読み込み
 
 	/*
@@ -95,6 +100,8 @@ private: /* メンバ変数 */
 	CObject3D* m_pFloar;					//3Dポリゴンの床のポインタ
 	CObject3D* m_apWall[DIRECTION::MAX];	//3Dポリゴンの壁(四方)のポインタ
 	CObjectX* m_apModel[MAX_MODEL];			//モデルのポインタ
+	CGimmick* m_apGimmick[MAX_GIMMICK];		//ギミックのポインタ
+	CItem* m_pItem;							//アイテムのポインタ
 
 	int m_nNumModel;	//モデル数
 	int m_nCntModelSet;	//セット済モデル数カウント用

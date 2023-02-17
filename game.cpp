@@ -20,7 +20,6 @@
 #include "polygon3D.h"
 #include "player.h"
 #include "item.h"
-#include "gimmick.h"
 #include "stage.h"
 
 #include <assert.h>
@@ -40,7 +39,6 @@ CCamera* CGame::m_pCamera = nullptr;		//カメラ
 CLight* CGame::m_pLight = nullptr;			//ライト
 CPlayer* CGame::m_pPlayer = nullptr;		//プレイヤー
 CItem* CGame::m_pItem = nullptr;			//アイテム
-CGimmick* CGame::m_pGimmick = nullptr;		//ギミック
 CStage* CGame::m_pStage = nullptr;			//ステージ
 
 //================================================
@@ -73,14 +71,6 @@ CPlayer* CGame::GetPlayer()
 CItem* CGame::GetItem()
 {
 	return m_pItem;
-}
-
-//================================================
-//ギミック情報を取得
-//================================================
-CGimmick* CGame::GetGimmick()
-{
-	return m_pGimmick;
 }
 
 //================================================
@@ -153,14 +143,6 @@ HRESULT CGame::Init()
 		m_pItem = CItem::Create();	//生成
 	}
 
-	/* ギミック */
-
-	if (m_pGimmick == nullptr)
-	{//NULLチェック
-		m_pGimmick = CGimmick::Create();	//生成
-		m_pGimmick->SetFlagOfMove(true);
-	}
-
 	/* ステージ */
 
 	if (m_pStage == nullptr)
@@ -209,10 +191,6 @@ void CGame::Uninit()
 	/* アイテム */
 
 	m_pItem = nullptr;	//nullptrにする
-
-	/* ギミック */
-
-	m_pGimmick = nullptr;	//nullptrにする
 
 	/* ステージ */
 

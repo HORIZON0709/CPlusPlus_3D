@@ -17,6 +17,7 @@
 #include "line.h"
 #include "item.h"
 #include "fade.h"
+#include "stage.h"
 
 #include "debug_proc.h"
 #include "utility.h"
@@ -466,7 +467,7 @@ void CPlayer::Collision()
 	D3DXVECTOR3 sizeOwn = (m_vtxMax - m_vtxMin);
 
 	//当たり判定対象のギミック情報を取得
-	m_pTargetGimmick = CGame::GetGimmick();
+	m_pTargetGimmick = CStage::GetGimmick(0);
 
 	//対象
 	D3DXVECTOR3 sizeTarget = (m_pTargetGimmick->GetVtxMax() - m_pTargetGimmick->GetVtxMin());
@@ -485,7 +486,7 @@ void CPlayer::Collision()
 		return;
 	}
 
-	//アイテム所法を取得
+	//アイテム情報を取得
 	m_pTargetItem = CGame::GetItem();
 
 	//サイズを設定
