@@ -34,11 +34,11 @@ private: /* 定数の定義 */
 	static const int FADE_INTERVAL_GAMECLEAR;	//フェードまでの間隔(ゲームクリア時)
 
 public: /* 静的メンバ関数 */
-	static CCamera* GetCamera();		//カメラの情報を取得
-	static CLight* GetLight();			//ライトの情報を取得
-	static CPlayer* GetPlayer();		//プレイヤーの情報を取得
-	static CItem* GetItem();			//アイテムの情報を取得
-	static CStage* GetStage();			//ステージの情報を取得
+	static CCamera* GetCamera();	//カメラの情報を取得
+	static CLight* GetLight();		//ライトの情報を取得
+	static CPlayer* GetPlayer();	//プレイヤーの情報を取得
+	static CItem* GetItem();		//アイテムの情報を取得
+	static CStage* GetStage();		//ステージの情報を取得
 	
 public: /* コンストラクタ・デストラクタ */
 	CGame();
@@ -51,11 +51,14 @@ public: /* オーバーライド関数 */
 	void Draw() override;		//描画
 
 private: /* 静的メンバ変数 */
-	static CCamera* m_pCamera;			//カメラ
-	static CLight* m_pLight;			//ライト
-	static CPlayer* m_pPlayer;			//プレイヤー
-	static CItem* m_pItem;				//アイテム
-	static CStage* m_pStage;			//ステージ
+	static CCamera* m_pCamera;		//カメラ
+	static CLight* m_pLight;		//ライト
+	static CPlayer* m_pPlayer;		//プレイヤー
+	static CItem* m_pItem;			//アイテム
+	static CStage* m_pStage;		//ステージ
+
+private: /* メンバ関数 */
+	void SwitchWireFrame();	//ワイヤーフレームの切り替え
 
 private: /* メンバ変数 */
 	int m_nCntIntervalFade;	//フェードするまでの間隔カウント用

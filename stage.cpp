@@ -20,6 +20,14 @@
 //***************************
 //定数の定義
 //***************************
+const char* CStage::s_apFileName[] =
+{//ステージのパス
+	"data/TEXT/Stage_01.txt",	//ステージ01
+	"data/TEXT/Stage_02.txt",	//ステージ01
+};
+
+static_assert(sizeof(CStage::s_apFileName) / sizeof(CStage::s_apFileName[0]) == CStage::STAGE::MAX, "aho");
+
 const float CStage::FLOAR_SIZE = 400.0f;				//床のサイズ
 const float CStage::WALL_WIDTH = FLOAR_SIZE;			//壁の幅
 const float CStage::WALL_HEIGHT = FLOAR_SIZE * 0.5f;	//壁の高さ
@@ -32,12 +40,10 @@ const int CStage::MAX_WORD = 256;	//最大文字数
 CGimmick* CStage::m_apGimmick[MAX_GIMMICK] = {};	//ギミックのポインタ
 CItem* CStage::m_pItem = nullptr;					//アイテムのポインタ
 
-char* CStage::m_pFileName = nullptr;	//ファイル名
-
 //================================================
 //生成
 //================================================
-CStage* CStage::Create(char* pFileName)
+CStage* CStage::Create(const STAGE &stage)
 {
 	CStage* pStage = nullptr;	//ポインタ
 
@@ -50,9 +56,7 @@ CStage* CStage::Create(char* pFileName)
 
 	pStage = new CStage;	//メモリの動的確保
 
-	m_pFileName = pFileName;	//ファイル名を代入
-
-	pStage->Init();	//初期化
+	pStage->Init(s_apFileName[stage]);	//初期化
 
 	return pStage;	//動的確保したものを返す
 }
@@ -96,7 +100,7 @@ CStage::~CStage()
 //================================================
 //初期化
 //================================================
-HRESULT CStage::Init()
+HRESULT CStage::Init(const char* pStage)
 {
 	//床の生成
 	m_pFloar = CObject3D::Create();
@@ -105,7 +109,7 @@ HRESULT CStage::Init()
 	m_pFloar->SetSize(D3DXVECTOR3(FLOAR_SIZE, 0.0f, FLOAR_SIZE));
 	m_pFloar->SetCol(D3DXCOLOR(0.0f, 1.0f, 0.0f, 0.5f));
 
-	for (int i = 0; i < DIRECTION::MAX; i++)
+	for (int i = 0; i < DIRECTION::DIR_MAX; i++)
 	{
 		//壁の生成
 		m_apWall[i] = CObject3D::Create();
@@ -115,7 +119,7 @@ HRESULT CStage::Init()
 	SetWall();
 
 	//読み込み
-	Load();
+	Load(pStage);
 
 	return S_OK;
 }
@@ -132,7 +136,7 @@ void CStage::Uninit()
 		m_pFloar = nullptr;	//nullptrにする
 	}
 
-	for (int i = 0; i < DIRECTION::MAX; i++)
+	for (int i = 0; i < DIRECTION::DIR_MAX; i++)
 	{
 		if (m_apWall[i] != nullptr)
 		{//NULLチェック
@@ -154,19 +158,49 @@ void CStage::Uninit()
 }
 
 //================================================
-//更新
+//ステージの設定
 //================================================
-void CStage::Update()
+CStage* CStage::Set()
 {
+	if (m_stageNext == STAGE::NONE)
+	{//次のステージが決まっていない
+		return this;
+	}
+
+	//現在のステージを終了
+	Uninit();
+
+	m_stage = m_stageNext;		//ステージを変更
+	m_stageNext = STAGE::NONE;	//何もない状態にする
+
+	return Create(m_stage);	//変更後のステージを生成して返す
+}
+
+//================================================
+//ステージの取得
+//================================================
+CStage::STAGE CStage::Get()
+{
+	return m_stage;
+}
+
+//================================================
+//ステージの変更
+//================================================
+void CStage::Change(const STAGE &stage)
+{
+	assert(stage > STAGE::NONE && stage < STAGE::MAX);
+	
+	m_stageNext = stage;
 }
 
 //================================================
 //読み込み
 //================================================
-void CStage::Load()
+void CStage::Load(const char* pStage)
 {
 	//ファイルを開く
-	FILE* pFile = fopen(m_pFileName, "r");
+	FILE* pFile = fopen(pStage, "r");
 	
 	if (pFile == nullptr)
 	{//ファイルが開けなかった場合
@@ -381,7 +415,7 @@ void CStage::SetWall()
 	//********** 左 **********//
 
 	//生成する方向
-	DIRECTION dir = DIRECTION::LEFT;
+	DIRECTION dir = DIRECTION::DIR_LEFT;
 
 	//サイズ
 	m_apWall[dir]->SetSize(D3DXVECTOR3(WALL_HEIGHT, 0.0f, WALL_WIDTH));
@@ -402,7 +436,7 @@ void CStage::SetWall()
 	//********** 奥 **********//
 
 	//生成する方向
-	dir = DIRECTION::BACK;
+	dir = DIRECTION::DIR_BACK;
 
 	//サイズ
 	m_apWall[dir]->SetSize(D3DXVECTOR3(WALL_WIDTH, 0.0f, WALL_HEIGHT));
@@ -423,7 +457,7 @@ void CStage::SetWall()
 	//********** 右 **********//
 
 	//生成する方向
-	dir = DIRECTION::RIGHT;
+	dir = DIRECTION::DIR_RIGHT;
 
 	//サイズ
 	m_apWall[dir]->SetSize(D3DXVECTOR3(WALL_HEIGHT, 0.0f, WALL_WIDTH));
@@ -444,7 +478,7 @@ void CStage::SetWall()
 	//********** 手前 **********//
 
 	//生成する方向
-	dir = DIRECTION::FRONT;
+	dir = DIRECTION::DIR_FRONT;
 
 	//サイズ
 	m_apWall[dir]->SetSize(D3DXVECTOR3(WALL_WIDTH, 0.0f, WALL_HEIGHT));

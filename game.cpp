@@ -35,11 +35,11 @@ const int CGame::FADE_INTERVAL_GAMECLEAR = 180;	//ÉtÉFÅ[ÉhÇ‹Ç≈ÇÃä‘äu(ÉQÅ[ÉÄÉNÉäÉ
 //***************************
 //ê√ìIÉÅÉìÉoïœêî
 //***************************
-CCamera* CGame::m_pCamera = nullptr;		//ÉJÉÅÉâ
-CLight* CGame::m_pLight = nullptr;			//ÉâÉCÉg
-CPlayer* CGame::m_pPlayer = nullptr;		//ÉvÉåÉCÉÑÅ[
-CItem* CGame::m_pItem = nullptr;			//ÉAÉCÉeÉÄ
-CStage* CGame::m_pStage = nullptr;			//ÉXÉeÅ[ÉW
+CCamera* CGame::m_pCamera = nullptr;	//ÉJÉÅÉâ
+CLight* CGame::m_pLight = nullptr;		//ÉâÉCÉg
+CPlayer* CGame::m_pPlayer = nullptr;	//ÉvÉåÉCÉÑÅ[
+CItem* CGame::m_pItem = nullptr;		//ÉAÉCÉeÉÄ
+CStage* CGame::m_pStage = nullptr;		//ÉXÉeÅ[ÉW
 
 //================================================
 //ÉJÉÅÉâèÓïÒÇéÊìæ
@@ -140,7 +140,7 @@ HRESULT CGame::Init()
 
 	if (m_pStage == nullptr)
 	{//NULLÉ`ÉFÉbÉN
-		m_pStage = CStage::Create("data/TEXT/model.txt");	//ê∂ê¨
+		m_pStage = CStage::Create(CStage::STAGE::Stage01);	//ê∂ê¨
 	}
 
 	//ñæì]
@@ -183,7 +183,12 @@ void CGame::Uninit()
 
 	/* ÉXÉeÅ[ÉW */
 
-	m_pStage = nullptr;	//nullptrÇ…Ç∑ÇÈ
+	if (m_pStage != nullptr)
+	{//NULLÉ`ÉFÉbÉN
+		m_pStage->Uninit();	//èIóπ
+		delete m_pStage;	//ÉÅÉÇÉäÇÃâï˙
+		m_pStage = nullptr;	//nullptrÇ…Ç∑ÇÈ
+	}
 }
 
 //================================================
@@ -205,10 +210,55 @@ void CGame::Update()
 
 	if (m_pStage != nullptr)
 	{//NULLÉ`ÉFÉbÉN
-		m_pStage->Update();	//ÉXÉeÅ[ÉW
+		m_pStage = m_pStage->Set();	//ÉXÉeÅ[ÉW
 	}
 
 	//ÉèÉCÉÑÅ[ÉtÉåÅ[ÉÄÇÃêÿÇËë÷Ç¶
+	SwitchWireFrame();
+
+	if (CApplication::GetInput()->GetKey()->Press(CInput::DECISION))
+	{//EnterÉLÅ[âüâ∫
+		m_nCntIntervalFade++;	//ÉJÉEÉìÉgÉAÉbÉv
+	}
+
+	if (CApplication::GetInputKeyboard()->GetTrigger(DIK_2))
+	{//2ÉLÅ[âüâ∫
+		m_nCntIntervalFade = FADE_INTERVAL_GAMEOVER + 1;
+	}
+
+	if (!m_bFadeOut && (m_nCntIntervalFade > FADE_INTERVAL_GAMEOVER))
+	{//à√ì]ÇµÇƒÇ¢Ç»Ç¢ & ÉJÉEÉìÉgÇ™àÍíËêîÇí¥Ç¶ÇΩ
+		//à√ì]
+		CApplication::GetFade()->Set(CFade::STATE::FADE_OUT);
+
+		//à√ì]ÇµÇΩ
+		m_bFadeOut = true;
+	}
+
+	if (m_bFadeOut && (CApplication::GetFade()->GetState() == CFade::STATE::NONE))
+	{//à√ì]ÇµÇΩ & åªç›ÉtÉFÅ[ÉhÇµÇƒÇ¢Ç»Ç¢
+		Change(MODE::RESULT);	//ÉÇÅ[ÉhÇÃê›íË
+
+		//m_pStage->Change()
+	}
+}
+
+//================================================
+//ï`âÊ
+//================================================
+void CGame::Draw()
+{
+	//ÉJÉÅÉâÇÃê›íË
+	m_pCamera->Set();
+
+	CObject::DrawAll();	//ÉIÉuÉWÉFÉNÉg
+}
+
+//================================================
+//ÉèÉCÉÑÅ[ÉtÉåÅ[ÉÄÇÃêÿÇËë÷Ç¶
+//================================================
+void CGame::SwitchWireFrame()
+{
 	if (CApplication::GetInputKeyboard()->GetTrigger(DIK_F2))
 	{//F2ÉLÅ[
 		//ï\é¶:îÒï\é¶ÇÃêÿÇËë÷Ç¶
@@ -228,34 +278,4 @@ void CGame::Update()
 			pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
 		}
 	}
-
-	if (CApplication::GetInput()->GetKey()->Press(CInput::DECISION))
-	{//EnterÉLÅ[âüâ∫
-		m_nCntIntervalFade++;	//ÉJÉEÉìÉgÉAÉbÉv
-	}
-
-	if (!m_bFadeOut && (m_nCntIntervalFade > FADE_INTERVAL_GAMEOVER))
-	{//à√ì]ÇµÇƒÇ¢Ç»Ç¢ & ÉJÉEÉìÉgÇ™àÍíËêîÇí¥Ç¶ÇΩ
-		//à√ì]
-		CApplication::GetFade()->Set(CFade::STATE::FADE_OUT);
-
-		//à√ì]ÇµÇΩ
-		m_bFadeOut = true;
-	}
-
-	if (m_bFadeOut && (CApplication::GetFade()->GetState() == CFade::STATE::NONE))
-	{//à√ì]ÇµÇΩ & åªç›ÉtÉFÅ[ÉhÇµÇƒÇ¢Ç»Ç¢
-		Change(MODE::RESULT);	//ÉÇÅ[ÉhÇÃê›íË
-	}
-}
-
-//================================================
-//ï`âÊ
-//================================================
-void CGame::Draw()
-{
-	//ÉJÉÅÉâÇÃê›íË
-	m_pCamera->Set();
-
-	CObject::DrawAll();	//ÉIÉuÉWÉFÉNÉg
 }

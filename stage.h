@@ -26,14 +26,23 @@ class CItem;
 //***************************
 class CStage
 {/* 基本クラス */
-private: /* 列挙型の定義 */
+public: /* 列挙型の定義 */
+	enum STAGE	//ステージの種類
+	{
+		NONE = -1,
+		Stage01 = 0,	//ステージ1
+		Stage02,		//ステージ2
+		MAX
+	};
+
+private:
 	enum DIRECTION	//方向
 	{
-		LEFT = 0,	//左
-		BACK,		//奥
-		RIGHT,		//右
-		FRONT,		//手前
-		MAX
+		DIR_LEFT = 0,	//左
+		DIR_BACK,		//奥
+		DIR_RIGHT,		//右
+		DIR_FRONT,		//手前
+		DIR_MAX
 	};
 
 	enum MODEL_TYPE	//モデルタイプ
@@ -45,7 +54,10 @@ private: /* 列挙型の定義 */
 		TYPE_MAX
 	};
 
-private: /* 定数の定義 */
+public: /* 定数の定義 */
+	static const char* s_apFileName[];	//ファイルパス
+
+private:
 	static const float FLOAR_SIZE;	//床のサイズ
 	static const float WALL_WIDTH;	//壁の幅
 	static const float WALL_HEIGHT;	//壁の高さ
@@ -66,9 +78,9 @@ private: /* 構造体の定義 */
 public: /* 静的メンバ関数 */
 	/*
 		生成
-		char* pFileName ---> ファイル名
+		const STAGE &stage ---> ステージ
 	*/
-	static CStage* Create(char* pFileName);	//生成
+	static CStage* Create(const STAGE &stage);	//生成
 
 	static CGimmick* GetGimmick(int nIdx);	//ギミック情報の取得
 	static CItem* GetItem();				//アイテム情報の取得
@@ -77,19 +89,21 @@ public: /* 静的メンバ変数 */
 	static CGimmick* m_apGimmick[MAX_GIMMICK];		//ギミックのポインタ
 	static CItem* m_pItem;							//アイテムのポインタ
 
-	static char* m_pFileName;	//ファイル名
-
 public: /* コンストラクタ・デストラクタ */
 	CStage();
 	~CStage();
 
 public: /* オーバーライド関数 */
-	HRESULT Init();	//初期化
+	HRESULT Init(const char* pStage);	//初期化
 	void Uninit();	//終了
-	void Update();	//更新
 
-private: /* メンバ関数 */
-	void Load();	//読み込み
+public: /* メンバ関数 */
+	CStage* Set();						//ステージの設定
+	STAGE Get();						//ステージの取得
+	void Change(const STAGE &stage);	//ステージの変更
+
+private:
+	void Load(const char* pStage);	//読み込み
 
 	/*
 		モデルセット設定
@@ -102,9 +116,12 @@ private: /* メンバ関数 */
 private: /* メンバ変数 */
 	MODELSET_INFO m_aModelSetInfo[MAX_MODEL];	//モデル設置に必要な情報
 
-	CObject3D* m_pFloar;					//3Dポリゴンの床のポインタ
-	CObject3D* m_apWall[DIRECTION::MAX];	//3Dポリゴンの壁(四方)のポインタ
-	CObjectX* m_apModel[MAX_MODEL];			//モデルのポインタ
+	CObject3D* m_pFloar;						//3Dポリゴンの床のポインタ
+	CObject3D* m_apWall[DIRECTION::DIR_MAX];	//3Dポリゴンの壁(四方)のポインタ
+	CObjectX* m_apModel[MAX_MODEL];				//モデルのポインタ
+
+	STAGE m_stage;		//現在のステージ
+	STAGE m_stageNext;	//次のステージ
 
 	int m_nNumModel;	//モデル数
 	int m_nCntModelSet;	//セット済モデル数カウント用
