@@ -54,8 +54,6 @@ private: /* 定数の定義 */
 	static const int MAX_GIMMICK = 8;	//ギミックの最大数
 	static const int MAX_WORD;			//最大文字数
 
-	static const char* FILE_NAME;	//ファイル名
-
 private: /* 構造体の定義 */
 	struct MODELSET_INFO	//モデル配置に必要な情報
 	{
@@ -73,6 +71,13 @@ public: /* 静的メンバ関数 */
 	static CStage* Create(char* pFileName);	//生成
 
 	static CGimmick* GetGimmick(int nIdx);	//ギミック情報の取得
+	static CItem* GetItem();				//アイテム情報の取得
+
+public: /* 静的メンバ変数 */
+	static CGimmick* m_apGimmick[MAX_GIMMICK];		//ギミックのポインタ
+	static CItem* m_pItem;							//アイテムのポインタ
+
+	static char* m_pFileName;	//ファイル名
 
 public: /* コンストラクタ・デストラクタ */
 	CStage();
@@ -100,8 +105,6 @@ private: /* メンバ変数 */
 	CObject3D* m_pFloar;					//3Dポリゴンの床のポインタ
 	CObject3D* m_apWall[DIRECTION::MAX];	//3Dポリゴンの壁(四方)のポインタ
 	CObjectX* m_apModel[MAX_MODEL];			//モデルのポインタ
-	CGimmick* m_apGimmick[MAX_GIMMICK];		//ギミックのポインタ
-	CItem* m_pItem;							//アイテムのポインタ
 
 	int m_nNumModel;	//モデル数
 	int m_nCntModelSet;	//セット済モデル数カウント用

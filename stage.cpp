@@ -26,27 +26,35 @@ const float CStage::WALL_HEIGHT = FLOAR_SIZE * 0.5f;	//壁の高さ
 
 const int CStage::MAX_WORD = 256;	//最大文字数
 
-const char* CStage::FILE_NAME = "data/TEXT/model.txt";	//ファイル名
+//***************************
+//静的メンバ変数
+//***************************
+CGimmick* CStage::m_apGimmick[MAX_GIMMICK] = {};	//ギミックのポインタ
+CItem* CStage::m_pItem = nullptr;					//アイテムのポインタ
+
+char* CStage::m_pFileName = nullptr;	//ファイル名
 
 //================================================
 //生成
 //================================================
 CStage* CStage::Create(char* pFileName)
 {
-	CStage* pObjectX = nullptr;	//ポインタ
+	CStage* pStage = nullptr;	//ポインタ
 
-	if (pObjectX != nullptr)
+	if (pStage != nullptr)
 	{//NULLチェック
 		assert(false);
 	}
 
 	/* nullptrの場合 */
 
-	pObjectX = new CStage;	//メモリの動的確保
+	pStage = new CStage;	//メモリの動的確保
 
-	pObjectX->Init();	//初期化
+	m_pFileName = pFileName;	//ファイル名を代入
 
-	return pObjectX;	//動的確保したものを返す
+	pStage->Init();	//初期化
+
+	return pStage;	//動的確保したものを返す
 }
 
 //================================================
@@ -58,18 +66,24 @@ CGimmick* CStage::GetGimmick(int nIdx)
 }
 
 //================================================
+//アイテム情報の取得
+//================================================
+CItem* CStage::GetItem()
+{
+	return m_pItem;
+}
+
+//================================================
 //コンストラクタ
 //================================================
 CStage::CStage() :
 	m_pFloar(nullptr),
-	m_pItem(nullptr),
 	m_nNumModel(0),
 	m_nCntModelSet(0)
 {
 	//メンバ変数のクリア
 	memset(m_apWall, 0, sizeof(m_apWall));
 	memset(m_apModel, 0, sizeof(m_apModel));
-	memset(m_apGimmick, 0, sizeof(m_apGimmick));
 }
 
 //================================================
@@ -152,7 +166,7 @@ void CStage::Update()
 void CStage::Load()
 {
 	//ファイルを開く
-	FILE* pFile = fopen(FILE_NAME, "r");
+	FILE* pFile = fopen(m_pFileName, "r");
 	
 	if (pFile == nullptr)
 	{//ファイルが開けなかった場合
@@ -231,6 +245,10 @@ void CStage::Load()
 			//生成
 			m_apModel[nNumModel] = CObjectX::Create(&aFileName[nIndex][0]);
 
+			//位置・向きの設定
+			m_apModel[nNumModel]->SetPos(m_aModelSetInfo[i].pos);
+			m_apModel[nNumModel]->SetRot(m_aModelSetInfo[i].rot);
+
 			//カウントアップ
 			nNumModel++;
 			break;
@@ -239,12 +257,21 @@ void CStage::Load()
 			//生成
 			m_apGimmick[nNumGimmick] = CGimmick::Create(&aFileName[nIndex][0]);
 
+			//位置・向きの設定
+			m_apGimmick[nNumGimmick]->SetPos(m_aModelSetInfo[i].pos);
+			m_apGimmick[nNumGimmick]->SetRot(m_aModelSetInfo[i].rot);
+
 			//カウントアップ
 			nNumGimmick++;
 			break;
 
 		case MODEL_TYPE::TYPE_ITEM:	//アイテム
-			m_pItem = CItem::Create();
+			//生成
+			m_pItem = CItem::Create(&aFileName[nIndex][0]);
+			
+			//位置・向きの設定
+			m_pItem->SetPos(m_aModelSetInfo[i].pos);
+			m_pItem->SetRot(m_aModelSetInfo[i].rot);
 			break;
 
 		case MODEL_TYPE::TYPE_NONE:	//その他
@@ -253,13 +280,6 @@ void CStage::Load()
 			assert(false);
 			break;
 		}
-
-		//読み込んだファイルパスからモデルを生成
-		m_apModel[i] = CObjectX::Create(&aFileName[nIndex][0]);
-
-		//位置・向きの設定
-		m_apModel[i]->SetPos(m_aModelSetInfo[i].pos);
-		m_apModel[i]->SetRot(m_aModelSetInfo[i].rot);
 	}
 }
 

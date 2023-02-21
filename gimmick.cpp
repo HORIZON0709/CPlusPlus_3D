@@ -61,10 +61,7 @@ CGimmick* CGimmick::Create(char* pFileName)
 CGimmick::CGimmick() :CObjectX::CObjectX(),
 	m_vec(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
 	m_rotDest(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
-	m_quaternion(D3DXQUATERNION(0.0f,0.0f,0.0f,1.0f)),
-	m_bPressKey(false),
-	m_bMove(false),
-	m_bRotation(false)
+	m_quaternion(D3DXQUATERNION(0.0f,0.0f,0.0f,1.0f))
 {
 	//メンバ変数のクリア
 	memset(m_mtxWorld, 0, sizeof(m_mtxWorld));
@@ -85,18 +82,13 @@ CGimmick::~CGimmick()
 //================================================
 HRESULT CGimmick::Init()
 {
+	//親クラスの初期化
 	CObjectX::Init();
 
 	//メンバ変数の初期化
 	m_vec = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_rotDest = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_quaternion = D3DXQUATERNION(0.0f, 0.0f, 0.0f, 1.0f);
-	m_bPressKey = false;
-	m_bMove = false;
-	m_bRotation = false;
-
-	//位置の設定
-	CObjectX::SetPos(D3DXVECTOR3(50.0f, 0.0f, 0.0f));
 
 	for (int i = 0; i < MAX_LINE; i++)
 	{
@@ -111,17 +103,18 @@ HRESULT CGimmick::Init()
 //================================================
 void CGimmick::Uninit()
 {
-	CObjectX::Uninit();
-
 	for (int i = 0; i < MAX_LINE; i++)
-	{
+	{//ライン
 		if (m_apLine[i] != nullptr)
 		{
-			m_apLine[i]->Uninit();
-			delete m_apLine[i];
-			m_apLine[i] = nullptr;
+			m_apLine[i]->Uninit();	//終了
+			delete m_apLine[i];		//メモリの解放
+			m_apLine[i] = nullptr;	//nullptrにする
 		}
 	}
+
+	//親クラスの終了
+	CObjectX::Uninit();
 }
 
 //================================================
@@ -129,6 +122,7 @@ void CGimmick::Uninit()
 //================================================
 void CGimmick::Update()
 {
+	//親クラスの更新
 	CObjectX::Update();
 
 	//ラインの設定まとめ
@@ -140,6 +134,7 @@ void CGimmick::Update()
 //================================================
 void CGimmick::Draw()
 {
+	//親クラスの描画
 	CObjectX::Draw();
 
 	for (int i = 0; i < MAX_LINE; i++)
@@ -154,10 +149,11 @@ void CGimmick::Draw()
 //================================================
 void CGimmick::SetLines()
 {
-	D3DXVECTOR3 pos = CObjectX::GetPos();
-	D3DXVECTOR3 rot = CObjectX::GetRot();
-	D3DXVECTOR3 vtxMax = CObjectX::GetVtxMax();
-	D3DXVECTOR3 vtxMin = CObjectX::GetVtxMin();
+	//各情報を取得
+	D3DXVECTOR3 pos = CObjectX::GetPos();		//位置
+	D3DXVECTOR3 rot = CObjectX::GetRot();		//向き
+	D3DXVECTOR3 vtxMax = CObjectX::GetVtxMax();	//頂点の最大値
+	D3DXVECTOR3 vtxMin = CObjectX::GetVtxMin();	//頂点の最小値
 
 	//色(全ての線で同じ色)
 	D3DXCOLOR col = D3DXCOLOR(0.0f, 1.0f, 0.0f, 1.0f);

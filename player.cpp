@@ -191,7 +191,7 @@ void CPlayer::Update()
 	//Motion();
 
 	//“–‚½‚è”»’è
-	Collision();
+	//Collision();
 
 	if (m_bGetItem)
 	{

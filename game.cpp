@@ -136,13 +136,6 @@ HRESULT CGame::Init()
 		m_pPlayer = CPlayer::Create();	//生成
 	}
 
-	/* アイテム */
-
-	if (m_pItem == nullptr)
-	{//NULLチェック
-		m_pItem = CItem::Create();	//生成
-	}
-
 	/* ステージ */
 
 	if (m_pStage == nullptr)
@@ -187,10 +180,6 @@ void CGame::Uninit()
 	/* プレイヤー */
 
 	m_pPlayer = nullptr;	//nullptrにする
-
-	/* アイテム */
-
-	m_pItem = nullptr;	//nullptrにする
 
 	/* ステージ */
 

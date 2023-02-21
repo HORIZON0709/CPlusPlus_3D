@@ -55,10 +55,6 @@ private: /* メンバ変数 */
 	D3DXVECTOR3 m_rotDest;	//目的の向き
 
 	D3DXQUATERNION m_quaternion;	//クォータニオン
-
-	bool m_bPressKey;	//キー押下中かどうか
-	bool m_bMove;		//移動するかどうか
-	bool m_bRotation;	//回転するかどうか
 };
 
 #endif
