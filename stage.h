@@ -80,30 +80,48 @@ public: /* 静的メンバ関数 */
 		生成
 		const STAGE &stage ---> ステージ
 	*/
-	static CStage* Create(const STAGE &stage);	//生成
+	static CStage* Create(const STAGE &stage);
 
-	static CGimmick* GetGimmick(int nIdx);	//ギミック情報の取得
-	static CItem* GetItem();				//アイテム情報の取得
+	/*
+		ギミック情報の取得
+		int nIdx ---> インデックス数
+	*/
+	static CGimmick* GetGimmick(int nIdx);
+
+	static CItem* GetItem();	//アイテム情報の取得
 
 public: /* 静的メンバ変数 */
-	static CGimmick* m_apGimmick[MAX_GIMMICK];		//ギミックのポインタ
-	static CItem* m_pItem;							//アイテムのポインタ
+	static CGimmick* m_apGimmick[MAX_GIMMICK];	//ギミックのポインタ
+	static CItem* m_pItem;						//アイテムのポインタ
 
 public: /* コンストラクタ・デストラクタ */
 	CStage();
 	~CStage();
 
-public: /* オーバーライド関数 */
-	HRESULT Init(const char* pStage);	//初期化
-	void Uninit();	//終了
-
 public: /* メンバ関数 */
-	CStage* Set();						//ステージの設定
-	STAGE Get();						//ステージの取得
-	void Change(const STAGE &stage);	//ステージの変更
+	/*
+		初期化
+		const STAGE &stage ---> ステージの種類
+		const char* pStage ---> ステージのファイルパス
+	*/
+	HRESULT Init(const STAGE &stage, const char* pStage);
+
+	void Uninit();	//終了
+	CStage* Set();	//ステージの設定
+	STAGE Get();	//ステージの取得
+
+	/*
+		ステージの変更
+		const STAGE &stage ---> ステージの種類
+	*/
+	void Change(const STAGE &stage);
 
 private:
-	void Load(const char* pStage);	//読み込み
+	/*
+		読み込み
+		const char* pStage ---> ステージのファイルパス
+	*/
+	void Load(const char* pStage);
 
 	/*
 		モデルセット設定

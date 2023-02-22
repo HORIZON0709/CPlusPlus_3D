@@ -37,9 +37,8 @@ public: /* 静的メンバ関数 */
 	static CCamera* GetCamera();	//カメラの情報を取得
 	static CLight* GetLight();		//ライトの情報を取得
 	static CPlayer* GetPlayer();	//プレイヤーの情報を取得
-	static CItem* GetItem();		//アイテムの情報を取得
 	static CStage* GetStage();		//ステージの情報を取得
-	
+
 public: /* コンストラクタ・デストラクタ */
 	CGame();
 	~CGame() override;
@@ -54,7 +53,6 @@ private: /* 静的メンバ変数 */
 	static CCamera* m_pCamera;		//カメラ
 	static CLight* m_pLight;		//ライト
 	static CPlayer* m_pPlayer;		//プレイヤー
-	static CItem* m_pItem;			//アイテム
 	static CStage* m_pStage;		//ステージ
 
 private: /* メンバ関数 */

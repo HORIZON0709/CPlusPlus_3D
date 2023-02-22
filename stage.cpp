@@ -10,6 +10,7 @@
 #include "stage.h"
 #include "application.h"
 #include "renderer.h"
+#include "game.h"
 #include "objectX.h"
 #include "object3D.h"
 #include "gimmick.h"
@@ -56,7 +57,7 @@ CStage* CStage::Create(const STAGE &stage)
 
 	pStage = new CStage;	//メモリの動的確保
 
-	pStage->Init(s_apFileName[stage]);	//初期化
+	pStage->Init(stage, s_apFileName[stage]);	//初期化
 
 	return pStage;	//動的確保したものを返す
 }
@@ -82,6 +83,8 @@ CItem* CStage::GetItem()
 //================================================
 CStage::CStage() :
 	m_pFloar(nullptr),
+	m_stage(STAGE::NONE),
+	m_stageNext(STAGE::NONE),
 	m_nNumModel(0),
 	m_nCntModelSet(0)
 {
@@ -100,8 +103,14 @@ CStage::~CStage()
 //================================================
 //初期化
 //================================================
-HRESULT CStage::Init(const char* pStage)
+HRESULT CStage::Init(const STAGE &stage, const char* pStage)
 {
+	//メンバ変数の初期化
+	m_stage = stage;
+	m_stageNext = STAGE::NONE;
+	m_nNumModel = 0;
+	m_nCntModelSet = 0;
+
 	//床の生成
 	m_pFloar = CObject3D::Create();
 
@@ -131,8 +140,8 @@ void CStage::Uninit()
 {
 	if (m_pFloar != nullptr)
 	{//NULLチェック
-		m_pFloar->Uninit();	//終了処理
-		delete m_pFloar;	//メモリの解放
+		m_pFloar->Release();	//終了処理
+		//delete m_pFloar;	//メモリの解放
 		m_pFloar = nullptr;	//nullptrにする
 	}
 
@@ -140,8 +149,8 @@ void CStage::Uninit()
 	{
 		if (m_apWall[i] != nullptr)
 		{//NULLチェック
-			m_apWall[i]->Uninit();	//終了処理
-			delete m_apWall[i];		//メモリの解放
+			m_apWall[i]->Release();	//終了処理
+			//delete m_apWall[i];		//メモリの解放
 			m_apWall[i] = nullptr;	//nullptrにする
 		}
 	}
@@ -150,10 +159,27 @@ void CStage::Uninit()
 	{
 		if (m_apModel[i] != nullptr)
 		{//NULLチェック
-			m_apModel[i]->Uninit();	//終了処理
-			delete m_apModel[i];	//メモリの解放
+			m_apModel[i]->Release();	//終了処理
+			//delete m_apModel[i];	//メモリの解放
 			m_apModel[i] = nullptr;	//nullptrにする
 		}
+	}
+
+	for (int i = 0; i < MAX_GIMMICK; i++)
+	{
+		if (m_apGimmick[i] != nullptr)
+		{//NULLチェック
+			m_apGimmick[i]->Release();	//終了処理
+			//delete m_apGimmick[i];		//メモリの解放
+			m_apGimmick[i] = nullptr;	//nullptrにする
+		}
+	}
+
+	if (m_pItem != nullptr)
+	{//NULLチェック
+		m_pItem->Release();	//終了処理
+		//delete m_pItem;		//メモリの解放
+		m_pItem = nullptr;	//nullptrにする
 	}
 }
 

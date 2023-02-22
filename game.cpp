@@ -38,7 +38,6 @@ const int CGame::FADE_INTERVAL_GAMECLEAR = 180;	//ƒtƒF[ƒh‚Ü‚Å‚ÌŠÔŠu(ƒQ[ƒ€ƒNƒŠƒ
 CCamera* CGame::m_pCamera = nullptr;	//ƒJƒƒ‰
 CLight* CGame::m_pLight = nullptr;		//ƒ‰ƒCƒg
 CPlayer* CGame::m_pPlayer = nullptr;	//ƒvƒŒƒCƒ„[
-CItem* CGame::m_pItem = nullptr;		//ƒAƒCƒeƒ€
 CStage* CGame::m_pStage = nullptr;		//ƒXƒe[ƒW
 
 //================================================
@@ -63,14 +62,6 @@ CLight* CGame::GetLight()
 CPlayer* CGame::GetPlayer()
 {
 	return m_pPlayer;
-}
-
-//================================================
-//ƒAƒCƒeƒ€î•ñ‚ðŽæ“¾
-//================================================
-CItem* CGame::GetItem()
-{
-	return m_pItem;
 }
 
 //================================================
@@ -158,6 +149,7 @@ void CGame::Uninit()
 
 	CObject2D::ReleaseAll();	//‘S‚Ä‚Ì‰ð•ú(2D)
 	CObject3D::ReleaseAll();	//‘S‚Ä‚Ì‰ð•ú(3D)
+	CObjectX::ReleaseAll();		//‘S‚Ä‚Ì‰ð•ú(Xƒ‚ƒfƒ‹)
 
 	/* ƒJƒƒ‰ */
 
@@ -221,11 +213,6 @@ void CGame::Update()
 		m_nCntIntervalFade++;	//ƒJƒEƒ“ƒgƒAƒbƒv
 	}
 
-	if (CApplication::GetInputKeyboard()->GetTrigger(DIK_2))
-	{//2ƒL[‰Ÿ‰º
-		m_nCntIntervalFade = FADE_INTERVAL_GAMEOVER + 1;
-	}
-
 	if (!m_bFadeOut && (m_nCntIntervalFade > FADE_INTERVAL_GAMEOVER))
 	{//ˆÃ“]‚µ‚Ä‚¢‚È‚¢ & ƒJƒEƒ“ƒg‚ªˆê’è”‚ð’´‚¦‚½
 		//ˆÃ“]
@@ -237,9 +224,9 @@ void CGame::Update()
 
 	if (m_bFadeOut && (CApplication::GetFade()->GetState() == CFade::STATE::NONE))
 	{//ˆÃ“]‚µ‚½ & Œ»ÝƒtƒF[ƒh‚µ‚Ä‚¢‚È‚¢
-		Change(MODE::RESULT);	//ƒ‚[ƒh‚ÌÝ’è
+		//Change(MODE::RESULT);	//ƒ‚[ƒh‚ÌÝ’è
 
-		//m_pStage->Change()
+		m_pStage->Change(CStage::STAGE::Stage02);
 	}
 }
 

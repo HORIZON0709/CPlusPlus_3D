@@ -487,7 +487,7 @@ void CPlayer::Collision()
 	}
 
 	//アイテム情報を取得
-	m_pTargetItem = CGame::GetItem();
+	m_pTargetItem = CStage::GetItem();
 
 	//サイズを設定
 	sizeTarget = (m_pTargetItem->GetVtxMax() - m_pTargetItem->GetVtxMin());
