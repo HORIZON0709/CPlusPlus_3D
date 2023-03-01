@@ -62,20 +62,11 @@ public: /* メンバ関数 */
 
 	STATE GetState();	//フェード状態の取得
 
-	/*
-		暗転したかどうかの設定
-		bool bFadeOut ---> 暗転したかどうか
-		[false : 暗転 / true : 明転]
-	*/
-	void SetFadeOut(bool bFadeOut);
-
 private: /* メンバ変数 */
 	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff;	//頂点バッファへのポインタ
 
 	STATE m_state;	//フェード状態
 
 	D3DXCOLOR m_col;	//色
-
-	bool m_bFadeOut;	//暗転したかどうか
 };
 #endif

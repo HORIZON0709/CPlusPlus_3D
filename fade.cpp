@@ -48,8 +48,7 @@ CFade* CFade::Create()
 CFade::CFade() :
 	m_pVtxBuff(nullptr),
 	m_state(STATE::NONE),
-	m_col(D3DXCOLOR(0.0f,0.0f,0.0f,0.0f)),
-	m_bFadeOut(false)
+	m_col(D3DXCOLOR(0.0f,0.0f,0.0f,0.0f))
 {
 }
 
@@ -70,7 +69,6 @@ HRESULT CFade::Init()
 	//メンバ変数の初期化
 	m_state = STATE::NONE;
 	m_col = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
-	m_bFadeOut = false;
 
 	//デバイスの取得
 	LPDIRECT3DDEVICE9 pDevice = CApplication::GetRenderer()->GetDevice();
@@ -154,7 +152,6 @@ void CFade::Update()
 		{//完全に透明になったら
 			m_col.a = 0.0f;			//0.0にする
 			m_state = STATE::NONE;	//フェードしていない状態にする
-			m_bFadeOut = false;		//明転した
 		}
 	}
 	else if (m_state == STATE::FADE_OUT)
@@ -165,7 +162,6 @@ void CFade::Update()
 		{//完全に不透明になったら
 			m_col.a = 1.0f;			//1.0にする
 			m_state = STATE::NONE;	//フェードしていない状態にする
-			m_bFadeOut = true;		//暗転した
 		}
 	}
 
@@ -221,12 +217,4 @@ void CFade::Set(const STATE &state)
 CFade::STATE CFade::GetState()
 {
 	return m_state;
-}
-
-//================================================
-//暗転したかどうかの設定
-//================================================
-void CFade::SetFadeOut(bool bFadeOut)
-{
-	m_bFadeOut = bFadeOut;
 }

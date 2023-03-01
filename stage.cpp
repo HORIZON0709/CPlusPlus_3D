@@ -140,8 +140,8 @@ void CStage::Uninit()
 {
 	if (m_pFloar != nullptr)
 	{//NULLチェック
-		m_pFloar->Release();	//終了処理
-		//delete m_pFloar;	//メモリの解放
+		m_pFloar->Uninit();	//終了処理
+		delete m_pFloar;	//メモリの解放
 		m_pFloar = nullptr;	//nullptrにする
 	}
 
@@ -149,8 +149,8 @@ void CStage::Uninit()
 	{
 		if (m_apWall[i] != nullptr)
 		{//NULLチェック
-			m_apWall[i]->Release();	//終了処理
-			//delete m_apWall[i];		//メモリの解放
+			m_apWall[i]->Uninit();	//終了処理
+			delete m_apWall[i];		//メモリの解放
 			m_apWall[i] = nullptr;	//nullptrにする
 		}
 	}
@@ -159,8 +159,8 @@ void CStage::Uninit()
 	{
 		if (m_apModel[i] != nullptr)
 		{//NULLチェック
-			m_apModel[i]->Release();	//終了処理
-			//delete m_apModel[i];	//メモリの解放
+			m_apModel[i]->Uninit();	//終了処理
+			delete m_apWall[i];		//メモリの解放
 			m_apModel[i] = nullptr;	//nullptrにする
 		}
 	}
@@ -169,16 +169,16 @@ void CStage::Uninit()
 	{
 		if (m_apGimmick[i] != nullptr)
 		{//NULLチェック
-			m_apGimmick[i]->Release();	//終了処理
-			//delete m_apGimmick[i];		//メモリの解放
+			m_apGimmick[i]->Uninit();	//終了処理
+			delete m_apGimmick[i];		//メモリの解放
 			m_apGimmick[i] = nullptr;	//nullptrにする
 		}
 	}
 
 	if (m_pItem != nullptr)
 	{//NULLチェック
-		m_pItem->Release();	//終了処理
-		//delete m_pItem;		//メモリの解放
+		m_pItem->Uninit();	//終了処理
+		delete m_pItem;		//メモリの解放
 		m_pItem = nullptr;	//nullptrにする
 	}
 }

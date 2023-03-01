@@ -134,13 +134,16 @@ HRESULT CGame::Init()
 		m_pStage = CStage::Create(CStage::STAGE::Stage01);	//生成
 	}
 
+	//明転した
+	m_bFadeOut = false;
+
 	//明転
 	CApplication::GetFade()->Set(CFade::STATE::FADE_IN);
 
 	return S_OK;
 }
 
-//================================================
+//================================================\
 //終了
 //================================================
 void CGame::Uninit()
@@ -226,7 +229,17 @@ void CGame::Update()
 	{//暗転した & 現在フェードしていない
 		//Change(MODE::RESULT);	//モードの設定
 
+		//ステージ切り替え
 		m_pStage->Change(CStage::STAGE::Stage02);
+
+		//カウントリセット
+		m_nCntIntervalFade = 0;
+
+		//明転した
+		m_bFadeOut = false;
+
+		//明転
+		CApplication::GetFade()->Set(CFade::STATE::FADE_IN);
 	}
 }
 
