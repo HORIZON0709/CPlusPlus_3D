@@ -144,6 +144,7 @@ CObject::CObject(const PRIORITY &priority)
 
 		//––”ö‚É©g(æ“ª)‚ğ“ü‚ê‚é
 		m_apCurrent[priority] = m_apTop[priority];
+
 		//‘”‚ğˆê‚Â‘‚â‚·
 		m_nNumAll++;
 		return;

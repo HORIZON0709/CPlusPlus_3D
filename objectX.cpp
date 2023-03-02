@@ -61,6 +61,9 @@ CObjectX::CObjectX() :CObject::CObject(CObject::PRIORITY::PRIO_MODEL),
 {
 	//メンバ変数のクリア
 	memset(m_mtxWorld, 0, sizeof(m_mtxWorld));
+
+	//タイプの設定
+	CObject::SetObjType(CObject::OBJ_TYPE::MODEL);
 }
 
 //================================================

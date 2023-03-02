@@ -46,7 +46,11 @@ CObject3D::CObject3D() : CObject::CObject(CObject::PRIORITY::PRIO_POLYGON_3D),
 	m_move(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
 	m_size(D3DXVECTOR3(0.0f, 0.0f, 0.0f))
 {
+	//メンバ変数のクリア
 	memset(m_mtxWorld, 0, sizeof(m_mtxWorld));
+
+	//タイプの設定
+	CObject::SetObjType(CObject::OBJ_TYPE::POLYGON_3D);
 }
 
 //================================================

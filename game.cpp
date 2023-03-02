@@ -154,14 +154,18 @@ void CGame::Uninit()
 	CObject3D::ReleaseAll();	//全ての解放(3D)
 	CObjectX::ReleaseAll();		//全ての解放(Xモデル)
 
-	/* カメラ */
+	/* ステージ */
 
-	if (m_pCamera != nullptr)
+	if (m_pStage != nullptr)
 	{//NULLチェック
-		m_pCamera->Uninit();	//終了
-		delete m_pCamera;		//メモリの解放
-		m_pCamera = nullptr;	//nullptrにする
+		m_pStage->Uninit();	//終了
+		delete m_pStage;	//メモリの解放
+		m_pStage = nullptr;	//nullptrにする
 	}
+
+	/* プレイヤー */
+
+	m_pPlayer = nullptr;	//nullptrにする
 
 	/* ライト */
 
@@ -172,17 +176,13 @@ void CGame::Uninit()
 		m_pLight = nullptr;	//nullptrにする
 	}
 
-	/* プレイヤー */
+	/* カメラ */
 
-	m_pPlayer = nullptr;	//nullptrにする
-
-	/* ステージ */
-
-	if (m_pStage != nullptr)
+	if (m_pCamera != nullptr)
 	{//NULLチェック
-		m_pStage->Uninit();	//終了
-		delete m_pStage;	//メモリの解放
-		m_pStage = nullptr;	//nullptrにする
+		m_pCamera->Uninit();	//終了
+		delete m_pCamera;		//メモリの解放
+		m_pCamera = nullptr;	//nullptrにする
 	}
 }
 
@@ -211,9 +211,9 @@ void CGame::Update()
 	//ワイヤーフレームの切り替え
 	SwitchWireFrame();
 
-	if (CApplication::GetInput()->GetKey()->Press(CInput::DECISION))
+	if (CApplication::GetInput()->GetKey()->Trigger(CInput::DECISION))
 	{//Enterキー押下
-		m_nCntIntervalFade++;	//カウントアップ
+		m_nCntIntervalFade = FADE_INTERVAL_GAMEOVER + 1;	//カウントアップ
 	}
 
 	if (!m_bFadeOut && (m_nCntIntervalFade > FADE_INTERVAL_GAMEOVER))

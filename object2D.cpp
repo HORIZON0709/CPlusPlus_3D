@@ -47,6 +47,8 @@ CObject2D::CObject2D() : CObject::CObject(CObject::PRIORITY::PRIO_POLYGON_2D),
 	m_col(D3DXCOLOR(1.0f,1.0f,1.0f,1.0f)),
 	m_texture(CTexture::NONE)
 {
+	//É^ÉCÉvÇÃê›íË
+	CObject::SetObjType(CObject::OBJ_TYPE::POLYGON_2D);
 }
 
 //================================================

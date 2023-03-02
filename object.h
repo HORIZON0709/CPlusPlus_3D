@@ -25,8 +25,11 @@ public: /* 列挙型の定義 */
 		PLAYER = 0,	//プレイヤー
 		ENEMY,		//敵
 		BG,			//背景
+		MODEL,		//モデル
 		ITEM,		//アイテム
 		GIMMICK,	//ギミック
+		POLYGON_2D,	//2Dポリゴン
+		POLYGON_3D,	//3Dポリゴン
 		SCORE,		//スコア
 		NUMBER,		//ナンバー
 		MAX
