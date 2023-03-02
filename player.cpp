@@ -195,7 +195,7 @@ void CPlayer::Update()
 
 	if (m_bGetItem)
 	{
-		m_pTargetItem->Release();
+		m_pTargetItem->SetDeathFlag();
 		m_pTargetItem = nullptr;
 
 		CApplication::GetMode()->Change(CMode::MODE::RESULT);

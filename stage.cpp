@@ -29,7 +29,7 @@ const char* CStage::s_apFileName[] =
 
 static_assert(sizeof(CStage::s_apFileName) / sizeof(CStage::s_apFileName[0]) == CStage::STAGE::MAX, "aho");
 
-const float CStage::FLOAR_SIZE = 400.0f;				//床のサイズ
+const float CStage::FLOAR_SIZE = 1000.0f;				//床のサイズ
 const float CStage::WALL_WIDTH = FLOAR_SIZE;			//壁の幅
 const float CStage::WALL_HEIGHT = FLOAR_SIZE * 0.5f;	//壁の高さ
 
@@ -140,16 +140,16 @@ void CStage::Uninit()
 {
 	if (m_pItem != nullptr)
 	{//NULLチェック
-		m_pItem->Release();	//終了処理
-		m_pItem = nullptr;	//nullptrにする
+		m_pItem->SetDeathFlag();	//死亡フラグの設定
+		m_pItem = nullptr;			//nullptrにする
 	}
 
 	for (int i = 0; i < MAX_GIMMICK; i++)
 	{
 		if (m_apGimmick[i] != nullptr)
 		{//NULLチェック
-			m_apGimmick[i]->Release();	//終了処理
-			m_apGimmick[i] = nullptr;	//nullptrにする
+			m_apGimmick[i]->SetDeathFlag();	//死亡フラグの設定
+			m_apGimmick[i] = nullptr;		//nullptrにする
 		}
 	}
 
@@ -157,8 +157,8 @@ void CStage::Uninit()
 	{
 		if (m_apModel[i] != nullptr)
 		{//NULLチェック
-			m_apModel[i]->Release();	//終了処理
-			m_apModel[i] = nullptr;	//nullptrにする
+			m_apModel[i]->SetDeathFlag();	//死亡フラグの設定
+			m_apModel[i] = nullptr;			//nullptrにする
 		}
 	}
 
@@ -166,15 +166,15 @@ void CStage::Uninit()
 	{
 		if (m_apWall[i] != nullptr)
 		{//NULLチェック
-			m_apWall[i]->Release();	//終了処理
-			m_apWall[i] = nullptr;	//nullptrにする
+			m_apWall[i]->SetDeathFlag();	//死亡フラグの設定
+			m_apWall[i] = nullptr;			//nullptrにする
 		}
 	}
 
 	if (m_pFloar != nullptr)
 	{//NULLチェック
-		m_pFloar->Release();	//終了処理
-		m_pFloar = nullptr;	//nullptrにする
+		m_pFloar->SetDeathFlag();	//死亡フラグの設定
+		m_pFloar = nullptr;			//nullptrにする
 	}
 }
 

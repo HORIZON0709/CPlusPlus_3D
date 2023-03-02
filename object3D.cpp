@@ -146,6 +146,19 @@ void CObject3D::Uninit()
 //================================================
 void CObject3D::Update()
 {
+	VERTEX_3D *pVtx;	//頂点情報へのポインタ
+
+	//頂点バッファをロックし、頂点情報へのポインタを取得
+	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
+
+	//頂点カラーの設定
+	D3DXCOLOR col = pVtx[0].col;
+	col = pVtx[1].col;
+	col = pVtx[2].col;
+	col = pVtx[3].col;
+
+	//頂点バッファをアンロックする
+	m_pVtxBuff->Unlock();
 }
 
 //================================================

@@ -64,7 +64,7 @@ public: /* 純粋仮想関数 */
 	virtual void Draw() = 0;	//描画
 
 public: /* メンバ関数 */
-	void Release();	//解放
+	void SetDeathFlag();	//死亡フラグの設定
 
 public:	/* ObjType */
 	/*
@@ -75,6 +75,9 @@ public:	/* ObjType */
 
 	//タイプの取得
 	OBJ_TYPE GetObjType();
+
+private:
+	void Release();	//解放
 
 private: /* 静的メンバ変数 */
 	static CObject* m_apTop[PRIORITY::PRIO_MAX];		//先頭のオブジェクトのポインタ
