@@ -93,6 +93,11 @@ public: /* 静的メンバ関数 */
 public: /* 静的メンバ変数 */
 	static CGimmick* m_apGimmick[MAX_GIMMICK];	//ギミックのポインタ
 	static CItem* m_pItem;						//アイテムのポインタ
+	static CObjectX* m_apModel[MAX_MODEL];		//モデルのポインタ
+
+private:
+	static CObject3D* m_pFloar;						//3Dポリゴンの床のポインタ
+	static CObject3D* m_apWall[DIRECTION::DIR_MAX];	//3Dポリゴンの壁(四方)のポインタ
 
 public: /* コンストラクタ・デストラクタ */
 	CStage();
@@ -106,9 +111,10 @@ public: /* メンバ関数 */
 	*/
 	HRESULT Init(const STAGE &stage, const char* pStage);
 
-	void Uninit();	//終了
-	CStage* Set();	//ステージの設定
-	STAGE Get();	//ステージの取得
+	void Uninit();		//終了
+	void UninitAll();	//全ての終了
+	CStage* Set();		//ステージの設定
+	STAGE Get();		//ステージの取得
 
 	/*
 		ステージの変更
@@ -129,14 +135,12 @@ private:
 	*/
 	void Set_ModelSet(FILE* pFile);
 
+	void CreateFloarAndWalls();	//床と壁の生成
+
 	void SetWall();	//壁の設定
 
 private: /* メンバ変数 */
 	MODELSET_INFO m_aModelSetInfo[MAX_MODEL];	//モデル設置に必要な情報
-
-	CObject3D* m_pFloar;						//3Dポリゴンの床のポインタ
-	CObject3D* m_apWall[DIRECTION::DIR_MAX];	//3Dポリゴンの壁(四方)のポインタ
-	CObjectX* m_apModel[MAX_MODEL];				//モデルのポインタ
 
 	STAGE m_stage;		//現在のステージ
 	STAGE m_stageNext;	//次のステージ

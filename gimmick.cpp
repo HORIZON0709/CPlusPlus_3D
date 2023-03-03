@@ -27,11 +27,6 @@ const float CGimmick::MOVE_SPEED = 1.5f;		//移動速度
 const float CGimmick::ROT_SMOOTHNESS = 0.5f;	//回転の滑らかさ
 const float CGimmick::ROTATION_SPEED = 0.25f;	//回転速度
 
-//***************************
-//静的メンバ変数
-//***************************
-CLine* CGimmick::m_apLine[MAX_LINE] = {};	//ラインのポインタ
-
 //================================================
 //生成
 //================================================
@@ -64,6 +59,7 @@ CGimmick::CGimmick() :CObjectX::CObjectX(),
 	m_quaternion(D3DXQUATERNION(0.0f,0.0f,0.0f,1.0f))
 {
 	//メンバ変数のクリア
+	memset(m_apLine, 0, sizeof(m_apLine));
 	memset(m_mtxWorld, 0, sizeof(m_mtxWorld));
 
 	//タイプの設定
@@ -166,6 +162,11 @@ void CGimmick::SetLines()
 	//始点・終点
 	D3DXVECTOR3 start = D3DXVECTOR3(vtxMin.x, vtxMax.y, vtxMax.z);
 	D3DXVECTOR3 end = D3DXVECTOR3(vtxMin.x, vtxMax.y, vtxMin.z);
+
+	if (m_apLine[nNum] == nullptr)
+	{
+		assert(false);
+	}
 
 	//設定
 	m_apLine[nNum]->Set(pos, rot, start, end, col);

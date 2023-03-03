@@ -30,9 +30,6 @@ private: /* 定数の定義 */
 public: /* 静的メンバ関数 */
 	static CItem* Create(char* pFileName);	//生成
 
-public: /* 静的メンバ変巣 */
-	static CLine* m_apLine[MAX_LINE];	//ラインのポインタ
-
 public: /* コンストラクタ・デストラクタ */
 	CItem();
 	~CItem() override;
@@ -47,6 +44,8 @@ public: /* メンバ関数 */
 	void SetLines();	//ラインの設定まとめ
 
 private: /* メンバ変数 */
+	CLine* m_apLine[MAX_LINE];	//ラインのポインタ
+
 	D3DXMATRIX m_mtxWorld;	//ワールドマトリックス
 
 	D3DXVECTOR3 m_rot;		//現在の向き

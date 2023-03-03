@@ -22,11 +22,6 @@
 //***************************
 const float CItem::ROTATION_SPEED = 0.05f;	//回転速度
 
-//***************************
-//静的メンバ変数
-//***************************
-CLine* CItem::m_apLine[MAX_LINE] = {};	//ラインのポインタ
-
 //================================================
 //生成
 //================================================
@@ -57,6 +52,7 @@ CItem::CItem() :CObjectX::CObjectX(),
 	m_rotDest(D3DXVECTOR3(0.0f, 0.0f, 0.0f))
 {
 	//メンバ変数のクリア
+	memset(m_apLine, 0, sizeof(m_apLine));
 	memset(m_mtxWorld, 0, sizeof(m_mtxWorld));
 
 	//タイプの設定

@@ -32,9 +32,6 @@ private: /* 定数の定義 */
 public: /* 静的メンバ関数 */
 	static CGimmick* Create(char* pFileName);	//生成
 
-public: /* 静的メンバ変数 */
-	static CLine* m_apLine[MAX_LINE];	//ラインのポインタ
-
 public: /* コンストラクタ・デストラクタ */
 	CGimmick();
 	~CGimmick() override;
@@ -46,9 +43,11 @@ public: /* オーバーライド関数 */
 	void Draw() override;		//描画
 
 private: /* メンバ関数 */
-	void SetLines();			//ラインの設定まとめ
+	void SetLines();	//ラインの設定まとめ
 
 private: /* メンバ変数 */
+	CLine* m_apLine[MAX_LINE];	//ラインのポインタ
+
 	D3DXMATRIX m_mtxWorld;	//ワールドマトリックス
 
 	D3DXVECTOR3 m_vec;		//方向ベクトル

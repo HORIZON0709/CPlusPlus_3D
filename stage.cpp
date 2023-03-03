@@ -40,6 +40,10 @@ const int CStage::MAX_WORD = 256;	//最大文字数
 //***************************
 CGimmick* CStage::m_apGimmick[MAX_GIMMICK] = {};	//ギミックのポインタ
 CItem* CStage::m_pItem = nullptr;					//アイテムのポインタ
+CObjectX* CStage::m_apModel[MAX_MODEL] = {};		//モデルのポインタ
+
+CObject3D* CStage::m_pFloar = nullptr;					//3Dポリゴンの床のポインタ
+CObject3D* CStage::m_apWall[DIRECTION::DIR_MAX] = {};	//3Dポリゴンの壁(四方)のポインタ
 
 //================================================
 //生成
@@ -82,15 +86,11 @@ CItem* CStage::GetItem()
 //コンストラクタ
 //================================================
 CStage::CStage() :
-	m_pFloar(nullptr),
 	m_stage(STAGE::NONE),
 	m_stageNext(STAGE::NONE),
 	m_nNumModel(0),
 	m_nCntModelSet(0)
 {
-	//メンバ変数のクリア
-	memset(m_apWall, 0, sizeof(m_apWall));
-	memset(m_apModel, 0, sizeof(m_apModel));
 }
 
 //================================================
@@ -111,21 +111,8 @@ HRESULT CStage::Init(const STAGE &stage, const char* pStage)
 	m_nNumModel = 0;
 	m_nCntModelSet = 0;
 
-	//床の生成
-	m_pFloar = CObject3D::Create();
-
-	//床の設定
-	m_pFloar->SetSize(D3DXVECTOR3(FLOAR_SIZE, 0.0f, FLOAR_SIZE));
-	m_pFloar->SetCol(D3DXCOLOR(0.0f, 1.0f, 0.0f, 0.5f));
-
-	for (int i = 0; i < DIRECTION::DIR_MAX; i++)
-	{
-		//壁の生成
-		m_apWall[i] = CObject3D::Create();
-	}
-
-	//壁の設定
-	SetWall();
+	//床と壁の生成
+	CreateFloarAndWalls();
 
 	//読み込み
 	Load(pStage);
@@ -137,6 +124,36 @@ HRESULT CStage::Init(const STAGE &stage, const char* pStage)
 //終了
 //================================================
 void CStage::Uninit()
+{
+	if (m_pItem != nullptr)
+	{//NULLチェック
+		m_pItem->SetDeathFlag();	//死亡フラグの設定
+		m_pItem = nullptr;			//nullptrにする
+	}
+
+	for (int i = 0; i < MAX_GIMMICK; i++)
+	{
+		if (m_apGimmick[i] != nullptr)
+		{//NULLチェック
+			m_apGimmick[i]->SetDeathFlag();	//死亡フラグの設定
+			m_apGimmick[i] = nullptr;		//nullptrにする
+		}
+	}
+
+	for (int i = 0; i < m_nNumModel; i++)
+	{
+		if (m_apModel[i] != nullptr)
+		{//NULLチェック
+			m_apModel[i]->SetDeathFlag();	//死亡フラグの設定
+			m_apModel[i] = nullptr;			//nullptrにする
+		}
+	}
+}
+
+//================================================
+//全ての終了
+//================================================
+void CStage::UninitAll()
 {
 	if (m_pItem != nullptr)
 	{//NULLチェック
@@ -425,6 +442,49 @@ void CStage::Set_ModelSet(FILE* pFile)
 }
 
 //================================================
+//床と壁の設定
+//================================================
+void CStage::CreateFloarAndWalls()
+{
+	if (m_pFloar == nullptr)
+	{//nullptrの場合
+		//床の生成
+		m_pFloar = CObject3D::Create();
+
+		//床の設定
+		m_pFloar->SetSize(D3DXVECTOR3(FLOAR_SIZE, 0.0f, FLOAR_SIZE));
+		m_pFloar->SetCol(D3DXCOLOR(0.0f, 1.0f, 0.0f, 0.5f));
+	}
+
+	int nCntCreate = 0;	//生成数カウント用
+
+	for (int i = 0; i < DIRECTION::DIR_MAX; i++)
+	{
+		if (m_apWall[i] != nullptr)
+		{//nullptrではない場合
+			continue;
+		}
+
+		/* nullptrの場合 */
+
+		//壁の生成
+		m_apWall[i] = CObject3D::Create();
+
+		//カウントアップ
+		nCntCreate++;
+	}
+
+	if (nCntCreate >= DIRECTION::DIR_MAX)
+	{//壁が全て生成出来ていたら
+		//壁の設定
+		SetWall();
+
+		//カウントリセット
+		nCntCreate = 0;
+	}
+}
+
+//================================================
 //壁の設定
 //================================================
 void CStage::SetWall()
@@ -515,5 +575,5 @@ void CStage::SetWall()
 	m_apWall[dir]->SetRot(D3DXVECTOR3(-D3DX_PI * 0.5f, 0.0f, 0.0f));
 
 	//色
-	m_apWall[dir]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.3f));
+	m_apWall[dir]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f));
 }

@@ -158,9 +158,9 @@ void CGame::Uninit()
 
 	if (m_pStage != nullptr)
 	{//NULLチェック
-		m_pStage->Uninit();	//終了
-		delete m_pStage;	//メモリの解放
-		m_pStage = nullptr;	//nullptrにする
+		m_pStage->UninitAll();	//全ての終了
+		delete m_pStage;		//メモリの解放
+		m_pStage = nullptr;		//nullptrにする
 	}
 
 	/* プレイヤー */
