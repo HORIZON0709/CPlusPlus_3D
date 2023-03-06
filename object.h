@@ -28,6 +28,7 @@ public: /* 列挙型の定義 */
 		MODEL,		//モデル
 		ITEM,		//アイテム
 		GIMMICK,	//ギミック
+		DOOR,		//ドア
 		POLYGON_2D,	//2Dポリゴン
 		POLYGON_3D,	//3Dポリゴン
 		SCORE,		//スコア

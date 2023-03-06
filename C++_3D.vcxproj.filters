@@ -153,6 +153,9 @@
     <ClCompile Include="stage.cpp">
       <Filter>ソース ファイル\Stage</Filter>
     </ClCompile>
+    <ClCompile Include="door.cpp">
+      <Filter>ソース ファイル\Stage</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mode.h">
@@ -237,6 +240,9 @@
       <Filter>ヘッダー ファイル\Mode</Filter>
     </ClInclude>
     <ClInclude Include="stage.h">
+      <Filter>ヘッダー ファイル\Stage</Filter>
+    </ClInclude>
+    <ClInclude Include="door.h">
       <Filter>ヘッダー ファイル\Stage</Filter>
     </ClInclude>
   </ItemGroup>

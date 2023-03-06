@@ -1,13 +1,13 @@
 //================================================
 //
-//3Dゲーム(仮)[gimmick.cpp]
+//3Dゲーム(仮)[door.cpp]
 //Author:Kishimoto Eiji
 //
 //================================================
 //***************************
 //インクルード
 //***************************
-#include "gimmick.h"
+#include "door.h"
 #include "application.h"
 #include "renderer.h"
 #include "line.h"
@@ -17,19 +17,12 @@
 
 #include <assert.h>
 
-//***************************
-//定数の定義
-//***************************
-const float CGimmick::MOVE_SPEED = 1.5f;		//移動速度
-const float CGimmick::ROT_SMOOTHNESS = 0.5f;	//回転の滑らかさ
-const float CGimmick::ROTATION_SPEED = 0.25f;	//回転速度
-
 //================================================
 //生成
 //================================================
-CGimmick* CGimmick::Create(char* pFileName)
+CDoor* CDoor::Create()
 {
-	CGimmick* pGimmick = nullptr;	//ポインタ
+	CDoor* pGimmick = nullptr;	//ポインタ
 
 	if (pGimmick != nullptr)
 	{//NULLチェック
@@ -38,9 +31,9 @@ CGimmick* CGimmick::Create(char* pFileName)
 
 	/* nullptrの場合 */
 
-	pGimmick = new CGimmick;	//メモリの動的確保
+	pGimmick = new CDoor;	//メモリの動的確保
 
-	pGimmick->SetFileName(pFileName);	//ファイル名の設定
+	pGimmick->SetFileName("data/MODEL/Door.x");	//ファイル名の設定
 
 	pGimmick->Init();	//初期化
 
@@ -50,38 +43,34 @@ CGimmick* CGimmick::Create(char* pFileName)
 //================================================
 //コンストラクタ
 //================================================
-CGimmick::CGimmick() :CObjectX::CObjectX(),
-	m_vec(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
-	m_rotDest(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
-	m_quaternion(D3DXQUATERNION(0.0f,0.0f,0.0f,1.0f))
+CDoor::CDoor() :CObjectX::CObjectX(),
+	m_stageConnect(CStage::STAGE::NONE)
 {
 	//メンバ変数のクリア
 	memset(m_apLine, 0, sizeof(m_apLine));
 	memset(m_mtxWorld, 0, sizeof(m_mtxWorld));
 
 	//タイプの設定
-	CObject::SetObjType(CObject::OBJ_TYPE::GIMMICK);
+	CObject::SetObjType(CObject::OBJ_TYPE::DOOR);
 }
 
 //================================================
 //デストラクタ
 //================================================
-CGimmick::~CGimmick()
+CDoor::~CDoor()
 {
 }
 
 //================================================
 //初期化
 //================================================
-HRESULT CGimmick::Init()
+HRESULT CDoor::Init()
 {
 	//親クラスの初期化
 	CObjectX::Init();
 
 	//メンバ変数の初期化
-	m_vec = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	m_rotDest = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	m_quaternion = D3DXQUATERNION(0.0f, 0.0f, 0.0f, 1.0f);
+	m_stageConnect = CStage::STAGE::NONE;
 
 	for (int i = 0; i < MAX_LINE; i++)
 	{
@@ -95,7 +84,7 @@ HRESULT CGimmick::Init()
 //================================================
 //終了
 //================================================
-void CGimmick::Uninit()
+void CDoor::Uninit()
 {
 	for (int i = 0; i < MAX_LINE; i++)
 	{//ライン
@@ -114,7 +103,7 @@ void CGimmick::Uninit()
 //================================================
 //更新
 //================================================
-void CGimmick::Update()
+void CDoor::Update()
 {
 	//親クラスの更新
 	CObjectX::Update();
@@ -126,7 +115,7 @@ void CGimmick::Update()
 //================================================
 //描画
 //================================================
-void CGimmick::Draw()
+void CDoor::Draw()
 {
 	//親クラスの描画
 	CObjectX::Draw();
@@ -141,7 +130,7 @@ void CGimmick::Draw()
 //================================================
 //ラインの設定まとめ
 //================================================
-void CGimmick::SetLines()
+void CDoor::SetLines()
 {
 	//各情報を取得
 	D3DXVECTOR3 pos = CObjectX::GetPos();		//位置
