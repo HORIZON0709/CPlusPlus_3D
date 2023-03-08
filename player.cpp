@@ -204,15 +204,17 @@ void CPlayer::Update()
 	}
 
 #ifdef _DEBUG
-	//各情報を表示
+	/* デバッグ表示 */
+
+	//プレイヤー
 	CDebugProc::Print("\n《 Player 》\n");
-	CDebugProc::Print("m_pos:[%f,%f,%f]\n", m_pos.x, m_pos.y, m_pos.z);
-	CDebugProc::Print("m_rot:[%f,%f,%f]\n", m_rot.x, m_rot.y, m_rot.z);
-	CDebugProc::Print("m_vec:[%f,%f,%f]\n", m_vec.x, m_vec.y, m_vec.z);
+	CDebugProc::Print("m_pos:[%f,%f,%f]\n", m_pos.x, m_pos.y, m_pos.z);	//位置
+	CDebugProc::Print("m_rot:[%f,%f,%f]\n", m_rot.x, m_rot.y, m_rot.z);	//向き
+	CDebugProc::Print("m_vec:[%f,%f,%f]\n", m_vec.x, m_vec.y, m_vec.z);	//方向ベクトル
 
-	D3DXVECTOR3 size = m_vtxMax - m_vtxMin;
+	D3DXVECTOR3 size = m_vtxMax - m_vtxMin;	//頂点の最大・最小からサイズを算出
 
-	CDebugProc::Print("size:[%f,%f,%f]\n", size.x, size.y, size.z);
+	CDebugProc::Print("size:[%f,%f,%f]\n", size.x, size.y, size.z);	//サイズ
 
 	if (m_bCollision)
 	{//対象のオブジェクトに当たっている場合
@@ -223,14 +225,17 @@ void CPlayer::Update()
 		CDebugProc::Print("Collision:[false]\n", m_bCollision);
 	}
 
+	//モデルパーツ
 	CDebugProc::Print("\n《 Parts 》\n");
 
-	CModel::MODEL_INFO aInfo[MAX_PARTS] = {};
+	CModel::MODEL_INFO aInfo[MAX_PARTS] = {};	//モデル情報
 
 	for (int i = 0; i < MAX_PARTS; i++)
 	{
+		//モデル情報の取得
 		aInfo[i] = m_pModel->GetModelInfo(i);
 
+		//位置・向き
 		CDebugProc::Print("pos:[%f,%f,%f]\n", aInfo[i].pos.x, aInfo[i].pos.y, aInfo[i].pos.z);
 		CDebugProc::Print("rot:[%f,%f,%f]\n", aInfo[i].rot.x, aInfo[i].rot.y, aInfo[i].rot.z);
 	}
