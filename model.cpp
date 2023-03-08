@@ -181,8 +181,8 @@ void CModel::Draw()
 	for (int i = 0; i < m_nNumModel; i++)
 	{
 		//キャラクター設定の情報
-		D3DXVECTOR3 pos = m_characterSet.aPartsSet[i].pos;	//位置
-		D3DXVECTOR3 rot = m_characterSet.aPartsSet[i].rot;	//向き
+		D3DXVECTOR3 pos = m_characterSet.aPartsSet[i].pos + m_aModelInfo[i].pos;	//位置
+		D3DXVECTOR3 rot = m_characterSet.aPartsSet[i].rot + m_aModelInfo[i].rot;	//向き
 
 		D3DXMATRIX mtxRot, mtxTrans, mtxParent;	//計算用マトリックス
 

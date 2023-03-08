@@ -188,17 +188,19 @@ void CPlayer::Update()
 	Move();
 
 	//モーション
-	//Motion();
+	Motion();
 
 	//当たり判定
-	//Collision();
+	Collision();
 
 	if (m_bGetItem)
 	{
 		m_pTargetItem->SetDeathFlag();
 		m_pTargetItem = nullptr;
 
-		CApplication::GetMode()->Change(CMode::MODE::RESULT);
+		m_bGetItem = false;
+
+		//CApplication::GetMode()->Change(CMode::MODE::RESULT);
 	}
 
 #ifdef _DEBUG
@@ -219,6 +221,18 @@ void CPlayer::Update()
 	else
 	{//当たっていない場合
 		CDebugProc::Print("Collision:[false]\n", m_bCollision);
+	}
+
+	CDebugProc::Print("\n《 Parts 》\n");
+
+	CModel::MODEL_INFO aInfo[MAX_PARTS] = {};
+
+	for (int i = 0; i < MAX_PARTS; i++)
+	{
+		aInfo[i] = m_pModel->GetModelInfo(i);
+
+		CDebugProc::Print("pos:[%f,%f,%f]\n", aInfo[i].pos.x, aInfo[i].pos.y, aInfo[i].pos.z);
+		CDebugProc::Print("rot:[%f,%f,%f]\n", aInfo[i].rot.x, aInfo[i].rot.y, aInfo[i].rot.z);
 	}
 
 	//ラインの設定まとめ
@@ -825,6 +839,9 @@ void CPlayer::Set_Motion(FILE* pFile, char aText[])
 			m_nNumKeySet++;
 		}
 	}
+
+	//キーセット数をリセット
+	m_nNumKeySet = 0;
 }
 
 //================================================
@@ -865,6 +882,9 @@ void CPlayer::Set_KeySet(FILE* pFile, char aText[])
 			m_nNumKey++;
 		}
 	}
+
+	//キー数をリセット
+	m_nNumKey = 0;
 }
 
 //================================================
