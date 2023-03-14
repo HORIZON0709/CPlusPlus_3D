@@ -30,7 +30,11 @@ private: /* 定数の定義 */
 	static const int MAX_LINE = 12;	//ラインの最大数
 
 public: /* 静的メンバ関数 */
-	static CGimmick* Create(char* pFileName);	//生成
+	/*
+		生成
+		char* pFileName ---> ファイル名
+	*/
+	static CGimmick* Create(char* pFileName);
 
 public: /* コンストラクタ・デストラクタ */
 	CGimmick();

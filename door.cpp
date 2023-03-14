@@ -20,7 +20,7 @@
 //================================================
 //生成
 //================================================
-CDoor* CDoor::Create()
+CDoor* CDoor::Create(char* pFileName)
 {
 	CDoor* pGimmick = nullptr;	//ポインタ
 
@@ -33,7 +33,7 @@ CDoor* CDoor::Create()
 
 	pGimmick = new CDoor;	//メモリの動的確保
 
-	pGimmick->SetFileName("data/MODEL/Door.x");	//ファイル名の設定
+	pGimmick->SetFileName(pFileName);	//ファイル名の設定
 
 	pGimmick->Init();	//初期化
 

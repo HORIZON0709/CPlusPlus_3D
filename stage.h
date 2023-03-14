@@ -20,6 +20,7 @@ class CObject3D;
 class CObjectX;
 class CGimmick;
 class CItem;
+class CDoor;
 
 //***************************
 //ステージクラスの定義
@@ -51,6 +52,7 @@ private:
 		TYPE_OBJECT = 0,	//オブジェクト
 		TYPE_GIMMICK,		//ギミック
 		TYPE_ITEM,			//アイテム
+		TYPE_DOOR,			//ドア
 		TYPE_MAX
 	};
 
@@ -64,6 +66,7 @@ private:
 
 	static const int MAX_MODEL = 16;	//モデルの最大数
 	static const int MAX_GIMMICK = 8;	//ギミックの最大数
+	static const int MAX_DOOR = 2;		//ドアの最大数
 	static const int MAX_WORD;			//最大文字数
 
 private: /* 構造体の定義 */
@@ -90,10 +93,17 @@ public: /* 静的メンバ関数 */
 
 	static CItem* GetItem();	//アイテム情報の取得
 
+	/*
+		ドア情報の取得
+		int nIdx ---> インデックス数
+	*/
+	static CDoor* GetDoor(int nIdx);
+
 public: /* 静的メンバ変数 */
+	static CObjectX* m_apModel[MAX_MODEL];		//モデルのポインタX
 	static CGimmick* m_apGimmick[MAX_GIMMICK];	//ギミックのポインタ
 	static CItem* m_pItem;						//アイテムのポインタ
-	static CObjectX* m_apModel[MAX_MODEL];		//モデルのポインタ
+	static CDoor* m_apDoor[MAX_DOOR];			//ドアのポインタ
 
 private:
 	static CObject3D* m_pFloar;						//3Dポリゴンの床のポインタ

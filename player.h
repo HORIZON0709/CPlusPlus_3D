@@ -88,7 +88,10 @@ public: /* オーバーライド関数 */
 	void Draw() override;		//描画
 
 public: /* メンバ関数 */
-	D3DXVECTOR3 GetPos();	//位置を取得
+	D3DXVECTOR3 GetPos();		//位置を取得
+	D3DXVECTOR3 GetVtxMax();	//頂点の最大値を取得
+	D3DXVECTOR3 GetVtxMin();	//頂点の最小値を取得
+
 private:
 	void Move();		//移動
 	void Motion();		//モーション
@@ -128,10 +131,13 @@ private: /* メンバ変数 */
 	int m_nNumMotion;	//モーション数
 	int m_nNumKeySet;	//キーセット数
 	int m_nNumKey;		//キー数
+	int m_nCnt;			//カウント
 
 	bool m_bPressKey;	//キー押下中かどうか
 	bool m_bCollision;	//当たっているかどうか
+	bool m_bCollDoor;	//ドアとの当たり判定
 	bool m_bGetItem;	//アイテムを取得したかどうか
+	bool m_bFadeOut;
 };
 
 #endif

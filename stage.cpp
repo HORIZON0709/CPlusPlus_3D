@@ -11,10 +11,10 @@
 #include "application.h"
 #include "renderer.h"
 #include "game.h"
-#include "objectX.h"
 #include "object3D.h"
 #include "gimmick.h"
 #include "item.h"
+#include "door.h"
 
 #include <assert.h>
 
@@ -38,9 +38,10 @@ const int CStage::MAX_WORD = 256;	//最大文字数
 //***************************
 //静的メンバ変数
 //***************************
+CObjectX* CStage::m_apModel[MAX_MODEL] = {};		//モデルのポインタ
 CGimmick* CStage::m_apGimmick[MAX_GIMMICK] = {};	//ギミックのポインタ
 CItem* CStage::m_pItem = nullptr;					//アイテムのポインタ
-CObjectX* CStage::m_apModel[MAX_MODEL] = {};		//モデルのポインタ
+CDoor* CStage::m_apDoor[MAX_DOOR] = {};				//ドアのポインタ
 
 CObject3D* CStage::m_pFloar = nullptr;					//3Dポリゴンの床のポインタ
 CObject3D* CStage::m_apWall[DIRECTION::DIR_MAX] = {};	//3Dポリゴンの壁(四方)のポインタ
@@ -80,6 +81,14 @@ CGimmick* CStage::GetGimmick(int nIdx)
 CItem* CStage::GetItem()
 {
 	return m_pItem;
+}
+
+//================================================
+//ドア情報の取得
+//================================================
+CDoor* CStage::GetDoor(int nIdx)
+{
+	return m_apDoor[nIdx];
 }
 
 //================================================
@@ -125,6 +134,15 @@ HRESULT CStage::Init(const STAGE &stage, const char* pStage)
 //================================================
 void CStage::Uninit()
 {
+	for (int i = 0; i < MAX_DOOR; i++)
+	{
+		if (m_apDoor[i] != nullptr)
+		{//NULLチェック
+			m_apDoor[i]->SetDeathFlag();	//死亡フラグの設定
+			m_apDoor[i] = nullptr;			//nullptrにする
+		}
+	}
+
 	if (m_pItem != nullptr)
 	{//NULLチェック
 		m_pItem->SetDeathFlag();	//死亡フラグの設定
@@ -155,6 +173,15 @@ void CStage::Uninit()
 //================================================
 void CStage::UninitAll()
 {
+	for (int i = 0; i < MAX_DOOR; i++)
+	{
+		if (m_apDoor[i] != nullptr)
+		{//NULLチェック
+			m_apDoor[i]->SetDeathFlag();	//死亡フラグの設定
+			m_apDoor[i] = nullptr;			//nullptrにする
+		}
+	}
+
 	if (m_pItem != nullptr)
 	{//NULLチェック
 		m_pItem->SetDeathFlag();	//死亡フラグの設定
@@ -306,7 +333,7 @@ void CStage::Load(const char* pStage)
 	//ファイルを閉じる
 	fclose(pFile);
 
-	for (int i = 0, nNumModel = 0, nNumGimmick = 0; i < m_nCntModelSet; i++)
+	for (int i = 0, nNumModel = 0, nNumGimmick = 0, nNumDoor = 0; i < m_nCntModelSet; i++)
 	{
 		//インデックス数
 		int nIndex = m_aModelSetInfo[i].nIndex;
@@ -344,6 +371,18 @@ void CStage::Load(const char* pStage)
 			//位置・向きの設定
 			m_pItem->SetPos(m_aModelSetInfo[i].pos);
 			m_pItem->SetRot(m_aModelSetInfo[i].rot);
+			break;
+
+		case MODEL_TYPE::TYPE_DOOR:	//ドア
+			//生成
+			m_apDoor[nNumDoor] = CDoor::Create(&aFileName[nIndex][0]);
+
+			//位置・向きの設定
+			m_apDoor[nNumDoor]->SetPos(m_aModelSetInfo[i].pos);
+			m_apDoor[nNumDoor]->SetRot(m_aModelSetInfo[i].rot);
+
+			//カウントアップ
+			nNumDoor++;
 			break;
 
 		case MODEL_TYPE::TYPE_NONE:	//その他
@@ -411,6 +450,10 @@ void CStage::Set_ModelSet(FILE* pFile)
 
 			case 2:	//アイテム
 				pInfo->type = MODEL_TYPE::TYPE_ITEM;
+				break;
+
+			case 3:	//ドア
+				pInfo->type = MODEL_TYPE::TYPE_DOOR;
 				break;
 
 			default:	//その他

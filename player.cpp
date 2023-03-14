@@ -18,6 +18,7 @@
 #include "item.h"
 #include "fade.h"
 #include "stage.h"
+#include "door.h"
 
 #include "debug_proc.h"
 #include "utility.h"
@@ -83,8 +84,10 @@ CPlayer::CPlayer() :CObject::CObject(CObject::PRIORITY::PRIO_MODEL),
 	m_nNumMotion(0),
 	m_nNumKeySet(0),
 	m_nNumKey(0),
+	m_nCnt(0),
 	m_bPressKey(false),
 	m_bCollision(false),
+	m_bCollDoor(false),
 	m_bGetItem(false)
 {
 	//メンバ変数のクリア
@@ -151,8 +154,10 @@ HRESULT CPlayer::Init()
 	m_nNumMotion = 0;
 	m_nNumKeySet = 0;
 	m_nNumKey = 0;
+	m_nCnt = 0;
 	m_bPressKey = false;
 	m_bCollision = false;
+	m_bCollDoor = false;
 	m_bGetItem = false;
 
 	for (int i = 0; i < MAX_LINE; i++)
@@ -199,8 +204,37 @@ void CPlayer::Update()
 		m_pTargetItem = nullptr;
 
 		m_bGetItem = false;
+	}
 
-		//CApplication::GetMode()->Change(CMode::MODE::RESULT);
+	if (m_bCollDoor)
+	{
+		m_nCnt = 61;
+	}
+
+	if (!m_bFadeOut && (m_nCnt > 60))
+	{//暗転していない & カウントが一定数を超えた
+		//暗転
+		CApplication::GetFade()->Set(CFade::STATE::FADE_OUT);
+
+		//暗転した
+		m_bFadeOut = true;
+	}
+
+	if (m_bFadeOut && (CApplication::GetFade()->GetState() == CFade::STATE::NONE))
+	{//暗転した & 現在フェードしていない
+		//Change(MODE::RESULT);	//モードの設定
+
+		//ステージ切り替え
+		CGame::GetStage()->Change(CStage::STAGE::Stage02);
+
+		//カウントリセット
+		m_nCnt = 0;
+
+		//明転した
+		m_bFadeOut = false;
+
+		//明転
+		CApplication::GetFade()->Set(CFade::STATE::FADE_IN);
 	}
 
 #ifdef _DEBUG
@@ -286,6 +320,22 @@ void CPlayer::Draw()
 D3DXVECTOR3 CPlayer::GetPos()
 {
 	return m_pos;
+}
+
+//================================================
+//頂点の最大値を取得
+//================================================
+D3DXVECTOR3 CPlayer::GetVtxMax()
+{
+	return m_vtxMax;
+}
+
+//================================================
+//頂点の最小値を取得
+//================================================
+D3DXVECTOR3 CPlayer::GetVtxMin()
+{
+	return m_vtxMin;
 }
 
 //================================================
@@ -480,45 +530,70 @@ void CPlayer::Motion()
 //================================================
 void CPlayer::Collision()
 {
-	//***** サイズを設定する *****//
-
-	//自身
+	//自身のサイズを算出
 	D3DXVECTOR3 sizeOwn = (m_vtxMax - m_vtxMin);
 
-	//当たり判定対象のギミック情報を取得
+	//対象のギミック情報を取得
 	m_pTargetGimmick = CStage::GetGimmick(0);
 
-	//対象
+	//対象のサイズを算出
 	D3DXVECTOR3 sizeTarget = (m_pTargetGimmick->GetVtxMax() - m_pTargetGimmick->GetVtxMin());
 
-	//モデル同士の当たり判定
+	//当たり判定
 	m_bCollision = CollisionModel(
-		&m_pos,					//自身の現在の位置
-		m_posOld,				//自身の前回の位置
+		&m_pos,						//自身の現在の位置
+		m_posOld,					//自身の前回の位置
 		m_pTargetGimmick->GetPos(),	//対象の位置
-		sizeOwn,				//自身のサイズ
-		sizeTarget				//対象のサイズ
+		sizeOwn,					//自身のサイズ
+		sizeTarget					//対象のサイズ
 	);
 
 	if (m_bGetItem)
-	{
+	{//アイテムを獲得している場合
 		return;
 	}
+
+	/* アイテムを獲得していない場合 */
 
 	//アイテム情報を取得
 	m_pTargetItem = CStage::GetItem();
 
-	//サイズを設定
+	//対象のサイズを算出
 	sizeTarget = (m_pTargetItem->GetVtxMax() - m_pTargetItem->GetVtxMin());
 
 	//当たり判定
 	m_bGetItem = CollisionModel(
-		&m_pos,					//自身の現在の位置
-		m_posOld,				//自身の前回の位置
+		&m_pos,						//自身の現在の位置
+		m_posOld,					//自身の前回の位置
 		m_pTargetItem->GetPos(),	//対象の位置
-		sizeOwn,				//自身のサイズ
-		sizeTarget				//対象のサイズ
+		sizeOwn,					//自身のサイズ
+		sizeTarget					//対象のサイズ
 	);
+
+	for (int i = 0; i < 2; i++)
+	{
+		//ドア情報を取得
+		CDoor* pDoor = CStage::GetDoor(i);
+
+		if (pDoor == nullptr)
+		{//NULLチェック
+			continue;
+		}
+
+		/* nullptrではない場合 */
+
+		//対象のサイズを算出
+		sizeTarget = (pDoor->GetVtxMax() - pDoor->GetVtxMin());
+
+		//当たり判定
+		m_bCollDoor = CollisionModel(
+			&m_pos,				//自身の現在の位置
+			m_posOld,			//自身の前回の位置
+			pDoor->GetPos(),	//対象の位置
+			sizeOwn,			//自身のサイズ
+			sizeTarget			//対象のサイズ
+		);
+	}
 }
 
 //================================================

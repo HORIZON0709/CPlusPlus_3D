@@ -27,7 +27,11 @@ private: /* 定数の定義 */
 	static const int MAX_LINE = 12;	//ラインの最大数
 
 public: /* 静的メンバ関数 */
-	static CDoor* Create();	//生成
+	/*
+		生成
+		char* pFileName ---> ファイル名
+	*/
+	static CDoor* Create(char* pFileName);
 
 public: /* コンストラクタ・デストラクタ */
 	CDoor();
@@ -41,6 +45,8 @@ public: /* オーバーライド関数 */
 
 private: /* メンバ関数 */
 	void SetLines();	//ラインの設定まとめ
+
+	void Collision();	//当たり判定
 
 private: /* メンバ変数 */
 	CLine* m_apLine[MAX_LINE];	//ラインのポインタ
