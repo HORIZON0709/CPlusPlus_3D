@@ -18,9 +18,7 @@
 //前方宣言
 //***************************
 class CModel;
-class CGimmick;
 class CLine;
-class CItem;
 
 //***************************
 //プレイヤークラスの定義
@@ -107,9 +105,7 @@ private:
 	void Set_Key(FILE* pFile, char aText[]);	//キー設定
 
 private: /* メンバ変数 */
-	CModel* m_pModel;				//モデルのポインタ
-	CGimmick* m_pTargetGimmick;		//ギミックのポインタ(当たり判定の対象)
-	CItem* m_pTargetItem;			//アイテムのポインタ(当たり判定の対象)
+	CModel* m_pModel;	//モデルのポインタ
 
 	D3DXMATRIX m_mtxWorld;	//ワールドマトリックス
 
@@ -131,13 +127,12 @@ private: /* メンバ変数 */
 	int m_nNumMotion;	//モーション数
 	int m_nNumKeySet;	//キーセット数
 	int m_nNumKey;		//キー数
-	int m_nCnt;			//カウント
 
 	bool m_bPressKey;	//キー押下中かどうか
 	bool m_bCollision;	//当たっているかどうか
 	bool m_bCollDoor;	//ドアとの当たり判定
 	bool m_bGetItem;	//アイテムを取得したかどうか
-	bool m_bFadeOut;
+	bool m_bFadeOut;	//フェードしたかどうか
 };
 
 #endif
