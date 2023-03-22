@@ -68,6 +68,7 @@ CPlayer* CPlayer::Create()
 //================================================
 CPlayer::CPlayer() :CObject::CObject(CObject::PRIORITY::PRIO_MODEL),
 	m_pModel(nullptr),
+	m_pItem(nullptr),
 	m_pos(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
 	m_posOld(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
 	m_move(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
@@ -83,7 +84,7 @@ CPlayer::CPlayer() :CObject::CObject(CObject::PRIORITY::PRIO_MODEL),
 	m_nNumKeySet(0),
 	m_nNumKey(0),
 	m_bPressKey(false),
-	m_bCollision(false),
+	m_bCollGimmick(false),
 	m_bCollDoor(false),
 	m_bGetItem(false)
 {
@@ -121,6 +122,7 @@ HRESULT CPlayer::Init()
 	Load();
 
 	//メンバ変数の初期化
+	m_pItem = nullptr;
 	m_pos = D3DXVECTOR3(-50.0f, 0.0f, 0.0f);
 	m_posOld = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -152,7 +154,7 @@ HRESULT CPlayer::Init()
 	m_nNumKeySet = 0;
 	m_nNumKey = 0;
 	m_bPressKey = false;
-	m_bCollision = false;
+	m_bCollGimmick = false;
 	m_bCollDoor = false;
 	m_bGetItem = false;
 
@@ -194,6 +196,9 @@ void CPlayer::Update()
 	//当たり判定
 	Collision();
 
+	//ステージ切り替え
+	StageChange();
+
 	if (!m_bFadeOut && m_bCollDoor)
 	{//暗転していない & ドアに当たった
 		//暗転
@@ -230,13 +235,13 @@ void CPlayer::Update()
 
 	CDebugProc::Print("size:[%f,%f,%f]\n", size.x, size.y, size.z);	//サイズ
 
-	if (m_bCollision)
+	if (m_bCollGimmick)
 	{//対象のオブジェクトに当たっている場合
-		CDebugProc::Print("Collision:[true]\n", m_bCollision);
+		CDebugProc::Print("Collision:[true]\n", m_bCollGimmick);
 	}
 	else
 	{//当たっていない場合
-		CDebugProc::Print("Collision:[false]\n", m_bCollision);
+		CDebugProc::Print("Collision:[false]\n", m_bCollGimmick);
 	}
 
 	//モデルパーツ
@@ -510,11 +515,7 @@ void CPlayer::Motion()
 //================================================
 void CPlayer::Collision()
 {
-	//自身のサイズを算出
-	D3DXVECTOR3 sizeOwn = (m_vtxMax - m_vtxMin);
-
-	D3DXVECTOR3 sizeTarget = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	//対象のサイズ
-
+	/* ギミック */
 	for (int i = 0; i < CStage::MAX_GIMMICK; i++)
 	{
 		//対象のギミック情報を取得
@@ -527,11 +528,14 @@ void CPlayer::Collision()
 
 		/* nullptrではない場合 */
 
+		//自身のサイズを算出
+		D3DXVECTOR3 sizeOwn = (m_vtxMax - m_vtxMin);
+
 		//対象のサイズを算出
-		sizeTarget = (pGimmick->GetVtxMax() - pGimmick->GetVtxMin());
+		D3DXVECTOR3 sizeTarget = (pGimmick->GetVtxMax() - pGimmick->GetVtxMin());
 
 		//当たり判定
-		m_bCollision = CollisionModel(
+		m_bCollGimmick = CollisionModel(
 			&m_pos,				//自身の現在の位置
 			m_posOld,			//自身の前回の位置
 			pGimmick->GetPos(),	//対象の位置
@@ -540,6 +544,7 @@ void CPlayer::Collision()
 		);
 	}
 
+	/* ドア */
 	for (int i = 0; i < CStage::MAX_DOOR; i++)
 	{
 		//ドア情報を取得
@@ -552,8 +557,11 @@ void CPlayer::Collision()
 
 		/* nullptrではない場合 */
 
+		//自身のサイズを算出
+		D3DXVECTOR3 sizeOwn = (m_vtxMax - m_vtxMin);
+
 		//対象のサイズを算出
-		sizeTarget = (pDoor->GetVtxMax() - pDoor->GetVtxMin());
+		D3DXVECTOR3 sizeTarget = (pDoor->GetVtxMax() - pDoor->GetVtxMin());
 
 		//当たり判定
 		m_bCollDoor = CollisionModel(
@@ -573,16 +581,19 @@ void CPlayer::Collision()
 	/* アイテムを獲得していない場合 */
 
 	//アイテム情報を取得
-	CItem* pItem = CStage::GetItem();
+	m_pItem = CStage::GetItem();
+
+	//自身のサイズを算出
+	D3DXVECTOR3 sizeOwn = (m_vtxMax - m_vtxMin);
 
 	//対象のサイズを算出
-	sizeTarget = (pItem->GetVtxMax() - pItem->GetVtxMin());
+	D3DXVECTOR3 sizeTarget = (m_pItem->GetVtxMax() - m_pItem->GetVtxMin());
 
 	//当たり判定
 	m_bGetItem = CollisionModel(
 		&m_pos,				//自身の現在の位置
 		m_posOld,			//自身の前回の位置
-		pItem->GetPos(),	//対象の位置
+		m_pItem->GetPos(),	//対象の位置
 		sizeOwn,			//自身のサイズ
 		sizeTarget			//対象のサイズ
 	);
@@ -590,10 +601,44 @@ void CPlayer::Collision()
 	if (m_bGetItem)
 	{//アイテムを獲得した場合
 		//死亡フラグの設定
-		pItem->SetDeathFlag();
+		m_pItem->SetDeathFlag();
 
 		//nullptrにする
-		pItem = nullptr;
+		m_pItem = nullptr;
+
+		//獲得状況をリセット
+		m_bGetItem = false;
+	}
+}
+
+//================================================
+//ステージ切り替え
+//================================================
+void CPlayer::StageChange()
+{
+	if (!m_bCollDoor)
+	{//ドアに触れていない
+		return;
+	}
+
+	/* ドアに当たった場合 */
+
+	for (int i = 0; i < CStage::MAX_DOOR; i++)
+	{
+		//ドア情報を取得
+		CDoor* pDoor = CStage::GetDoor(i);
+
+		if (pDoor == nullptr)
+		{//NULLチェック
+			continue;
+		}
+
+		/* nullptrではない場合 */
+
+		//方向を保存
+		CStage::DIRECTION dir = pDoor->GetDir();
+
+
 	}
 }
 

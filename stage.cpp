@@ -381,6 +381,9 @@ void CStage::Load(const char* pStage)
 			m_apDoor[nNumDoor]->SetPos(m_aModelSetInfo[i].pos);
 			m_apDoor[nNumDoor]->SetRot(m_aModelSetInfo[i].rot);
 
+			//方向の設定
+			m_apDoor[nNumDoor]->SetDir(m_aModelSetInfo[i].dir);
+
 			//カウントアップ
 			nNumDoor++;
 			break;
@@ -480,6 +483,39 @@ void CStage::Set_ModelSet(FILE* pFile)
 			fscanf(pFile, "%f", &pInfo->rot.x);
 			fscanf(pFile, "%f", &pInfo->rot.y);
 			fscanf(pFile, "%f", &pInfo->rot.z);
+		}
+		else if (strcmp(&aText[0], "DIR") == 0)
+		{//方向
+			//「＝」を読み込む
+			fscanf(pFile, "%s", &aText[0]);
+
+			int nDir = 0;	//方向読み込み用
+
+			//方向を読み込む
+			fscanf(pFile, "%d", &nDir);
+
+			switch (nDir)
+			{
+			case 0:	//左
+				pInfo->dir = DIRECTION::DIR_LEFT;
+				break;
+
+			case 1:	//奥
+				pInfo->dir = DIRECTION::DIR_BACK;
+				break;
+
+			case 2:	//右
+				pInfo->dir = DIRECTION::DIR_RIGHT;
+				break;
+
+			case 3:	//手前
+				pInfo->dir = DIRECTION::DIR_FRONT;
+				break;
+
+			default:	//その他
+				assert(false);
+				break;
+			}
 		}
 	}
 }

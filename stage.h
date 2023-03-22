@@ -36,9 +36,9 @@ public: /* 列挙型の定義 */
 		MAX
 	};
 
-private:
 	enum DIRECTION	//方向
 	{
+		DIR_NONE = -1,
 		DIR_LEFT = 0,	//左
 		DIR_BACK,		//奥
 		DIR_RIGHT,		//右
@@ -46,6 +46,7 @@ private:
 		DIR_MAX
 	};
 
+private:
 	enum MODEL_TYPE	//モデルタイプ
 	{
 		TYPE_NONE = -1,
@@ -76,6 +77,7 @@ private: /* 構造体の定義 */
 		MODEL_TYPE type;	//モデルタイプ
 		D3DXVECTOR3 pos;	//位置
 		D3DXVECTOR3 rot;	//向き
+		DIRECTION dir;		//方向
 	};
 
 public: /* 静的メンバ関数 */

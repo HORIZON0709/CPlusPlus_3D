@@ -44,7 +44,8 @@ CDoor* CDoor::Create(char* pFileName)
 //コンストラクタ
 //================================================
 CDoor::CDoor() :CObjectX::CObjectX(),
-	m_stageConnect(CStage::STAGE::NONE)
+	m_stageConnect(CStage::STAGE::NONE),
+	m_dir(CStage::DIRECTION::DIR_NONE)
 {
 	//メンバ変数のクリア
 	memset(m_apLine, 0, sizeof(m_apLine));
@@ -71,6 +72,7 @@ HRESULT CDoor::Init()
 
 	//メンバ変数の初期化
 	m_stageConnect = CStage::STAGE::NONE;
+	m_dir = CStage::DIRECTION::DIR_NONE;
 
 	for (int i = 0; i < MAX_LINE; i++)
 	{
@@ -125,6 +127,22 @@ void CDoor::Draw()
 		//ラインの描画
 		m_apLine[i]->Draw();
 	}
+}
+
+//================================================
+//方向の設定
+//================================================
+void CDoor::SetDir(CStage::DIRECTION dir)
+{
+	m_dir = dir;
+}
+
+//================================================
+//方向の取得
+//================================================
+CStage::DIRECTION CDoor::GetDir()
+{
+	return m_dir;
 }
 
 //================================================
@@ -276,3 +294,4 @@ void CDoor::SetLines()
 
 	nNum++;	//次に進める
 }
+

@@ -18,6 +18,7 @@
 //前方宣言
 //***************************
 class CModel;
+class CItem;
 class CLine;
 
 //***************************
@@ -94,6 +95,7 @@ private:
 	void Move();		//移動
 	void Motion();		//モーション
 	void Collision();	//当たり判定
+	void StageChange();	//ステージ切り替え
 
 	void SetVtxMaxAndMin();	//頂点の最大値と最小値の設定
 	void SetLines();		//ラインの設定まとめ
@@ -106,6 +108,7 @@ private:
 
 private: /* メンバ変数 */
 	CModel* m_pModel;	//モデルのポインタ
+	CItem* m_pItem;		//アイテムのポインタ
 
 	D3DXMATRIX m_mtxWorld;	//ワールドマトリックス
 
@@ -128,11 +131,11 @@ private: /* メンバ変数 */
 	int m_nNumKeySet;	//キーセット数
 	int m_nNumKey;		//キー数
 
-	bool m_bPressKey;	//キー押下中かどうか
-	bool m_bCollision;	//当たっているかどうか
-	bool m_bCollDoor;	//ドアとの当たり判定
-	bool m_bGetItem;	//アイテムを取得したかどうか
-	bool m_bFadeOut;	//フェードしたかどうか
+	bool m_bPressKey;		//キー押下中かどうか
+	bool m_bCollGimmick;	//ギミックとの当たり判定
+	bool m_bCollDoor;		//ドアとの当たり判定
+	bool m_bGetItem;		//アイテムを取得したかどうか
+	bool m_bFadeOut;		//フェードしたかどうか
 };
 
 #endif

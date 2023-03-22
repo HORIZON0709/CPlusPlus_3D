@@ -43,10 +43,17 @@ public: /* オーバーライド関数 */
 	void Update() override;		//更新
 	void Draw() override;		//描画
 
-private: /* メンバ関数 */
-	void SetLines();	//ラインの設定まとめ
+public: /* メンバ関数 */
+	/*
+		方向の設定
+		CStage::DIRECTION dir ---> 方向
+	*/
+	void SetDir(CStage::DIRECTION dir);
 
-	void Collision();	//当たり判定
+	CStage::DIRECTION GetDir();	//方向の取得
+
+private:
+	void SetLines();	//ラインの設定まとめ
 
 private: /* メンバ変数 */
 	CLine* m_apLine[MAX_LINE];	//ラインのポインタ
@@ -54,6 +61,8 @@ private: /* メンバ変数 */
 	D3DXMATRIX m_mtxWorld;	//ワールドマトリックス
 
 	CStage::STAGE m_stageConnect;	//繋がっているステージ
+
+	CStage::DIRECTION m_dir;	//方向
 };
 
 #endif
