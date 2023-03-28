@@ -29,6 +29,16 @@ const char* CStage::s_apFileName[] =
 
 static_assert(sizeof(CStage::s_apFileName) / sizeof(CStage::s_apFileName[0]) == CStage::STAGE::MAX, "aho");
 
+const float CStage::ROT_DOOR = 1.57f;	//ドアの向き
+
+const D3DXVECTOR3 CStage::POS_DOOR[CStage::DIRECTION::DIR_MAX] =
+{//ドアの位置
+	D3DXVECTOR3(0.0f,0.0f,0.0f),	//左
+	D3DXVECTOR3(0.0f,0.0f,0.0f),	//奥
+	D3DXVECTOR3(0.0f,0.0f,0.0f),	//右
+	D3DXVECTOR3(0.0f,0.0f,0.0f)		//手前
+};
+
 const float CStage::FLOAR_SIZE = 1000.0f;				//床のサイズ
 const float CStage::WALL_WIDTH = FLOAR_SIZE;			//壁の幅
 const float CStage::WALL_HEIGHT = FLOAR_SIZE * 0.5f;	//壁の高さ

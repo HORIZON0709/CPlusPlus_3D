@@ -52,6 +52,8 @@ public: /* メンバ関数 */
 
 	CStage::DIRECTION GetDir();	//方向の取得
 
+	CStage::STAGE GetStageConnect();	//繋がっているステージの取得
+
 private:
 	void SetLines();	//ラインの設定まとめ
 

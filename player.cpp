@@ -197,7 +197,7 @@ void CPlayer::Update()
 	Collision();
 
 	//ステージ切り替え
-	StageChange();
+	//StageChange();
 
 	if (!m_bFadeOut && m_bCollDoor)
 	{//暗転していない & ドアに当たった
@@ -583,6 +583,11 @@ void CPlayer::Collision()
 	//アイテム情報を取得
 	m_pItem = CStage::GetItem();
 
+	if (m_pItem == nullptr)
+	{//NULLチェック
+		return;
+	}
+
 	//自身のサイズを算出
 	D3DXVECTOR3 sizeOwn = (m_vtxMax - m_vtxMin);
 
@@ -637,6 +642,16 @@ void CPlayer::StageChange()
 
 		//方向を保存
 		CStage::DIRECTION dir = pDoor->GetDir();
+
+		//繋がっているステージを取得
+		CStage::STAGE stage = pDoor->GetStageConnect();
+
+		if (stage == CStage::STAGE::NONE)
+		{//繋がっているステージが無い場合
+			continue;
+		}
+
+		/* 繋がっているステージがある場合 */
 
 
 	}

@@ -62,6 +62,11 @@ public: /* 定数の定義 */
 
 	static const int MAX_GIMMICK = 8;	//ギミックの最大数
 	static const int MAX_DOOR = 2;		//ドアの最大数
+
+	static const float ROT_DOOR;
+
+	static const D3DXVECTOR3 POS_DOOR[DIRECTION::DIR_MAX];	//ドアの位置
+
 private:
 	static const float FLOAR_SIZE;	//床のサイズ
 	static const float WALL_WIDTH;	//壁の幅
