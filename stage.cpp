@@ -33,10 +33,10 @@ const float CStage::ROT_DOOR = 1.57f;	//ドアの向き
 
 const D3DXVECTOR3 CStage::POS_DOOR[CStage::DIRECTION::DIR_MAX] =
 {//ドアの位置
-	D3DXVECTOR3(0.0f,0.0f,0.0f),	//左
-	D3DXVECTOR3(0.0f,0.0f,0.0f),	//奥
-	D3DXVECTOR3(0.0f,0.0f,0.0f),	//右
-	D3DXVECTOR3(0.0f,0.0f,0.0f)		//手前
+	D3DXVECTOR3(-200.0f,0.0f,0.0f),	//左
+	D3DXVECTOR3(0.0f,0.0f,200.0f),	//奥
+	D3DXVECTOR3(200.0f,0.0f,0.0f),	//右
+	D3DXVECTOR3(0.0f,0.0f,-200.0f)	//手前
 };
 
 const float CStage::FLOAR_SIZE = 1000.0f;				//床のサイズ
@@ -387,12 +387,18 @@ void CStage::Load(const char* pStage)
 			//生成
 			m_apDoor[nNumDoor] = CDoor::Create(&aFileName[nIndex][0]);
 
-			//位置・向きの設定
-			m_apDoor[nNumDoor]->SetPos(m_aModelSetInfo[i].pos);
-			m_apDoor[nNumDoor]->SetRot(m_aModelSetInfo[i].rot);
-
 			//方向の設定
 			m_apDoor[nNumDoor]->SetDir(m_aModelSetInfo[i].dir);
+
+			//位置の設定
+			m_apDoor[nNumDoor]->SetPos(POS_DOOR[m_aModelSetInfo[i].dir]);
+
+			if (m_aModelSetInfo[i].dir == DIRECTION::DIR_LEFT ||
+				m_aModelSetInfo[i].dir == DIRECTION::DIR_RIGHT)
+			{//ドアの位置が [左側 or 右側] にある場合
+				//向きの設定
+				m_apDoor[nNumDoor]->SetRot(D3DXVECTOR3(0.0f, ROT_DOOR, 0.0f));
+			}
 
 			//カウントアップ
 			nNumDoor++;

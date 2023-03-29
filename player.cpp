@@ -25,6 +25,11 @@
 
 #include <assert.h>
 
+namespace
+{
+CStage::DIRECTION dirDoor = CStage::DIRECTION::DIR_NONE;	//触れたドアの方向
+}
+
 //***************************
 //定数の定義
 //***************************
@@ -197,7 +202,7 @@ void CPlayer::Update()
 	Collision();
 
 	//ステージ切り替え
-	//StageChange();
+	StageChange();
 
 	if (!m_bFadeOut && m_bCollDoor)
 	{//暗転していない & ドアに当たった
@@ -210,7 +215,24 @@ void CPlayer::Update()
 
 	if (m_bFadeOut && (CApplication::GetFade()->GetState() == CFade::STATE::NONE))
 	{//暗転した & 現在フェードしていない
-		//Change(MODE::RESULT);	//モードの設定
+		switch (dirDoor)
+		{
+		case CStage::DIRECTION::DIR_LEFT:	//左
+			m_pos = CStage::POS_DOOR[CStage::DIRECTION::DIR_RIGHT];
+			break;
+
+		case CStage::DIRECTION::DIR_BACK:	//奥
+			m_pos = CStage::POS_DOOR[CStage::DIRECTION::DIR_FRONT];
+			break;
+
+		case CStage::DIRECTION::DIR_RIGHT:	//右
+			m_pos = CStage::POS_DOOR[CStage::DIRECTION::DIR_LEFT];
+			break;
+
+		case CStage::DIRECTION::DIR_FRONT:	//手前
+			m_pos = CStage::POS_DOOR[CStage::DIRECTION::DIR_BACK];
+			break;
+		}
 
 		//ステージ切り替え
 		CGame::GetStage()->Change(CStage::STAGE::Stage02);
@@ -640,20 +662,18 @@ void CPlayer::StageChange()
 
 		/* nullptrではない場合 */
 
-		//方向を保存
-		CStage::DIRECTION dir = pDoor->GetDir();
+		////繋がっているステージを取得
+		//CStage::STAGE stage = pDoor->GetStageConnect();
 
-		//繋がっているステージを取得
-		CStage::STAGE stage = pDoor->GetStageConnect();
-
-		if (stage == CStage::STAGE::NONE)
-		{//繋がっているステージが無い場合
-			continue;
-		}
+		//if (stage == CStage::STAGE::NONE)
+		//{//繋がっているステージが無い場合
+		//	continue;
+		//}
 
 		/* 繋がっているステージがある場合 */
 
-
+		//方向を保存
+		dirDoor = pDoor->GetDir();
 	}
 }
 

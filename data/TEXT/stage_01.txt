@@ -55,6 +55,7 @@ END_MODELSET
 
 #------------------
 #ƒhƒA
+#yPOS,ROT‚ÌÝ’è–³‚µz
 #y•ûŒü(DIR)“à–óz
 #(0,¶)
 #(1,‰œ)
@@ -62,10 +63,8 @@ END_MODELSET
 #(3,Žè‘O)
 #------------------
 MODELSET
-	INDEX = 2		
+	INDEX = 2
 	MODEL_TYPE = 3
-	POS = 200.0 0.0 0.0
-	ROT = 0.0 0.0 0.0
 	DIR = 2
 END_MODELSET
 
