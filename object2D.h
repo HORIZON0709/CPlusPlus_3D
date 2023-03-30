@@ -109,6 +109,15 @@ public: /* Texture */
 	*/
 	void SetTexUV(const int nDivNum,const int nPtnAnim);
 
+public: /* IsDraw */
+	/*
+		//描画するかどうかの設定
+		bool bDraw ---> 描画するかどうか
+		false : 描画しない
+		true  : 描画する
+	*/
+	void SetIsDraw(bool bDraw);
+
 private: /* メンバ変数 */
 	LPDIRECT3DTEXTURE9 m_pTexture;		//テクスチャへのポインタ
 	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff;	//頂点バッファへのポインタ
@@ -119,6 +128,8 @@ private: /* メンバ変数 */
 	D3DXVECTOR3 m_move;	//移動量
 	D3DXVECTOR2 m_size;	//サイズ
 	D3DXCOLOR m_col;	//色
+
+	bool m_bDraw;	//描画するかどうか
 };
 
 #endif

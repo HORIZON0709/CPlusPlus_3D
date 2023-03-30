@@ -17,10 +17,10 @@
 
 #include "camera.h"
 #include "light.h"
-#include "polygon3D.h"
 #include "player.h"
 #include "item.h"
 #include "stage.h"
+#include "panel.h"
 
 #include <assert.h>
 #include <time.h>
@@ -39,6 +39,7 @@ CCamera* CGame::m_pCamera = nullptr;	//カメラ
 CLight* CGame::m_pLight = nullptr;		//ライト
 CPlayer* CGame::m_pPlayer = nullptr;	//プレイヤー
 CStage* CGame::m_pStage = nullptr;		//ステージ
+CPanel* CGame::m_pPanel = nullptr;		//パネル
 
 //================================================
 //カメラ情報を取得
@@ -70,6 +71,14 @@ CPlayer* CGame::GetPlayer()
 CStage* CGame::GetStage()
 {
 	return m_pStage;
+}
+
+//================================================
+//パネル情報を取得
+//================================================
+CPanel* CGame::GetPanel()
+{
+	return m_pPanel;
 }
 
 //================================================
@@ -134,6 +143,13 @@ HRESULT CGame::Init()
 		m_pStage = CStage::Create(CStage::STAGE::Stage01);	//生成
 	}
 
+	/* パネル */
+
+	if (m_pPanel == nullptr)
+	{//NULLチェック
+		m_pPanel = CPanel::Create();	//生成
+	}
+
 	//明転した
 	m_bFadeOut = false;
 
@@ -151,8 +167,16 @@ void CGame::Uninit()
 	/* オブジェクト */
 
 	CObject2D::ReleaseAll();	//全ての解放(2D)
-	CObject3D::ReleaseAll();	//全ての解放(3D)
 	CObjectX::ReleaseAll();		//全ての解放(Xモデル)
+
+	/* パネル */
+
+	if (m_pPanel == nullptr)
+	{
+		m_pPanel->Uninit();	//終了
+		delete m_pPanel;	//メモリの解放
+		m_pPanel = nullptr;	//nullptrにする
+	}
 
 	/* ステージ */
 
@@ -191,7 +215,15 @@ void CGame::Uninit()
 //================================================
 void CGame::Update()
 {
+	//ワイヤーフレームの切り替え
+	SwitchWireFrame();
+
 	CObject::UpdateAll();	//オブジェクト
+
+	if (m_pPanel != nullptr)
+	{//NULLチェック
+		m_pPanel->Update();	//パネル
+	}
 
 	if (m_pCamera != nullptr)
 	{//NULLチェック
@@ -207,9 +239,6 @@ void CGame::Update()
 	{//NULLチェック
 		m_pStage = m_pStage->Set();	//ステージ
 	}
-
-	//ワイヤーフレームの切り替え
-	SwitchWireFrame();
 
 	if (CApplication::GetInput()->GetKey()->Trigger(CInput::DECISION))
 	{//Enterキー押下

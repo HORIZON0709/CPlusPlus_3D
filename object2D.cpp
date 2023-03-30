@@ -40,12 +40,13 @@ CObject2D* CObject2D::Create()
 CObject2D::CObject2D() : CObject::CObject(CObject::PRIORITY::PRIO_POLYGON_2D),
 	m_pTexture(nullptr),
 	m_pVtxBuff(nullptr),
+	m_texture(CTexture::NONE),
 	m_pos(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
 	m_rot(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
 	m_move(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
 	m_size(D3DXVECTOR2(0.0f,0.0f)),
 	m_col(D3DXCOLOR(1.0f,1.0f,1.0f,1.0f)),
-	m_texture(CTexture::NONE)
+	m_bDraw(false)
 {
 	//タイプの設定
 	CObject::SetObjType(CObject::OBJ_TYPE::POLYGON_2D);
@@ -78,12 +79,13 @@ HRESULT CObject2D::Init()
 	LPDIRECT3DDEVICE9 pDevice = CApplication::GetRenderer()->GetDevice();
 
 	//メンバ変数の初期設定
+	m_texture = CTexture::NONE;
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_size = D3DXVECTOR2(0.0f, 0.0f);
 	m_col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-	m_texture = CTexture::NONE;
+	m_bDraw = true;
 
 	//頂点バッファの生成
 	pDevice->CreateVertexBuffer(sizeof(VERTEX_2D) * 4,
@@ -160,6 +162,13 @@ void CObject2D::Update()
 //================================================
 void CObject2D::Draw()
 {
+	if (!m_bDraw)
+	{//描画しない場合
+		return;
+	}
+
+	/* 描画する場合 */
+
 	//デバイスの取得
 	LPDIRECT3DDEVICE9 pDevice = CApplication::GetRenderer()->GetDevice();
 
@@ -320,4 +329,12 @@ void CObject2D::SetTexUV(const int nDivNum, const int nPtnAnim)
 
 	//頂点バッファをアンロックする
 	m_pVtxBuff->Unlock();
+}
+
+//================================================
+//描画するかどうかの設定
+//================================================
+void CObject2D::SetIsDraw(bool bDraw)
+{
+	m_bDraw = bDraw;
 }
