@@ -27,6 +27,16 @@ public: /* 定義 */
 		Bg_Title_Tentative = 0,	//仮背景：タイトル
 		Bg_Result_Tentative,	//仮背景：リザルト
 
+		/* Number_Single */
+		Number_Single_1,	//ナンバー画像(単体)[1]
+		Number_Single_2,	//ナンバー画像(単体)[2]
+		Number_Single_3,	//ナンバー画像(単体)[3]
+		Number_Single_4,	//ナンバー画像(単体)[4]
+		Number_Single_5,	//ナンバー画像(単体)[5]
+		Number_Single_6,	//ナンバー画像(単体)[6]
+		Number_Single_7,	//ナンバー画像(単体)[7]
+		Number_Single_8,	//ナンバー画像(単体)[8]
+
 		MAX
 	};
 

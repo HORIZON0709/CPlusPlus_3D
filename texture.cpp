@@ -23,6 +23,16 @@ const char* CTexture::s_FileName[] =
 	/* 背景 */
 	"data/TEXTURE/Bg_Title_Tentative.png",	//仮背景：タイトル
 	"data/TEXTURE/Bg_Result_Tentative.png",	//仮背景：リザルト
+
+	/* Number_Single */
+	"data/TEXTURE/Number_Single/Number_Single_1.png",	//ナンバー画像(単体)[1]
+	"data/TEXTURE/Number_Single/Number_Single_2.png",	//ナンバー画像(単体)[2]
+	"data/TEXTURE/Number_Single/Number_Single_3.png",	//ナンバー画像(単体)[3]
+	"data/TEXTURE/Number_Single/Number_Single_4.png",	//ナンバー画像(単体)[4]
+	"data/TEXTURE/Number_Single/Number_Single_5.png",	//ナンバー画像(単体)[5]
+	"data/TEXTURE/Number_Single/Number_Single_6.png",	//ナンバー画像(単体)[6]
+	"data/TEXTURE/Number_Single/Number_Single_7.png",	//ナンバー画像(単体)[7]
+	"data/TEXTURE/Number_Single/Number_Single_8.png",	//ナンバー画像(単体)[8]
 };
 
 static_assert(sizeof(CTexture::s_FileName) / sizeof(CTexture::s_FileName[0]) == CTexture::MAX, "aho");

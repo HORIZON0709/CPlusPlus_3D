@@ -23,6 +23,9 @@ class CObject2D;
 class CPanel
 {/* 基本クラス */
 private: /* 定数の定義 */
+	static const int MAX_PANEL = 8;	//パネルの最大数
+
+	static const float PANEL_SIZE;	//パネルのサイズ
 
 public: /* 静的メンバ関数 */
 	static CPanel* Create();	//生成
@@ -37,14 +40,15 @@ public: /* メンバ関数 */
 	void Update();	//更新
 	void Draw();	//描画
 
+	bool GetIsPanel();	//パネル操作中かどうかを取得
+
 private:
 
 private: /* メンバ変数 */
-	CObject2D* m_pBg;			//背景
-	CObject2D* m_apPanel[8];	//ステージ数分のポリゴン
+	CObject2D* m_pBg;					//背景
+	CObject2D* m_apPanel[MAX_PANEL];	//ステージ数分のポリゴン
 
-	bool m_bPanel;
-	
+	bool m_bPanel;	//パネル操作中かどうか
 };
 
 #endif

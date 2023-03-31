@@ -218,12 +218,19 @@ void CGame::Update()
 	//ワイヤーフレームの切り替え
 	SwitchWireFrame();
 
-	CObject::UpdateAll();	//オブジェクト
-
 	if (m_pPanel != nullptr)
 	{//NULLチェック
 		m_pPanel->Update();	//パネル
 	}
+
+	if (m_pPanel->GetIsPanel())
+	{//パネル操作中の場合
+		return;
+	}
+
+	/* パネル操作をしていない場合 */
+
+	CObject::UpdateAll();	//オブジェクト
 
 	if (m_pCamera != nullptr)
 	{//NULLチェック

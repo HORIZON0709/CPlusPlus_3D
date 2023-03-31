@@ -18,6 +18,11 @@
 
 #include <assert.h>
 
+//***************************
+//定数の定義
+//***************************
+const float CPanel::PANEL_SIZE = 100.0f;	//パネルのサイズ
+
 //================================================
 //生成
 //================================================
@@ -76,6 +81,46 @@ HRESULT CPanel::Init()
 	//描画しない
 	m_pBg->SetIsDraw(false);
 
+	float fWidth = CRenderer::SCREEN_WIDTH;		//画面の横幅
+	float fHeight = CRenderer::SCREEN_HEIGHT;	//画面の縦幅
+
+	D3DXVECTOR3 aPos[MAX_PANEL] =
+	{//パネルの位置
+		D3DXVECTOR3(fWidth * 0.4f, fHeight * 0.3f, 0.0f),	//1
+		D3DXVECTOR3(fWidth * 0.5f, fHeight * 0.3f, 0.0f),	//2
+		D3DXVECTOR3(fWidth * 0.6f, fHeight * 0.3f, 0.0f),	//3
+
+		D3DXVECTOR3(fWidth * 0.4f, fHeight * 0.5f, 0.0f),	//4
+		D3DXVECTOR3(fWidth * 0.5f, fHeight * 0.5f, 0.0f),	//5
+		D3DXVECTOR3(fWidth * 0.6f, fHeight * 0.5f, 0.0f),	//6
+
+		D3DXVECTOR3(fWidth * 0.4f, fHeight * 0.7f, 0.0f),	//7
+		D3DXVECTOR3(fWidth * 0.5f, fHeight * 0.7f, 0.0f)	//8
+	};
+
+	int nTex = CTexture::TEXTURE::Number_Single_1;	//テクスチャ設定用
+
+	for (int i = 0; i < MAX_PANEL; i++)
+	{
+		//パネルの生成
+		m_apPanel[i] = CObject2D::Create();
+
+		//位置の設定
+		m_apPanel[i]->SetPos(aPos[i]);
+
+		//サイズの設定
+		m_apPanel[i]->SetSize(D3DXVECTOR2(PANEL_SIZE, PANEL_SIZE));
+
+		//テクスチャの設定
+		m_apPanel[i]->SetTexture((CTexture::TEXTURE)nTex);
+
+		//次のテクスチャにする
+		nTex++;
+
+		//描画しない
+		m_apPanel[i]->SetIsDraw(false);
+	}
+
 	return S_OK;
 }
 
@@ -84,6 +129,18 @@ HRESULT CPanel::Init()
 //================================================
 void CPanel::Uninit()
 {
+	for (int i = 0; i < MAX_PANEL; i++)
+	{
+		if (m_apPanel[i] != nullptr)
+		{//NULLチェック
+			m_apPanel[i] = nullptr;
+		}
+	}
+
+	if (m_pBg != nullptr)
+	{//NULLチェック
+		m_pBg = nullptr;
+	}
 }
 
 //================================================
@@ -97,8 +154,16 @@ void CPanel::Update()
 		m_bPanel = m_bPanel ? false : true;
 	}
 
-	//描画する
+	/* 描画する */
+
+	//背景
 	m_pBg->SetIsDraw(m_bPanel);
+
+	for (int i = 0; i < MAX_PANEL; i++)
+	{
+		//パネル
+		m_apPanel[i]->SetIsDraw(m_bPanel);
+	}
 }
 
 //================================================
@@ -106,4 +171,12 @@ void CPanel::Update()
 //================================================
 void CPanel::Draw()
 {
+}
+
+//================================================
+//パネル操作中かどうかを取得
+//================================================
+bool CPanel::GetIsPanel()
+{
+	return m_bPanel;
 }
