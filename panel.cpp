@@ -23,6 +23,11 @@
 //***************************
 const float CPanel::PANEL_SIZE = 100.0f;	//パネルのサイズ
 
+//***************************
+//静的メンバ変数
+//***************************
+CPanel::PANEL_INFO CPanel::m_aPanelInfo[MAX_PANEL] = {};	//パネル情報
+
 //================================================
 //生成
 //================================================
@@ -49,6 +54,9 @@ CPanel* CPanel::Create()
 //================================================
 CPanel::CPanel() :
 	m_pBg(nullptr),
+	m_pSelect(nullptr),
+	m_nPosX(0),
+	m_nPosY(0),
 	m_bPanel(false)
 {
 	//メンバ変数のクリア
@@ -68,21 +76,31 @@ CPanel::~CPanel()
 HRESULT CPanel::Init()
 {
 	//メンバ変数の初期化
+	m_nPosX = 0;
+	m_nPosY = 0;
 	m_bPanel = false;
 
-	//背景の生成
+	float fWidth = (float)CRenderer::SCREEN_WIDTH;		//画面の横幅
+	float fHeight = (float)CRenderer::SCREEN_HEIGHT;	//画面の縦幅
+
+	for (int i = 0; i < MAX_PANEL; i++)
+	{//パネル情報の初期化
+		m_aPanelInfo[i].pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+		m_aPanelInfo[i].stage = CStage::STAGE::NONE;
+	}
+
+	/* 背景 */
+
+	//生成
 	m_pBg = CObject2D::Create();
 
 	//各情報の設定
-	m_pBg->SetPos(D3DXVECTOR3(CRenderer::SCREEN_WIDTH * 0.5f, CRenderer::SCREEN_HEIGHT * 0.5f, 0.0f));
-	m_pBg->SetSize(D3DXVECTOR2((float)CRenderer::SCREEN_WIDTH, (float)CRenderer::SCREEN_HEIGHT));
+	m_pBg->SetPos(D3DXVECTOR3(fWidth * 0.5f, fHeight * 0.5f, 0.0f));
+	m_pBg->SetSize(D3DXVECTOR2(fWidth, fHeight));
 	m_pBg->SetCol(D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.5f));
 
 	//描画しない
 	m_pBg->SetIsDraw(false);
-
-	float fWidth = CRenderer::SCREEN_WIDTH;		//画面の横幅
-	float fHeight = CRenderer::SCREEN_HEIGHT;	//画面の縦幅
 
 	D3DXVECTOR3 aPos[MAX_PANEL] =
 	{//パネルの位置
@@ -98,11 +116,26 @@ HRESULT CPanel::Init()
 		D3DXVECTOR3(fWidth * 0.5f, fHeight * 0.7f, 0.0f)	//8
 	};
 
+	/* 選択用 */
+
+	//生成
+	m_pSelect = CObject2D::Create();
+
+	//各情報の設定
+	m_pSelect->SetPos(aPos[0]);
+	m_pSelect->SetSize(D3DXVECTOR2(PANEL_SIZE + 20.0f, PANEL_SIZE + 20.0f));
+	m_pSelect->SetCol(D3DXCOLOR(1.0f, 0.5f, 0.0f, 1.0f));
+
+	//描画しない
+	m_pSelect->SetIsDraw(false);
+
+	/* パネル */
+
 	int nTex = CTexture::TEXTURE::Number_Single_1;	//テクスチャ設定用
 
 	for (int i = 0; i < MAX_PANEL; i++)
 	{
-		//パネルの生成
+		//生成
 		m_apPanel[i] = CObject2D::Create();
 
 		//位置の設定
@@ -137,6 +170,11 @@ void CPanel::Uninit()
 		}
 	}
 
+	if (m_pSelect != nullptr)
+	{//NULLチェック
+		m_pSelect = nullptr;
+	}
+
 	if (m_pBg != nullptr)
 	{//NULLチェック
 		m_pBg = nullptr;
@@ -154,10 +192,23 @@ void CPanel::Update()
 		m_bPanel = m_bPanel ? false : true;
 	}
 
+	if (!m_bPanel)
+	{//パネル操作をしていない場合
+		return;
+	}
+
+	/* パネル操作中の場合 */
+
+	//パネルの選択
+	SelectPanel();
+
 	/* 描画する */
 
 	//背景
 	m_pBg->SetIsDraw(m_bPanel);
+
+	//選択用
+	m_pSelect->SetIsDraw(m_bPanel);
 
 	for (int i = 0; i < MAX_PANEL; i++)
 	{
@@ -179,4 +230,65 @@ void CPanel::Draw()
 bool CPanel::GetIsPanel()
 {
 	return m_bPanel;
+}
+
+//================================================
+//パネルの選択
+//================================================
+void CPanel::SelectPanel()
+{
+	float fWidth = (float)CRenderer::SCREEN_WIDTH;		//画面の横幅
+	float fHeight = (float)CRenderer::SCREEN_HEIGHT;	//画面の縦幅
+
+	D3DXVECTOR3 aPos[GRID_Y][GRID_X] = {};	//パネルの位置
+
+	for (int Y = 0; Y < GRID_Y; Y++)
+	{
+		for (int X = 0; X < GRID_X; X++)
+		{
+			//位置を設定
+			aPos[Y][X] = D3DXVECTOR3(fWidth * (0.3f + (0.1f * (X + 1))), fHeight * ((0.2f * (Y + 1)) + 0.1f), 0.0f);
+		}
+	}
+
+	if (CApplication::GetInputKeyboard()->GetTrigger(DIK_W))
+	{//Wキー押下
+		m_nPosY--;	//-1する
+
+		if (m_nPosY < 0)
+		{//0未満(-1以下)になった場合
+			m_nPosY = 0;	//0に固定
+		}
+	}
+	else if (CApplication::GetInputKeyboard()->GetTrigger(DIK_S))
+	{//Sキー押下
+		m_nPosY++;	//+1する
+
+		if (m_nPosY > 2)
+		{//2より大きく(3以上)になった場合
+			m_nPosY = 2;	//2に固定
+		}
+	}
+
+	if (CApplication::GetInputKeyboard()->GetTrigger(DIK_A))
+	{//Aキー押下
+		m_nPosX--;	//-1する
+
+		if (m_nPosX < 0)
+		{//0未満(-1以下)になった場合
+			m_nPosX = 0;	//0に固定
+		}
+	}
+	else if (CApplication::GetInputKeyboard()->GetTrigger(DIK_D))
+	{//Dキー押下
+		m_nPosX++;	//+1する
+
+		if (m_nPosX > 2)
+		{//2より大きく(3以上)になった場合
+			m_nPosX = 2;	//2に固定
+		}
+	}
+
+	//選択用の位置の設定
+	m_pSelect->SetPos(aPos[m_nPosY][m_nPosX]);
 }

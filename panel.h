@@ -12,6 +12,8 @@
 //***************************
 #include <d3dx9.h>
 
+#include "stage.h"
+
 //***************************
 //前方宣言
 //***************************
@@ -24,11 +26,23 @@ class CPanel
 {/* 基本クラス */
 private: /* 定数の定義 */
 	static const int MAX_PANEL = 8;	//パネルの最大数
+	static const int GRID_X = 3;	//マス目の数(X軸)
+	static const int GRID_Y = 3;	//マス目の数(Y軸)
 
 	static const float PANEL_SIZE;	//パネルのサイズ
 
+private: /* 構造体の定義 */
+	struct PANEL_INFO	//パネル情報
+	{
+		D3DXVECTOR3 pos;		//パネルの位置
+		CStage::STAGE stage;	//ステージ
+	};
+
 public: /* 静的メンバ関数 */
 	static CPanel* Create();	//生成
+
+public: /* 静的メンバ変数 */
+	static PANEL_INFO m_aPanelInfo[MAX_PANEL];	//パネル情報
 
 public: /* コンストラクタ・デストラクタ */
 	CPanel();
@@ -43,10 +57,15 @@ public: /* メンバ関数 */
 	bool GetIsPanel();	//パネル操作中かどうかを取得
 
 private:
+	void SelectPanel();	//パネルの選択
 
 private: /* メンバ変数 */
 	CObject2D* m_pBg;					//背景
+	CObject2D* m_pSelect;				//選択用
 	CObject2D* m_apPanel[MAX_PANEL];	//ステージ数分のポリゴン
+
+	int m_nPosX;	//位置(X軸)
+	int m_nPosY;	//位置(Y軸)
 
 	bool m_bPanel;	//パネル操作中かどうか
 };
