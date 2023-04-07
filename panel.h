@@ -34,6 +34,7 @@ private: /* 定数の定義 */
 private: /* 構造体の定義 */
 	struct PANEL_INFO	//パネル情報
 	{
+		CObject2D* m_pPanel;	//パネルのポインタ
 		D3DXVECTOR3 pos;		//パネルの位置
 		CStage::STAGE stage;	//ステージ
 	};
@@ -41,7 +42,7 @@ private: /* 構造体の定義 */
 public: /* 静的メンバ関数 */
 	static CPanel* Create();	//生成
 
-public: /* 静的メンバ変数 */
+private: /* 静的メンバ変数 */
 	static PANEL_INFO m_aPanelInfo[MAX_PANEL];	//パネル情報
 
 public: /* コンストラクタ・デストラクタ */
@@ -59,15 +60,29 @@ public: /* メンバ関数 */
 private:
 	void SelectPanel();	//パネルの選択
 
+	/*
+		パネルのサイズの設定
+		bool bIsSelect ---> 選択中かどうか
+	*/
+	void SetPanelSize(bool bIsSelect);
+
+	/*
+		選択用の色の設定
+		bool bIsSelect ---> 選択中かどうか
+	*/
+	void SetSelectColor(bool bIsSelect);
+
 private: /* メンバ変数 */
-	CObject2D* m_pBg;					//背景
-	CObject2D* m_pSelect;				//選択用
-	CObject2D* m_apPanel[MAX_PANEL];	//ステージ数分のポリゴン
+	CObject2D* m_pBg;		//背景
+	CObject2D* m_pSelect;	//選択用
+
+	D3DXVECTOR3 m_aPos[GRID_Y][GRID_X];	//パネルの位置
 
 	int m_nPosX;	//位置(X軸)
 	int m_nPosY;	//位置(Y軸)
 
-	bool m_bPanel;	//パネル操作中かどうか
+	bool m_bPanel;		//パネル操作中かどうか
+	bool m_bIsSelect;	//選択中かどうか
 };
 
 #endif

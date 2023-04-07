@@ -57,10 +57,11 @@ CPanel::CPanel() :
 	m_pSelect(nullptr),
 	m_nPosX(0),
 	m_nPosY(0),
-	m_bPanel(false)
+	m_bPanel(false),
+	m_bIsSelect(false)
 {
 	//メンバ変数のクリア
-	memset(m_apPanel, 0, sizeof(m_apPanel));
+	memset(&m_aPos, 0, sizeof(m_aPos));
 }
 
 //================================================
@@ -79,15 +80,10 @@ HRESULT CPanel::Init()
 	m_nPosX = 0;
 	m_nPosY = 0;
 	m_bPanel = false;
+	m_bIsSelect = false;
 
 	float fWidth = (float)CRenderer::SCREEN_WIDTH;		//画面の横幅
 	float fHeight = (float)CRenderer::SCREEN_HEIGHT;	//画面の縦幅
-
-	for (int i = 0; i < MAX_PANEL; i++)
-	{//パネル情報の初期化
-		m_aPanelInfo[i].pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-		m_aPanelInfo[i].stage = CStage::STAGE::NONE;
-	}
 
 	/* 背景 */
 
@@ -102,56 +98,75 @@ HRESULT CPanel::Init()
 	//描画しない
 	m_pBg->SetIsDraw(false);
 
-	D3DXVECTOR3 aPos[MAX_PANEL] =
-	{//パネルの位置
-		D3DXVECTOR3(fWidth * 0.4f, fHeight * 0.3f, 0.0f),	//1
-		D3DXVECTOR3(fWidth * 0.5f, fHeight * 0.3f, 0.0f),	//2
-		D3DXVECTOR3(fWidth * 0.6f, fHeight * 0.3f, 0.0f),	//3
-
-		D3DXVECTOR3(fWidth * 0.4f, fHeight * 0.5f, 0.0f),	//4
-		D3DXVECTOR3(fWidth * 0.5f, fHeight * 0.5f, 0.0f),	//5
-		D3DXVECTOR3(fWidth * 0.6f, fHeight * 0.5f, 0.0f),	//6
-
-		D3DXVECTOR3(fWidth * 0.4f, fHeight * 0.7f, 0.0f),	//7
-		D3DXVECTOR3(fWidth * 0.5f, fHeight * 0.7f, 0.0f)	//8
-	};
-
 	/* 選択用 */
 
 	//生成
 	m_pSelect = CObject2D::Create();
 
 	//各情報の設定
-	m_pSelect->SetPos(aPos[0]);
+	m_pSelect->SetPos(m_aPanelInfo[0].pos);
 	m_pSelect->SetSize(D3DXVECTOR2(PANEL_SIZE + 20.0f, PANEL_SIZE + 20.0f));
 	m_pSelect->SetCol(D3DXCOLOR(1.0f, 0.5f, 0.0f, 1.0f));
 
 	//描画しない
 	m_pSelect->SetIsDraw(false);
 
-	/* パネル */
+	{//パネルの位置を設定する
+		D3DXVECTOR3 aPos[MAX_PANEL + 1] =
+		{//パネルの位置(固定)
+			D3DXVECTOR3(fWidth * 0.4f, fHeight * 0.3f, 0.0f),	//1
+			D3DXVECTOR3(fWidth * 0.5f, fHeight * 0.3f, 0.0f),	//2
+			D3DXVECTOR3(fWidth * 0.6f, fHeight * 0.3f, 0.0f),	//3
+
+			D3DXVECTOR3(fWidth * 0.4f, fHeight * 0.5f, 0.0f),	//4
+			D3DXVECTOR3(fWidth * 0.5f, fHeight * 0.5f, 0.0f),	//5
+			D3DXVECTOR3(fWidth * 0.6f, fHeight * 0.5f, 0.0f),	//6
+
+			D3DXVECTOR3(fWidth * 0.4f, fHeight * 0.7f, 0.0f),	//7
+			D3DXVECTOR3(fWidth * 0.5f, fHeight * 0.7f, 0.0f),	//8
+			D3DXVECTOR3(fWidth * 0.6f, fHeight * 0.7f, 0.0f)	//9
+		};
+
+		for (int Y = 0; Y < GRID_Y; Y++)
+		{
+			for (int X = 0; X < GRID_X; X++)
+			{
+				//3×3マスでの位置を保存する
+				m_aPos[Y][X] = aPos[X + (Y * 3)];
+			}
+		}
+
+		for (int i = 0; i < MAX_PANEL; i++)
+		{
+			//パネルの位置を設定
+			m_aPanelInfo[i].pos = aPos[i];
+		}
+	}
 
 	int nTex = CTexture::TEXTURE::Number_Single_1;	//テクスチャ設定用
 
 	for (int i = 0; i < MAX_PANEL; i++)
-	{
+	{//パネル情報の初期化
 		//生成
-		m_apPanel[i] = CObject2D::Create();
+		m_aPanelInfo[i].m_pPanel = CObject2D::Create();
 
 		//位置の設定
-		m_apPanel[i]->SetPos(aPos[i]);
+		m_aPanelInfo[i].m_pPanel->SetPos(m_aPanelInfo[i].pos);
 
 		//サイズの設定
-		m_apPanel[i]->SetSize(D3DXVECTOR2(PANEL_SIZE, PANEL_SIZE));
+		m_aPanelInfo[i].m_pPanel->SetSize(D3DXVECTOR2(PANEL_SIZE, PANEL_SIZE));
 
 		//テクスチャの設定
-		m_apPanel[i]->SetTexture((CTexture::TEXTURE)nTex);
+		m_aPanelInfo[i].m_pPanel->SetTexture((CTexture::TEXTURE)nTex);
 
 		//次のテクスチャにする
 		nTex++;
 
 		//描画しない
-		m_apPanel[i]->SetIsDraw(false);
+		m_aPanelInfo[i].m_pPanel->SetIsDraw(false);
+
+		//ステージを設定
+		m_aPanelInfo[i].stage = CStage::STAGE::NONE;
 	}
 
 	return S_OK;
@@ -164,9 +179,9 @@ void CPanel::Uninit()
 {
 	for (int i = 0; i < MAX_PANEL; i++)
 	{
-		if (m_apPanel[i] != nullptr)
+		if (m_aPanelInfo[i].m_pPanel != nullptr)
 		{//NULLチェック
-			m_apPanel[i] = nullptr;
+			m_aPanelInfo[i].m_pPanel = nullptr;
 		}
 	}
 
@@ -192,16 +207,6 @@ void CPanel::Update()
 		m_bPanel = m_bPanel ? false : true;
 	}
 
-	if (!m_bPanel)
-	{//パネル操作をしていない場合
-		return;
-	}
-
-	/* パネル操作中の場合 */
-
-	//パネルの選択
-	SelectPanel();
-
 	/* 描画する */
 
 	//背景
@@ -213,8 +218,18 @@ void CPanel::Update()
 	for (int i = 0; i < MAX_PANEL; i++)
 	{
 		//パネル
-		m_apPanel[i]->SetIsDraw(m_bPanel);
+		m_aPanelInfo[i].m_pPanel->SetIsDraw(m_bPanel);
 	}
+
+	if (!m_bPanel)
+	{//パネル操作をしていない場合
+		return;
+	}
+
+	/* パネル操作中の場合 */
+
+	//パネルの選択
+	SelectPanel();
 }
 
 //================================================
@@ -237,20 +252,6 @@ bool CPanel::GetIsPanel()
 //================================================
 void CPanel::SelectPanel()
 {
-	float fWidth = (float)CRenderer::SCREEN_WIDTH;		//画面の横幅
-	float fHeight = (float)CRenderer::SCREEN_HEIGHT;	//画面の縦幅
-
-	D3DXVECTOR3 aPos[GRID_Y][GRID_X] = {};	//パネルの位置
-
-	for (int Y = 0; Y < GRID_Y; Y++)
-	{
-		for (int X = 0; X < GRID_X; X++)
-		{
-			//位置を設定
-			aPos[Y][X] = D3DXVECTOR3(fWidth * (0.3f + (0.1f * (X + 1))), fHeight * ((0.2f * (Y + 1)) + 0.1f), 0.0f);
-		}
-	}
-
 	if (CApplication::GetInputKeyboard()->GetTrigger(DIK_W))
 	{//Wキー押下
 		m_nPosY--;	//-1する
@@ -290,5 +291,78 @@ void CPanel::SelectPanel()
 	}
 
 	//選択用の位置の設定
-	m_pSelect->SetPos(aPos[m_nPosY][m_nPosX]);
+	m_pSelect->SetPos(m_aPos[m_nPosY][m_nPosX]);
+
+	if (CApplication::GetInputKeyboard()->GetTrigger(DIK_RETURN))
+	{//Enterキー
+		//選択：非選択の切り替え
+		m_bIsSelect = m_bIsSelect ? false : true;
+	}
+
+	//パネルのサイズの設定
+	SetPanelSize(m_bIsSelect);
+
+	//選択用の色の設定
+	SetSelectColor(m_bIsSelect);
+}
+
+//================================================
+//パネルのサイズの設定
+//================================================
+void CPanel::SetPanelSize(bool bIsSelect)
+{
+	for (int i = 0; i < MAX_PANEL; i++)
+	{
+		//ポインタを取得
+		CObject2D* pPanel = m_aPanelInfo[i].m_pPanel;
+
+		//位置を取得
+		D3DXVECTOR3 posPanel = pPanel->GetPos();		//パネル
+		D3DXVECTOR3 posSelect = m_pSelect->GetPos();	//選択用
+
+		if (pPanel == nullptr ||
+			posPanel != posSelect)
+		{//nullptrである or 同じ位置にいない
+			continue;
+		}
+
+		/* 「nullptrではない」かつ「同じ位置にある」場合 */
+
+		//サイズ設定用
+		D3DXVECTOR2 size = D3DXVECTOR2(PANEL_SIZE, PANEL_SIZE);
+
+		if (bIsSelect)
+		{//選択中の場合
+			//サイズを少し大きくする
+			size = D3DXVECTOR2(PANEL_SIZE + 10.0f, PANEL_SIZE + 10.0f);
+		}
+
+		//サイズの設定
+		pPanel->SetSize(size);
+	}
+}
+
+//================================================
+//選択用の色の設定
+//================================================
+void CPanel::SetSelectColor(bool bIsSelect)
+{
+	if (m_pSelect == nullptr)
+	{//NULLチェック
+		return;
+	}
+
+	/* nullptrではない場合 */
+
+	//色設定用
+	D3DXCOLOR col = D3DXCOLOR(1.0f, 0.5f, 0.0f, 1.0f);
+
+	if (bIsSelect)
+	{//選択中の場合
+		//色を変える
+		col = D3DXCOLOR(0.0f, 0.5f, 1.0f, 1.0f);
+	}
+
+	//色の設定
+	m_pSelect->SetCol(col);
 }
