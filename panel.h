@@ -25,7 +25,7 @@ class CObject2D;
 class CPanel
 {/* 基本クラス */
 private: /* 定数の定義 */
-	static const int MAX_PANEL = 8;	//パネルの最大数
+	static const int MAX_PANEL = 9;	//パネルの最大数
 	static const int GRID_X = 3;	//マス目の数(X軸)
 	static const int GRID_Y = 3;	//マス目の数(Y軸)
 
@@ -58,23 +58,15 @@ public: /* メンバ関数 */
 	bool GetIsPanel();	//パネル操作中かどうかを取得
 
 private:
-	void SelectPanel();	//パネルの選択
-
-	/*
-		パネルのサイズの設定
-		bool bIsSelect ---> 選択中かどうか
-	*/
-	void SetPanelSize(bool bIsSelect);
-
-	/*
-		選択用の色の設定
-		bool bIsSelect ---> 選択中かどうか
-	*/
-	void SetSelectColor(bool bIsSelect);
+	void SelectPanel();		//パネルの選択
+	void MoveSelect();		//選択用パネルの移動
+	void SetPanelSize();	//パネルのサイズの設定
+	void SetSelectColor();	//選択用パネルの色の設定
+	void MovePanel();		//パネルの移動
 
 private: /* メンバ変数 */
 	CObject2D* m_pBg;		//背景
-	CObject2D* m_pSelect;	//選択用
+	CObject2D* m_pSelect;	//選択用パネル
 
 	D3DXVECTOR3 m_aPos[GRID_Y][GRID_X];	//パネルの位置
 

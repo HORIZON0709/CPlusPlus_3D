@@ -98,7 +98,7 @@ HRESULT CPanel::Init()
 	//描画しない
 	m_pBg->SetIsDraw(false);
 
-	/* 選択用 */
+	/* 選択用パネル */
 
 	//生成
 	m_pSelect = CObject2D::Create();
@@ -112,7 +112,7 @@ HRESULT CPanel::Init()
 	m_pSelect->SetIsDraw(false);
 
 	{//パネルの位置を設定する
-		D3DXVECTOR3 aPos[MAX_PANEL + 1] =
+		D3DXVECTOR3 aPos[MAX_PANEL] =
 		{//パネルの位置(固定)
 			D3DXVECTOR3(fWidth * 0.4f, fHeight * 0.3f, 0.0f),	//1
 			D3DXVECTOR3(fWidth * 0.5f, fHeight * 0.3f, 0.0f),	//2
@@ -147,6 +147,13 @@ HRESULT CPanel::Init()
 
 	for (int i = 0; i < MAX_PANEL; i++)
 	{//パネル情報の初期化
+		if (i == MAX_PANEL - 1)
+		{//1つ分は空白にする
+			//ステージを設定
+			m_aPanelInfo[i].stage = CStage::STAGE::NONE;
+			continue;
+		}
+
 		//生成
 		m_aPanelInfo[i].m_pPanel = CObject2D::Create();
 
@@ -212,11 +219,18 @@ void CPanel::Update()
 	//背景
 	m_pBg->SetIsDraw(m_bPanel);
 
-	//選択用
+	//選択用パネル
 	m_pSelect->SetIsDraw(m_bPanel);
 
 	for (int i = 0; i < MAX_PANEL; i++)
 	{
+		if (m_aPanelInfo[i].m_pPanel == nullptr)
+		{//NULLチェック
+			continue;
+		}
+
+		/* nullptrではない場合 */
+
 		//パネル
 		m_aPanelInfo[i].m_pPanel->SetIsDraw(m_bPanel);
 	}
@@ -252,6 +266,37 @@ bool CPanel::GetIsPanel()
 //================================================
 void CPanel::SelectPanel()
 {
+	if (CApplication::GetInputKeyboard()->GetTrigger(DIK_RETURN))
+	{//Enterキー
+		//選択：非選択の切り替え
+		m_bIsSelect = m_bIsSelect ? false : true;
+	}
+
+	//選択用パネルの移動
+	MoveSelect();
+
+	//パネルのサイズの設定
+	SetPanelSize();
+
+	//選択用パネルの色の設定
+	SetSelectColor();
+
+	//パネルの移動
+	MovePanel();
+}
+
+//================================================
+//選択用パネルの移動
+//================================================
+void CPanel::MoveSelect()
+{
+	if (m_bIsSelect)
+	{//選択中の場合
+		return;
+	}
+
+	/* 選択中ではない場合 */
+
 	if (CApplication::GetInputKeyboard()->GetTrigger(DIK_W))
 	{//Wキー押下
 		m_nPosY--;	//-1する
@@ -290,48 +335,42 @@ void CPanel::SelectPanel()
 		}
 	}
 
-	//選択用の位置の設定
+	//選択用パネルの位置の設定
 	m_pSelect->SetPos(m_aPos[m_nPosY][m_nPosX]);
-
-	if (CApplication::GetInputKeyboard()->GetTrigger(DIK_RETURN))
-	{//Enterキー
-		//選択：非選択の切り替え
-		m_bIsSelect = m_bIsSelect ? false : true;
-	}
-
-	//パネルのサイズの設定
-	SetPanelSize(m_bIsSelect);
-
-	//選択用の色の設定
-	SetSelectColor(m_bIsSelect);
 }
 
 //================================================
 //パネルのサイズの設定
 //================================================
-void CPanel::SetPanelSize(bool bIsSelect)
+void CPanel::SetPanelSize()
 {
 	for (int i = 0; i < MAX_PANEL; i++)
 	{
 		//ポインタを取得
 		CObject2D* pPanel = m_aPanelInfo[i].m_pPanel;
 
-		//位置を取得
-		D3DXVECTOR3 posPanel = pPanel->GetPos();		//パネル
-		D3DXVECTOR3 posSelect = m_pSelect->GetPos();	//選択用
-
-		if (pPanel == nullptr ||
-			posPanel != posSelect)
-		{//nullptrである or 同じ位置にいない
+		if (pPanel == nullptr)
+		{//NULLチェック
 			continue;
 		}
 
-		/* 「nullptrではない」かつ「同じ位置にある」場合 */
+		/* nullptrではない場合 */
+
+		//位置を取得
+		D3DXVECTOR3 posPanel = pPanel->GetPos();		//パネル
+		D3DXVECTOR3 posSelect = m_pSelect->GetPos();	//選択用パネル
+
+		if (posPanel != posSelect)
+		{//同じ位置にいない場合
+			continue;
+		}
+
+		/* 同じ位置にある場合 */
 
 		//サイズ設定用
 		D3DXVECTOR2 size = D3DXVECTOR2(PANEL_SIZE, PANEL_SIZE);
 
-		if (bIsSelect)
+		if (m_bIsSelect)
 		{//選択中の場合
 			//サイズを少し大きくする
 			size = D3DXVECTOR2(PANEL_SIZE + 10.0f, PANEL_SIZE + 10.0f);
@@ -343,9 +382,9 @@ void CPanel::SetPanelSize(bool bIsSelect)
 }
 
 //================================================
-//選択用の色の設定
+//選択用パネルの色の設定
 //================================================
-void CPanel::SetSelectColor(bool bIsSelect)
+void CPanel::SetSelectColor()
 {
 	if (m_pSelect == nullptr)
 	{//NULLチェック
@@ -357,7 +396,7 @@ void CPanel::SetSelectColor(bool bIsSelect)
 	//色設定用
 	D3DXCOLOR col = D3DXCOLOR(1.0f, 0.5f, 0.0f, 1.0f);
 
-	if (bIsSelect)
+	if (m_bIsSelect)
 	{//選択中の場合
 		//色を変える
 		col = D3DXCOLOR(0.0f, 0.5f, 1.0f, 1.0f);
@@ -365,4 +404,56 @@ void CPanel::SetSelectColor(bool bIsSelect)
 
 	//色の設定
 	m_pSelect->SetCol(col);
+}
+
+//================================================
+//パネルの移動
+//================================================
+void CPanel::MovePanel()
+{
+	if (!m_bIsSelect)
+	{//選択中ではない場合
+		return;
+	}
+
+	/* 選択中の場合 */
+
+	int nIdx = 0;	//番号
+
+	for (int i = 0; i < MAX_PANEL; i++)
+	{
+		if (m_aPanelInfo[i].m_pPanel == nullptr)
+		{//NULLチェック
+			continue;
+		}
+
+		/* nullptrではない場合 */
+
+		if (m_aPanelInfo[i].m_pPanel->GetPos() == m_pSelect->GetPos())
+		{//選択用パネルと同じ位置にあるパネルを探す
+			//番号を保存
+			nIdx = i;
+		}
+	}
+
+	if (CApplication::GetInputKeyboard()->GetTrigger(DIK_D))
+	{//Dキー
+		if ((m_nPosX + 1) <= 2 && m_aPanelInfo[nIdx + 1].stage == CStage::STAGE::NONE)
+		{//「右側に移動できる」かつ「部屋が無い」場合
+			//位置を右にずらす
+			m_nPosX++;
+
+			//パネルを移動
+			m_aPanelInfo[nIdx].m_pPanel->SetPos(m_aPos[m_nPosY][m_nPosX]);
+
+			//
+			m_aPanelInfo[nIdx + 1].m_pPanel = m_aPanelInfo[nIdx].m_pPanel;
+			m_aPanelInfo[nIdx].m_pPanel = nullptr;
+
+			//選択用パネルも合わせて移動
+			m_pSelect->SetPos(m_aPos[m_nPosY][m_nPosX]);
+
+			m_bIsSelect = false;
+		}
+	}
 }
