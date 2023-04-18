@@ -35,7 +35,6 @@ private: /* 構造体の定義 */
 	struct PANEL_INFO	//パネル情報
 	{
 		CObject2D* m_pPanel;	//パネルのポインタ
-		D3DXVECTOR3 pos;		//パネルの位置
 		CStage::STAGE stage;	//ステージ
 	};
 

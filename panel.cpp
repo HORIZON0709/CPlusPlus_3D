@@ -85,32 +85,6 @@ HRESULT CPanel::Init()
 	float fWidth = (float)CRenderer::SCREEN_WIDTH;		//画面の横幅
 	float fHeight = (float)CRenderer::SCREEN_HEIGHT;	//画面の縦幅
 
-	/* 背景 */
-
-	//生成
-	m_pBg = CObject2D::Create();
-
-	//各情報の設定
-	m_pBg->SetPos(D3DXVECTOR3(fWidth * 0.5f, fHeight * 0.5f, 0.0f));
-	m_pBg->SetSize(D3DXVECTOR2(fWidth, fHeight));
-	m_pBg->SetCol(D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.5f));
-
-	//描画しない
-	m_pBg->SetIsDraw(false);
-
-	/* 選択用パネル */
-
-	//生成
-	m_pSelect = CObject2D::Create();
-
-	//各情報の設定
-	m_pSelect->SetPos(m_aPanelInfo[0].pos);
-	m_pSelect->SetSize(D3DXVECTOR2(PANEL_SIZE + 20.0f, PANEL_SIZE + 20.0f));
-	m_pSelect->SetCol(D3DXCOLOR(1.0f, 0.5f, 0.0f, 1.0f));
-
-	//描画しない
-	m_pSelect->SetIsDraw(false);
-
 	{//パネルの位置を設定する
 		D3DXVECTOR3 aPos[MAX_PANEL] =
 		{//パネルの位置(固定)
@@ -135,15 +109,36 @@ HRESULT CPanel::Init()
 				m_aPos[Y][X] = aPos[X + (Y * 3)];
 			}
 		}
-
-		for (int i = 0; i < MAX_PANEL; i++)
-		{
-			//パネルの位置を設定
-			m_aPanelInfo[i].pos = aPos[i];
-		}
 	}
 
+	/* 背景 */
+
+	//生成
+	m_pBg = CObject2D::Create();
+
+	//各情報の設定
+	m_pBg->SetPos(D3DXVECTOR3(fWidth * 0.5f, fHeight * 0.5f, 0.0f));
+	m_pBg->SetSize(D3DXVECTOR2(fWidth, fHeight));
+	m_pBg->SetCol(D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.5f));
+
+	//描画しない
+	m_pBg->SetIsDraw(false);
+
+	/* 選択用パネル */
+
+	//生成
+	m_pSelect = CObject2D::Create();
+
+	//各情報の設定
+	m_pSelect->SetPos(m_aPos[0][0]);
+	m_pSelect->SetSize(D3DXVECTOR2(PANEL_SIZE + 20.0f, PANEL_SIZE + 20.0f));
+	m_pSelect->SetCol(D3DXCOLOR(1.0f, 0.5f, 0.0f, 1.0f));
+
+	//描画しない
+	m_pSelect->SetIsDraw(false);
+
 	int nTex = CTexture::TEXTURE::Number_Single_1;	//テクスチャ設定用
+	int nStage = CStage::STAGE::Stage01;			//ステージ設定用
 
 	for (int i = 0; i < MAX_PANEL; i++)
 	{//パネル情報の初期化
@@ -158,7 +153,7 @@ HRESULT CPanel::Init()
 		m_aPanelInfo[i].m_pPanel = CObject2D::Create();
 
 		//位置の設定
-		m_aPanelInfo[i].m_pPanel->SetPos(m_aPanelInfo[i].pos);
+		m_aPanelInfo[i].m_pPanel->SetPos(m_aPos[(i / GRID_Y)][(i % GRID_X)]);
 
 		//サイズの設定
 		m_aPanelInfo[i].m_pPanel->SetSize(D3DXVECTOR2(PANEL_SIZE, PANEL_SIZE));
@@ -173,7 +168,10 @@ HRESULT CPanel::Init()
 		m_aPanelInfo[i].m_pPanel->SetIsDraw(false);
 
 		//ステージを設定
-		m_aPanelInfo[i].stage = CStage::STAGE::NONE;
+		m_aPanelInfo[i].stage = (CStage::STAGE)nStage;
+
+		//次のステージにする
+		nStage++;
 	}
 
 	return S_OK;
@@ -438,21 +436,83 @@ void CPanel::MovePanel()
 
 	if (CApplication::GetInputKeyboard()->GetTrigger(DIK_D))
 	{//Dキー
-		if ((m_nPosX + 1) <= 2 && m_aPanelInfo[nIdx + 1].stage == CStage::STAGE::NONE)
+		int nRight = (nIdx + 1);	//現在位置の右側の番号
+
+		if ((m_nPosX + 1) < GRID_X && m_aPanelInfo[nRight].stage == CStage::STAGE::NONE)
 		{//「右側に移動できる」かつ「部屋が無い」場合
 			//位置を右にずらす
 			m_nPosX++;
 
+			//選択用パネルを移動
+			m_pSelect->SetPos(m_aPos[m_nPosY][m_nPosX]);
+
 			//パネルを移動
 			m_aPanelInfo[nIdx].m_pPanel->SetPos(m_aPos[m_nPosY][m_nPosX]);
 
-			//
-			m_aPanelInfo[nIdx + 1].m_pPanel = m_aPanelInfo[nIdx].m_pPanel;
-			m_aPanelInfo[nIdx].m_pPanel = nullptr;
+			//パネルの各情報を移動させる
+			m_aPanelInfo[nRight].m_pPanel = m_aPanelInfo[nIdx].m_pPanel;
+			m_aPanelInfo[nRight].stage = m_aPanelInfo[nIdx].stage;
 
-			//選択用パネルも合わせて移動
+			//移動前の位置にあった情報を空にする
+			m_aPanelInfo[nIdx].m_pPanel = nullptr;
+			m_aPanelInfo[nIdx].stage = CStage::STAGE::NONE;
+
+			//選択されていない状態にする
+			m_bIsSelect = false;
+		}
+	}
+	else if (CApplication::GetInputKeyboard()->GetTrigger(DIK_A))
+	{//Aキー
+		int nLeft = (nIdx - 1);	//現在位置の左側の番号
+
+		if ((m_nPosX - 1) >= 0 && m_aPanelInfo[nLeft].stage == CStage::STAGE::NONE)
+		{//「右側に移動できる」かつ「部屋が無い」場合
+			//位置を左にずらす
+			m_nPosX--;
+
+			//選択用パネルを移動
 			m_pSelect->SetPos(m_aPos[m_nPosY][m_nPosX]);
 
+			//パネルを移動
+			m_aPanelInfo[nIdx].m_pPanel->SetPos(m_aPos[m_nPosY][m_nPosX]);
+
+			//パネルの各情報を移動させる
+			m_aPanelInfo[nLeft].m_pPanel = m_aPanelInfo[nIdx].m_pPanel;
+			m_aPanelInfo[nLeft].stage = m_aPanelInfo[nIdx].stage;
+
+			//移動前の位置にあった情報を空にする
+			m_aPanelInfo[nIdx].m_pPanel = nullptr;
+			m_aPanelInfo[nIdx].stage = CStage::STAGE::NONE;
+
+			//選択されていない状態にする
+			m_bIsSelect = false;
+		}
+	}
+
+	if (CApplication::GetInputKeyboard()->GetTrigger(DIK_W))
+	{//Wキー
+		int nTop = (nIdx + 1);	//現在位置の上側の番号
+
+		if ((m_nPosY - 1) < GRID_X && m_aPanelInfo[nTop].stage == CStage::STAGE::NONE)
+		{//「右側に移動できる」かつ「部屋が無い」場合
+		 //位置を右にずらす
+			m_nPosX++;
+
+			//選択用パネルを移動
+			m_pSelect->SetPos(m_aPos[m_nPosY][m_nPosX]);
+
+			//パネルを移動
+			m_aPanelInfo[nIdx].m_pPanel->SetPos(m_aPos[m_nPosY][m_nPosX]);
+
+			//パネルの各情報を移動させる
+			m_aPanelInfo[nTop].m_pPanel = m_aPanelInfo[nIdx].m_pPanel;
+			m_aPanelInfo[nTop].stage = m_aPanelInfo[nIdx].stage;
+
+			//移動前の位置にあった情報を空にする
+			m_aPanelInfo[nIdx].m_pPanel = nullptr;
+			m_aPanelInfo[nIdx].stage = CStage::STAGE::NONE;
+
+			//選択されていない状態にする
 			m_bIsSelect = false;
 		}
 	}

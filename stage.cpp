@@ -24,7 +24,13 @@
 const char* CStage::s_apFileName[] =
 {//ステージのパス
 	"data/TEXT/Stage_01.txt",	//ステージ01
-	"data/TEXT/Stage_02.txt",	//ステージ01
+	"data/TEXT/Stage_02.txt",	//ステージ02
+	"data/TEXT/Stage_03.txt",	//ステージ03
+	"data/TEXT/Stage_04.txt",	//ステージ04
+	"data/TEXT/Stage_05.txt",	//ステージ05
+	"data/TEXT/Stage_06.txt",	//ステージ06
+	"data/TEXT/Stage_07.txt",	//ステージ07
+	"data/TEXT/Stage_08.txt"	//ステージ08
 };
 
 static_assert(sizeof(CStage::s_apFileName) / sizeof(CStage::s_apFileName[0]) == CStage::STAGE::MAX, "aho");

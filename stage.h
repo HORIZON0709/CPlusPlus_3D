@@ -33,6 +33,12 @@ public: /* 列挙型の定義 */
 		NONE = -1,
 		Stage01 = 0,	//ステージ1
 		Stage02,		//ステージ2
+		Stage03,		//ステージ3
+		Stage04,		//ステージ4
+		Stage05,		//ステージ5
+		Stage06,		//ステージ6
+		Stage07,		//ステージ7
+		Stage08,		//ステージ8
 		MAX
 	};
 
