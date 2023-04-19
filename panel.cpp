@@ -308,9 +308,9 @@ void CPanel::MoveSelect()
 	{//Sキー押下
 		m_nPosY++;	//+1する
 
-		if (m_nPosY > 2)
+		if (m_nPosY >= GRID_Y)
 		{//2より大きく(3以上)になった場合
-			m_nPosY = 2;	//2に固定
+			m_nPosY = GRID_Y - 1;	//2に固定
 		}
 	}
 
@@ -327,9 +327,9 @@ void CPanel::MoveSelect()
 	{//Dキー押下
 		m_nPosX++;	//+1する
 
-		if (m_nPosX > 2)
+		if (m_nPosX >= GRID_X)
 		{//2より大きく(3以上)になった場合
-			m_nPosX = 2;	//2に固定
+			m_nPosX = GRID_X - 1;	//2に固定
 		}
 	}
 
@@ -434,86 +434,97 @@ void CPanel::MovePanel()
 		}
 	}
 
+	int nDest = 0;	//現在位置から移動する先の番号
+
+	bool bCanMove = false;		//移動できるかどうか
+
 	if (CApplication::GetInputKeyboard()->GetTrigger(DIK_D))
 	{//Dキー
-		int nRight = (nIdx + 1);	//現在位置の右側の番号
-
-		if ((m_nPosX + 1) < GRID_X && m_aPanelInfo[nRight].stage == CStage::STAGE::NONE)
-		{//「右側に移動できる」かつ「部屋が無い」場合
+		if ((m_nPosX + 1) < GRID_X)
+		{//右側に移動して、マス目の数(X軸)を超えない場合
 			//位置を右にずらす
 			m_nPosX++;
 
-			//選択用パネルを移動
-			m_pSelect->SetPos(m_aPos[m_nPosY][m_nPosX]);
+			//移動先の番号を設定
+			nDest = (nIdx + 1);
+		}
 
-			//パネルを移動
-			m_aPanelInfo[nIdx].m_pPanel->SetPos(m_aPos[m_nPosY][m_nPosX]);
-
-			//パネルの各情報を移動させる
-			m_aPanelInfo[nRight].m_pPanel = m_aPanelInfo[nIdx].m_pPanel;
-			m_aPanelInfo[nRight].stage = m_aPanelInfo[nIdx].stage;
-
-			//移動前の位置にあった情報を空にする
-			m_aPanelInfo[nIdx].m_pPanel = nullptr;
-			m_aPanelInfo[nIdx].stage = CStage::STAGE::NONE;
-
-			//選択されていない状態にする
-			m_bIsSelect = false;
+		if (m_aPanelInfo[nDest].stage == CStage::STAGE::NONE)
+		{//移動先にステージが無い場合
+			//移動できる
+			bCanMove = true;
 		}
 	}
 	else if (CApplication::GetInputKeyboard()->GetTrigger(DIK_A))
 	{//Aキー
-		int nLeft = (nIdx - 1);	//現在位置の左側の番号
-
-		if ((m_nPosX - 1) >= 0 && m_aPanelInfo[nLeft].stage == CStage::STAGE::NONE)
-		{//「右側に移動できる」かつ「部屋が無い」場合
+		if ((m_nPosX - 1) >= 0)
+		{//左側に移動して、マス目の数(X軸)を超えない場合
 			//位置を左にずらす
 			m_nPosX--;
 
-			//選択用パネルを移動
-			m_pSelect->SetPos(m_aPos[m_nPosY][m_nPosX]);
+			//移動先の番号を設定
+			nDest = (nIdx - 1);
+		}
 
-			//パネルを移動
-			m_aPanelInfo[nIdx].m_pPanel->SetPos(m_aPos[m_nPosY][m_nPosX]);
-
-			//パネルの各情報を移動させる
-			m_aPanelInfo[nLeft].m_pPanel = m_aPanelInfo[nIdx].m_pPanel;
-			m_aPanelInfo[nLeft].stage = m_aPanelInfo[nIdx].stage;
-
-			//移動前の位置にあった情報を空にする
-			m_aPanelInfo[nIdx].m_pPanel = nullptr;
-			m_aPanelInfo[nIdx].stage = CStage::STAGE::NONE;
-
-			//選択されていない状態にする
-			m_bIsSelect = false;
+		if (m_aPanelInfo[nDest].stage == CStage::STAGE::NONE)
+		{//移動先にステージが無い場合
+			//移動できる
+			bCanMove = true;
 		}
 	}
 
 	if (CApplication::GetInputKeyboard()->GetTrigger(DIK_W))
 	{//Wキー
-		int nTop = (nIdx + 1);	//現在位置の上側の番号
+		if ((m_nPosY - 1) >= 0)
+		{//上側に移動して、マス目の数(Y軸)を超えない場合
+			//位置を上にずらす
+			m_nPosY--;
 
-		if ((m_nPosY - 1) < GRID_X && m_aPanelInfo[nTop].stage == CStage::STAGE::NONE)
-		{//「右側に移動できる」かつ「部屋が無い」場合
-		 //位置を右にずらす
-			m_nPosX++;
-
-			//選択用パネルを移動
-			m_pSelect->SetPos(m_aPos[m_nPosY][m_nPosX]);
-
-			//パネルを移動
-			m_aPanelInfo[nIdx].m_pPanel->SetPos(m_aPos[m_nPosY][m_nPosX]);
-
-			//パネルの各情報を移動させる
-			m_aPanelInfo[nTop].m_pPanel = m_aPanelInfo[nIdx].m_pPanel;
-			m_aPanelInfo[nTop].stage = m_aPanelInfo[nIdx].stage;
-
-			//移動前の位置にあった情報を空にする
-			m_aPanelInfo[nIdx].m_pPanel = nullptr;
-			m_aPanelInfo[nIdx].stage = CStage::STAGE::NONE;
-
-			//選択されていない状態にする
-			m_bIsSelect = false;
+			//移動先の番号を設定
+			nDest = (nIdx - 3);
 		}
+
+		if (m_aPanelInfo[nDest].stage == CStage::STAGE::NONE)
+		{//移動先にステージが無い場合
+			//移動できる
+			bCanMove = true;
+		}
+	}
+	else if (CApplication::GetInputKeyboard()->GetTrigger(DIK_S))
+	{//Sキー
+		if ((m_nPosY + 1) < GRID_Y)
+		{//右側に移動して、マス目の数(Y軸)を超えない場合
+			//位置を下にずらす
+			m_nPosY++;
+
+			//移動先の番号を設定
+			nDest = (nIdx + 3);
+		}
+
+		if (m_aPanelInfo[nDest].stage == CStage::STAGE::NONE)
+		{//移動先にステージが無い場合
+			//移動できる
+			bCanMove = true;
+		}
+	}
+
+	if (bCanMove)
+	{//移動できる場合
+		//パネルを移動
+		m_aPanelInfo[nIdx].m_pPanel->SetPos(m_aPos[m_nPosY][m_nPosX]);
+
+		//パネルの各情報を移動させる
+		m_aPanelInfo[nDest].m_pPanel = m_aPanelInfo[nIdx].m_pPanel;
+		m_aPanelInfo[nDest].stage = m_aPanelInfo[nIdx].stage;
+
+		//移動前の位置にあった情報を空にする
+		m_aPanelInfo[nIdx].m_pPanel = nullptr;
+		m_aPanelInfo[nIdx].stage = CStage::STAGE::NONE;
+
+		//選択されていない状態にする
+		m_bIsSelect = false;
+
+		//移動完了
+		bCanMove = false;
 	}
 }
