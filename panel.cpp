@@ -12,6 +12,7 @@
 #include "renderer.h"
 #include "object2D.h"
 #include "input.h"
+#include "game.h"
 
 #include "debug_proc.h"
 #include "utility.h"
@@ -142,13 +143,6 @@ HRESULT CPanel::Init()
 
 	for (int i = 0; i < MAX_PANEL; i++)
 	{//パネル情報の初期化
-		if (i == MAX_PANEL - 1)
-		{//1つ分は空白にする
-			//ステージを設定
-			m_aPanelInfo[i].stage = CStage::STAGE::NONE;
-			continue;
-		}
-
 		//生成
 		m_aPanelInfo[i].m_pPanel = CObject2D::Create();
 
@@ -169,6 +163,11 @@ HRESULT CPanel::Init()
 
 		//ステージを設定
 		m_aPanelInfo[i].stage = (CStage::STAGE)nStage;
+
+		if (i == (MAX_PANEL - 1))
+		{//空白部分はステージ無し
+			m_aPanelInfo[i].stage = CStage::STAGE::NONE;
+		}
 
 		//次のステージにする
 		nStage++;
@@ -231,6 +230,15 @@ void CPanel::Update()
 
 		//パネル
 		m_aPanelInfo[i].m_pPanel->SetIsDraw(m_bPanel);
+
+		//現在のステージを取得
+		CStage::STAGE stage = CGame::GetStage()->Get();
+
+		if (m_aPanelInfo[i].stage == stage)
+		{//現在のステージに該当するパネルを探す
+			//色を暗くする
+			m_aPanelInfo[i].m_pPanel->SetCol(D3DXCOLOR(0.5f, 0.5f, 0.5f, 1.0f));
+		}
 	}
 
 	if (!m_bPanel)
@@ -344,6 +352,13 @@ void CPanel::SetPanelSize()
 {
 	for (int i = 0; i < MAX_PANEL; i++)
 	{
+		if (m_aPanelInfo[i].stage == CStage::STAGE::NONE)
+		{//ステージが無い場合
+			continue;
+		}
+
+		/* ステージがある場合 */
+
 		//ポインタを取得
 		CObject2D* pPanel = m_aPanelInfo[i].m_pPanel;
 
@@ -434,9 +449,14 @@ void CPanel::MovePanel()
 		}
 	}
 
+	if (m_aPanelInfo[nIdx].stage == CStage::STAGE::NONE)
+	{//選択したパネルに、該当するステージが無い場合
+		return;
+	}
+
 	int nDest = 0;	//現在位置から移動する先の番号
 
-	bool bCanMove = false;		//移動できるかどうか
+	bool bCanMove = false;	//移動できるかどうか
 
 	if (CApplication::GetInputKeyboard()->GetTrigger(DIK_D))
 	{//Dキー
@@ -510,16 +530,17 @@ void CPanel::MovePanel()
 
 	if (bCanMove)
 	{//移動できる場合
-		//パネルを移動
-		m_aPanelInfo[nIdx].m_pPanel->SetPos(m_aPos[m_nPosY][m_nPosX]);
+		//移動先の情報を保存
+		CStage::STAGE stageDest = m_aPanelInfo[nDest].stage;
+		D3DXVECTOR3 posDest = m_aPanelInfo[nDest].m_pPanel->GetPos();
 
 		//パネルの各情報を移動させる
-		m_aPanelInfo[nDest].m_pPanel = m_aPanelInfo[nIdx].m_pPanel;
 		m_aPanelInfo[nDest].stage = m_aPanelInfo[nIdx].stage;
+		m_aPanelInfo[nDest].m_pPanel->SetPos(m_aPanelInfo[nIdx].m_pPanel->GetPos());
 
-		//移動前の位置にあった情報を空にする
-		m_aPanelInfo[nIdx].m_pPanel = nullptr;
-		m_aPanelInfo[nIdx].stage = CStage::STAGE::NONE;
+		//移動元の情報に移動先の保存した情報を入れる
+		m_aPanelInfo[nIdx].stage = stageDest;
+		m_aPanelInfo[nIdx].m_pPanel->SetPos(posDest);
 
 		//選択されていない状態にする
 		m_bIsSelect = false;

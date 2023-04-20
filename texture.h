@@ -36,6 +36,7 @@ public: /* 定義 */
 		Number_Single_6,	//ナンバー画像(単体)[6]
 		Number_Single_7,	//ナンバー画像(単体)[7]
 		Number_Single_8,	//ナンバー画像(単体)[8]
+		Cross,				//バツ
 
 		MAX
 	};

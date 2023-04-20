@@ -33,6 +33,7 @@ const char* CTexture::s_FileName[] =
 	"data/TEXTURE/Number_Single/Number_Single_6.png",	//ナンバー画像(単体)[6]
 	"data/TEXTURE/Number_Single/Number_Single_7.png",	//ナンバー画像(単体)[7]
 	"data/TEXTURE/Number_Single/Number_Single_8.png",	//ナンバー画像(単体)[8]
+	"data/TEXTURE/Number_Single/Cross.png",				//バツ
 };
 
 static_assert(sizeof(CTexture::s_FileName) / sizeof(CTexture::s_FileName[0]) == CTexture::MAX, "aho");
