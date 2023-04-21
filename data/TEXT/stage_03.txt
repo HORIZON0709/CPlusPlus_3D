@@ -30,20 +30,13 @@ MODELSET
 	ROT = 0.0 0.0 0.0
 END_MODELSET
 
-MODELSET
-	INDEX = 0
-	MODEL_TYPE = 1
-	POS = -50.0 0.0 0.0
-	ROT = 0.0 0.0 0.0
-END_MODELSET
-
 #------------------
 #ƒAƒCƒeƒ€
 #------------------
 MODELSET
 	INDEX = 1
 	MODEL_TYPE = 2
-	POS = -100.0 0.0 0.0
+	POS = -100.0 0.0 50.0
 	ROT = 0.0 0.0 0.0
 END_MODELSET
 

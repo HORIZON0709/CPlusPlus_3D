@@ -90,6 +90,7 @@ public: /* メンバ関数 */
 	D3DXVECTOR3 GetPos();		//位置を取得
 	D3DXVECTOR3 GetVtxMax();	//頂点の最大値を取得
 	D3DXVECTOR3 GetVtxMin();	//頂点の最小値を取得
+	bool GetIsGetItem();		//アイテムを取得したかどうかを取得
 
 private:
 	void Move();		//移動
@@ -130,6 +131,7 @@ private: /* メンバ変数 */
 	int m_nNumMotion;	//モーション数
 	int m_nNumKeySet;	//キーセット数
 	int m_nNumKey;		//キー数
+	int m_nGetItem;		//アイテム取得数
 
 	bool m_bPressKey;		//キー押下中かどうか
 	bool m_bCollGimmick;	//ギミックとの当たり判定

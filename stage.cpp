@@ -15,6 +15,7 @@
 #include "gimmick.h"
 #include "item.h"
 #include "door.h"
+#include "player.h"
 
 #include <assert.h>
 
@@ -235,6 +236,21 @@ void CStage::UninitAll()
 	{//NULLチェック
 		m_pFloar->SetDeathFlag();	//死亡フラグの設定
 		m_pFloar = nullptr;			//nullptrにする
+	}
+}
+
+//================================================
+//更新
+//================================================
+void CStage::Update()
+{
+	if (CGame::GetPlayer()->GetIsGetItem())
+	{//プレイヤーがアイテムを取得したら
+		if (m_pItem != nullptr)
+		{//NULLチェック
+			m_pItem->SetDeathFlag();	//死亡フラグの設定
+			m_pItem = nullptr;			//nullptrにする
+		}
 	}
 }
 

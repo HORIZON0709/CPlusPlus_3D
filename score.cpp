@@ -103,6 +103,11 @@ void CScore::Update()
 		AddScore(1);
 	}
 	
+	if (m_nScore > 3)
+	{
+		m_nScore = 3;
+	}
+
 	//テクスチャ座標の設定
 	m_pNumber->SetTexUV(CNumber::DIVIDE_TEX_U, m_nScore);
 }

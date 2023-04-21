@@ -89,6 +89,7 @@ CPlayer::CPlayer() :CObject::CObject(CObject::PRIORITY::PRIO_MODEL),
 	m_nNumMotion(0),
 	m_nNumKeySet(0),
 	m_nNumKey(0),
+	m_nGetItem(0),
 	m_bPressKey(false),
 	m_bCollGimmick(false),
 	m_bCollDoor(false),
@@ -159,6 +160,7 @@ HRESULT CPlayer::Init()
 	m_nNumMotion = 0;
 	m_nNumKeySet = 0;
 	m_nNumKey = 0;
+	m_nGetItem = 0;
 	m_bPressKey = false;
 	m_bCollGimmick = false;
 	m_bCollDoor = false;
@@ -205,6 +207,9 @@ void CPlayer::Update()
 	//ステージ切り替え
 	StageChange();
 
+	//スコア(アイテム取得数)をセット
+	CGame::GetScore()->SetScore(m_nGetItem);
+
 	if (!m_bFadeOut && m_bCollDoor)
 	{//暗転していない & ドアに当たった
 		//暗転
@@ -234,9 +239,6 @@ void CPlayer::Update()
 			m_pos = CStage::POS_DOOR[CStage::DIRECTION::DIR_BACK];
 			break;
 		}
-
-		//ステージ切り替え
-		CGame::GetStage()->Change(CStage::STAGE::Stage02);
 
 		//明転した
 		m_bFadeOut = false;
@@ -344,6 +346,14 @@ D3DXVECTOR3 CPlayer::GetVtxMax()
 D3DXVECTOR3 CPlayer::GetVtxMin()
 {
 	return m_vtxMin;
+}
+
+//================================================
+//アイテムを取得したかどうかを取得
+//================================================
+bool CPlayer::GetIsGetItem()
+{
+	return m_bGetItem;
 }
 
 //================================================
@@ -596,13 +606,6 @@ void CPlayer::Collision()
 		);
 	}
 
-	if (m_bGetItem)
-	{//アイテムを獲得している場合
-		return;
-	}
-
-	/* アイテムを獲得していない場合 */
-
 	//アイテム情報を取得
 	m_pItem = CStage::GetItem();
 
@@ -628,17 +631,8 @@ void CPlayer::Collision()
 
 	if (m_bGetItem)
 	{//アイテムを獲得した場合
-		//獲得数を増やす
-		CGame::GetScore()->AddScore(1);
-
-		//死亡フラグの設定
-		m_pItem->SetDeathFlag();
-
-		//nullptrにする
-		m_pItem = nullptr;
-
-		//獲得状況をリセット
-		m_bGetItem = false;
+		//アイテム獲得数を増やす
+		m_nGetItem++;
 	}
 }
 

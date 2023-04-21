@@ -136,6 +136,7 @@ public: /* メンバ関数 */
 
 	void Uninit();		//終了
 	void UninitAll();	//全ての終了
+	void Update();		//更新
 	CStage* Set();		//ステージの設定
 	STAGE Get();		//ステージの取得
 
