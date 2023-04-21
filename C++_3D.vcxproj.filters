@@ -67,6 +67,12 @@
     <Filter Include="ヘッダー ファイル\Stage">
       <UniqueIdentifier>{e460d2f0-2d86-46d0-a95c-61018f975d65}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\Score">
+      <UniqueIdentifier>{eaf61bfa-ffb1-4f43-a28b-81a72b6a138b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Score">
+      <UniqueIdentifier>{909f667d-7a68-4790-91ae-933c1def4533}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="mode.cpp">
@@ -159,6 +165,12 @@
     <ClCompile Include="panel.cpp">
       <Filter>ソース ファイル\Stage</Filter>
     </ClCompile>
+    <ClCompile Include="number.cpp">
+      <Filter>ソース ファイル\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="score.cpp">
+      <Filter>ソース ファイル\Score</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mode.h">
@@ -250,6 +262,12 @@
     </ClInclude>
     <ClInclude Include="panel.h">
       <Filter>ヘッダー ファイル\Stage</Filter>
+    </ClInclude>
+    <ClInclude Include="number.h">
+      <Filter>ヘッダー ファイル\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="score.h">
+      <Filter>ヘッダー ファイル\Score</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
