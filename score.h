@@ -1,6 +1,6 @@
 //================================================
 //
-//制作実践基礎[score.h]
+//3Dゲーム(仮)[score.h]
 //Author:Kishimoto Eiji
 //
 //================================================
@@ -22,9 +22,6 @@ class CNumber;
 //***************************
 class CScore : public CObject
 {/* CObjectの派生クラス */
-private: /* 定数の定義 */
-	static const int MAX_DIGIT = 8;	//最大桁数
-
 public: /* 静的メンバ関数 */
 	static CScore* Create();	//生成
 
@@ -52,11 +49,10 @@ public: /* メンバ関数 */
 	void AddScore(int nValue);
 
 	int GetCurrentScore();	//現在のスコアの取得
-private:
-	void ChangeTexUV();	//現在のスコアに応じたテクスチャ座標の変更
 
 private: /* メンバ変数 */
-	CNumber* m_apNumber[MAX_DIGIT];	//桁数分用意
-	int m_nScore;					//スコア
+	CNumber* m_pNumber;	//ナンバーのポインタ(一桁)
+
+	int m_nScore;	//スコア
 };
 #endif

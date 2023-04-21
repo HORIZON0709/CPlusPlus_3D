@@ -19,6 +19,7 @@
 #include "fade.h"
 #include "stage.h"
 #include "door.h"
+#include "score.h"
 
 #include "debug_proc.h"
 #include "utility.h"
@@ -627,6 +628,9 @@ void CPlayer::Collision()
 
 	if (m_bGetItem)
 	{//ƒAƒCƒeƒ€‚ðŠl“¾‚µ‚½ê‡
+		//Šl“¾”‚ð‘‚â‚·
+		CGame::GetScore()->AddScore(1);
+
 		//Ž€–Sƒtƒ‰ƒO‚ÌÝ’è
 		m_pItem->SetDeathFlag();
 

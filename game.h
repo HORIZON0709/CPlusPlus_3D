@@ -23,6 +23,7 @@ class CPlayer;
 class CItem;
 class CStage;
 class CPanel;
+class CScore;
 
 //***************************
 //ゲームクラスの定義
@@ -40,6 +41,7 @@ public: /* 静的メンバ関数 */
 	static CPlayer* GetPlayer();	//プレイヤーの情報を取得
 	static CStage* GetStage();		//ステージの情報を取得
 	static CPanel* GetPanel();		//パネルの情報を取得
+	static CScore* GetScore();		//スコアの情報を取得
 
 public: /* コンストラクタ・デストラクタ */
 	CGame();
@@ -57,6 +59,7 @@ private: /* 静的メンバ変数 */
 	static CPlayer* m_pPlayer;		//プレイヤー
 	static CStage* m_pStage;		//ステージ
 	static CPanel* m_pPanel;		//パネル
+	static CScore* m_pScore;		//スコア
 
 private: /* メンバ関数 */
 	void SwitchWireFrame();	//ワイヤーフレームの切り替え

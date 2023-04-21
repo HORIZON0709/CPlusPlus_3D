@@ -38,6 +38,9 @@ public: /* 定義 */
 		Number_Single_8,	//ナンバー画像(単体)[8]
 		Cross,				//バツ
 
+		/* Number */
+		Number00,	//ナンバー画像
+
 		MAX
 	};
 

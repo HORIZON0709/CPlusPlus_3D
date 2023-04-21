@@ -1,6 +1,6 @@
 //================================================
 //
-//制作実践基礎[number.cpp]
+//3Dゲーム(仮)[number.cpp]
 //Author:Kishimoto Eiji
 //
 //================================================
@@ -14,8 +14,8 @@
 //***************************
 //定数の定義
 //***************************
-const float CNumber::POS_X = 1200.0f;		//位置( X )
-const float CNumber::POS_Y = 50.0f;			//位置( Y )
+const float CNumber::POS_X = 1000.0f;		//位置( X )
+const float CNumber::POS_Y = 100.0f;		//位置( Y )
 const float CNumber::NUMBER_WIDTH = 30.0f;	//横幅
 const float CNumber::NUMBER_HEIGHT = 50.0f;	//縦幅
 

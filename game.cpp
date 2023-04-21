@@ -21,6 +21,7 @@
 #include "item.h"
 #include "stage.h"
 #include "panel.h"
+#include "score.h"
 
 #include <assert.h>
 #include <time.h>
@@ -40,6 +41,7 @@ CLight* CGame::m_pLight = nullptr;		//ライト
 CPlayer* CGame::m_pPlayer = nullptr;	//プレイヤー
 CStage* CGame::m_pStage = nullptr;		//ステージ
 CPanel* CGame::m_pPanel = nullptr;		//パネル
+CScore* CGame::m_pScore = nullptr;		//スコア
 
 //================================================
 //カメラ情報を取得
@@ -79,6 +81,14 @@ CStage* CGame::GetStage()
 CPanel* CGame::GetPanel()
 {
 	return m_pPanel;
+}
+
+//================================================
+//スコア情報を取得
+//================================================
+CScore* CGame::GetScore()
+{
+	return m_pScore;
 }
 
 //================================================
@@ -150,6 +160,13 @@ HRESULT CGame::Init()
 		m_pPanel = CPanel::Create();	//生成
 	}
 
+	/* スコア */
+
+	if (m_pScore == nullptr)
+	{//NULLチェック
+		m_pScore = CScore::Create();	//生成
+	}
+
 	//明転した
 	m_bFadeOut = false;
 
@@ -168,6 +185,10 @@ void CGame::Uninit()
 
 	CObject2D::ReleaseAll();	//全ての解放(2D)
 	CObjectX::ReleaseAll();		//全ての解放(Xモデル)
+
+	/* スコア */
+
+	m_pScore = nullptr;	//nullptrにする
 
 	/* パネル */
 
@@ -247,8 +268,9 @@ void CGame::Update()
 		m_pStage = m_pStage->Set();	//ステージ
 	}
 
-	if (CApplication::GetInput()->GetKey()->Trigger(CInput::DECISION))
-	{//Enterキー押下
+	if (CApplication::GetInput()->GetKey()->Trigger(CInput::DECISION) ||
+		m_pScore->GetCurrentScore() >= 3)
+	{//Enterキー押下 or アイテムを全て獲得した
 		m_nCntIntervalFade = FADE_INTERVAL_GAMEOVER + 1;	//カウントアップ
 	}
 
