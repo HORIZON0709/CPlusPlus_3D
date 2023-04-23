@@ -11,10 +11,9 @@
 #include "input.h"
 #include "renderer.h"
 #include "texture.h"
-#include "camera.h"
-
 #include "fade.h"
 #include "mode.h"
+#include "sound.h"
 
 //***************************
 //静的メンバ変数
@@ -25,8 +24,9 @@ CInputKeyboard* CApplication::m_pInputKeyboard = nullptr;	//キーボード
 CTexture* CApplication::m_pTexture = nullptr;	//テクスチャ
 CRenderer* CApplication::m_pRenderer = nullptr;	//レンダラー
 
-CMode* CApplication::m_pMode = nullptr;	//モード
-CFade* CApplication::m_pFade = nullptr;	//フェード
+CMode* CApplication::m_pMode = nullptr;		//モード
+CFade* CApplication::m_pFade = nullptr;		//フェード
+CSound* CApplication::m_pSound = nullptr;	//サウンド
 
 //================================================
 //インプット情報を取得
@@ -74,6 +74,14 @@ CMode* CApplication::GetMode()
 CFade* CApplication::GetFade()
 {
 	return m_pFade;
+}
+
+//================================================
+//サウンド情報を取得
+//================================================
+CSound* CApplication::GetSound()
+{
+	return m_pSound;
 }
 
 //================================================
@@ -152,6 +160,18 @@ HRESULT CApplication::Init(HWND hWnd, BOOL bWindow, HINSTANCE hInstance)
 		m_pMode = CMode::Create(CMode::MODE::TITLE);	//生成
 	}
 
+	/* サウンド */
+
+	if (m_pSound == nullptr)
+	{//NULLチェック
+		m_pSound = new CSound;	//メモリの動的確保
+	}
+
+	if (FAILED(m_pSound->Init(hWnd)))
+	{//初期化処理が失敗した場合
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 
@@ -160,6 +180,15 @@ HRESULT CApplication::Init(HWND hWnd, BOOL bWindow, HINSTANCE hInstance)
 //================================================
 void CApplication::Uninit()
 {
+	/* サウンド */
+
+	if (m_pSound != nullptr)
+	{//NULLチェック
+		m_pSound->Uninit();	//終了
+		delete m_pSound;	//メモリの解放
+		m_pSound = nullptr;	//nullptrにする
+	}
+
 	/* フェード */
 
 	if (m_pFade != nullptr)

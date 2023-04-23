@@ -21,6 +21,7 @@ class CRenderer;
 class CTexture;
 class CMode;
 class CFade;
+class CSound;
 
 //***************************
 //アプリケーションクラスの定義
@@ -39,6 +40,7 @@ public: /* 静的メンバ関数 */
 
 	static CMode* GetMode();	//モード
 	static CFade* GetFade();	//フェード
+	static CSound* GetSound();	//サウンド
 
 public: /* コンストラクタ・デストラクタ */
 	CApplication();
@@ -61,7 +63,8 @@ private: /* 静的メンバ変数 */
 	static CTexture* m_pTexture;	//テクスチャ
 	static CRenderer* m_pRenderer;	//レンダラー
 
-	static CMode* m_pMode;	//モード
-	static CFade* m_pFade;	//フェード
+	static CMode* m_pMode;		//モード
+	static CFade* m_pFade;		//フェード
+	static CSound* m_pSound;	//サウンド
 };
 #endif
