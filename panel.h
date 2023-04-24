@@ -42,7 +42,7 @@ public: /* 静的メンバ関数 */
 	static CPanel* Create();	//生成
 
 private: /* 静的メンバ変数 */
-	static PANEL_INFO m_aPanelInfo[MAX_PANEL];	//パネル情報
+	static PANEL_INFO m_aPanelInfo[GRID_Y][GRID_X];	//パネル情報
 
 public: /* コンストラクタ・デストラクタ */
 	CPanel();
