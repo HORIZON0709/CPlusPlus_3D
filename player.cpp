@@ -650,28 +650,9 @@ void CPlayer::StageChange()
 
 	for (int i = 0; i < CStage::MAX_DOOR; i++)
 	{
-		//ドア情報を取得
-		CDoor* pDoor = CStage::GetDoor(i);
+		CStage* stage = CGame::GetStage();
 
-		if (pDoor == nullptr)
-		{//NULLチェック
-			continue;
-		}
-
-		/* nullptrではない場合 */
-
-		////繋がっているステージを取得
-		//CStage::STAGE stage = pDoor->GetStageConnect();
-
-		//if (stage == CStage::STAGE::NONE)
-		//{//繋がっているステージが無い場合
-		//	continue;
-		//}
-
-		/* 繋がっているステージがある場合 */
-
-		//方向を保存
-		dirDoor = pDoor->GetDir();
+		CStage::DIRECTION* dir = stage->LoadAndGetInfo_Door(CStage::STAGE::NONE);
 	}
 }
 

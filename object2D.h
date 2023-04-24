@@ -109,6 +109,8 @@ public: /* Texture */
 	*/
 	void SetTexUV(const int nDivNum,const int nPtnAnim);
 
+	CTexture::TEXTURE GetTexture();	//テクスチャの取得
+
 public: /* IsDraw */
 	/*
 		//描画するかどうかの設定

@@ -332,6 +332,14 @@ void CObject2D::SetTexUV(const int nDivNum, const int nPtnAnim)
 }
 
 //================================================
+//テクスチャの取得
+//================================================
+CTexture::TEXTURE CObject2D::GetTexture()
+{
+	return m_texture;
+}
+
+//================================================
 //描画するかどうかの設定
 //================================================
 void CObject2D::SetIsDraw(bool bDraw)

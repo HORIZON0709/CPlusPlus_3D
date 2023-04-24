@@ -22,29 +22,28 @@
 //================================================
 CDoor* CDoor::Create(char* pFileName)
 {
-	CDoor* pGimmick = nullptr;	//ポインタ
+	CDoor* pDoor = nullptr;	//ポインタ
 
-	if (pGimmick != nullptr)
+	if (pDoor != nullptr)
 	{//NULLチェック
 		assert(false);
 	}
 
 	/* nullptrの場合 */
 
-	pGimmick = new CDoor;	//メモリの動的確保
+	pDoor = new CDoor;	//メモリの動的確保
 
-	pGimmick->SetFileName(pFileName);	//ファイル名の設定
+	pDoor->SetFileName(pFileName);	//ファイル名の設定
 
-	pGimmick->Init();	//初期化
+	pDoor->Init();	//初期化
 
-	return pGimmick;	//動的確保したものを返す
+	return pDoor;	//動的確保したものを返す
 }
 
 //================================================
 //コンストラクタ
 //================================================
 CDoor::CDoor() :CObjectX::CObjectX(),
-	m_stageConnect(CStage::STAGE::NONE),
 	m_dir(CStage::DIRECTION::DIR_NONE)
 {
 	//メンバ変数のクリア
@@ -71,7 +70,6 @@ HRESULT CDoor::Init()
 	CObjectX::Init();
 
 	//メンバ変数の初期化
-	m_stageConnect = CStage::STAGE::NONE;
 	m_dir = CStage::DIRECTION::DIR_NONE;
 
 	for (int i = 0; i < MAX_LINE; i++)
@@ -143,14 +141,6 @@ void CDoor::SetDir(CStage::DIRECTION dir)
 CStage::DIRECTION CDoor::GetDir()
 {
 	return m_dir;
-}
-
-//================================================
-//繋がっているステージの取得
-//================================================
-CStage::STAGE CDoor::GetStageConnect()
-{
-	return m_stageConnect;
 }
 
 //================================================

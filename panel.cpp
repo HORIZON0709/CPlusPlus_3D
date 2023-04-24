@@ -290,9 +290,6 @@ void CPanel::SelectPanel()
 	//選択用パネルの移動
 	MoveSelect();
 
-	//パネルのサイズの設定
-	SetPanelSize();
-
 	//選択用パネルの色の設定
 	SetSelectColor();
 
@@ -355,69 +352,19 @@ void CPanel::MoveSelect()
 }
 
 //================================================
-//パネルのサイズの設定
-//================================================
-void CPanel::SetPanelSize()
-{
-	for (int Y = 0; Y < GRID_Y; Y++)
-	{
-		for (int X = 0; X < GRID_X; X++)
-		{
-			if (m_aPanelInfo[Y][X].stage == CStage::STAGE::NONE)
-			{//ステージが無い場合
-				continue;
-			}
-
-			/* ステージがある場合 */
-
-			//ポインタを取得
-			CObject2D* pPanel = m_aPanelInfo[Y][X].m_pPanel;
-
-			if (pPanel == nullptr)
-			{//NULLチェック
-				continue;
-			}
-
-			/* nullptrではない場合 */
-
-			//位置を取得
-			D3DXVECTOR3 posPanel = pPanel->GetPos();		//パネル
-			D3DXVECTOR3 posSelect = m_pSelect->GetPos();	//選択用パネル
-
-			if (posPanel != posSelect)
-			{//同じ位置にいない場合
-				continue;
-			}
-
-			/* 同じ位置にある場合 */
-
-			//サイズ設定用
-			D3DXVECTOR2 size = D3DXVECTOR2(PANEL_SIZE, PANEL_SIZE);
-
-			if (m_bIsSelect)
-			{//選択中の場合
-				//サイズを少し大きくする
-				size = D3DXVECTOR2(PANEL_SIZE + 10.0f, PANEL_SIZE + 10.0f);
-			}
-
-			//サイズの設定
-			pPanel->SetSize(size);
-		}
-	}
-}
-
-//================================================
 //選択用パネルの色の設定
 //================================================
 void CPanel::SetSelectColor()
 {
-	if (m_pSelect == nullptr)
-	{//NULLチェック
+	if (m_aPanelInfo[m_nPosY][m_nPosX].stage == CGame::GetStage()->Get() ||
+		m_aPanelInfo[m_nPosY][m_nPosX].stage == CStage::STAGE::NONE)
+	{//「現在居るステージと同じパネル」もしくは「ステージ情報が無いパネル」の場合
+		m_bIsSelect = false;
 		return;
 	}
 
-	/* nullptrではない場合 */
-
+	/* 「現在居るステージではないパネル」かつ「ステージ情報があるパネル」の場合 */
+	
 	//色設定用
 	D3DXCOLOR col = D3DXCOLOR(1.0f, 0.5f, 0.0f, 1.0f);
 
@@ -452,47 +399,47 @@ void CPanel::MovePanel()
 		return;
 	}
 
-	bool bCanMove = false;	//移動できるかどうか
-
-	if (CApplication::GetInputKeyboard()->GetTrigger(DIK_D))
-	{//Dキー
-		nPosX++;	//+1する
-
-		if (nPosX >= GRID_X)
-		{//2より大きく(3以上)になった場合
-			nPosX = (GRID_X - 1);	//2に固定
-		}
-	}
-	else if (CApplication::GetInputKeyboard()->GetTrigger(DIK_A))
-	{//Aキー
-		nPosX--;	//-1する
-
-		if (nPosX < 0)
-		{//0未満(-1以下)になった場合
-			nPosX = 0;	//0に固定
-		}
-	}
-
 	if (CApplication::GetInputKeyboard()->GetTrigger(DIK_W))
-	{//Wキー
-		nPosY--;	//-1する
+	{//Wキー押下
+		m_nPosY--;	//-1する
 
-		if (nPosY < 0)
+		if (m_nPosY < 0)
 		{//0未満(-1以下)になった場合
-			nPosY = 0;	//0に固定
+			m_nPosY = 0;	//0に固定
 		}
 	}
 	else if (CApplication::GetInputKeyboard()->GetTrigger(DIK_S))
-	{//Sキー
-		nPosY++;	//+1する
+	{//Sキー押下
+		m_nPosY++;	//+1する
 
-		if (nPosY >= GRID_Y)
+		if (m_nPosY >= GRID_Y)
 		{//2より大きく(3以上)になった場合
-			nPosY = (GRID_Y - 1);	//2に固定
+			m_nPosY = GRID_Y - 1;	//2に固定
 		}
 	}
 
-	if (m_aPanelInfo[nPosY][nPosX].stage == CStage::STAGE::NONE)
+	if (CApplication::GetInputKeyboard()->GetTrigger(DIK_A))
+	{//Aキー押下
+		m_nPosX--;	//-1する
+
+		if (m_nPosX < 0)
+		{//0未満(-1以下)になった場合
+			m_nPosX = 0;	//0に固定
+		}
+	}
+	else if (CApplication::GetInputKeyboard()->GetTrigger(DIK_D))
+	{//Dキー押下
+		m_nPosX++;	//+1する
+
+		if (m_nPosX >= GRID_X)
+		{//2より大きく(3以上)になった場合
+			m_nPosX = GRID_X - 1;	//2に固定
+		}
+	}
+
+	bool bCanMove = false;	//移動できるかどうか
+
+	if (m_aPanelInfo[m_nPosY][m_nPosX].stage == CStage::STAGE::NONE)
 	{//移動先にステージが無い場合
 		//移動できる
 		bCanMove = true;
@@ -500,16 +447,25 @@ void CPanel::MovePanel()
 
 	if (bCanMove)
 	{//移動できる場合
-		//移動先のステージ情報を保存
-		CStage::STAGE stageDest = m_aPanelInfo[nPosY][nPosX].stage;
+		//パネル情報のポインタ
+		PANEL_INFO* now = &m_aPanelInfo[nPosY][nPosX];		//現在選択しているパネル
+		PANEL_INFO* dest = &m_aPanelInfo[m_nPosY][m_nPosX];	//移動先のパネル(バツ)
+
+		//ステージ情報を保存
+		CStage::STAGE stageNow = now->stage;
+		CStage::STAGE stageDest = dest->stage;
 
 		//ステージ情報を入れ替える
-		m_aPanelInfo[nPosY][nPosX].stage = m_aPanelInfo[m_nPosY][m_nPosX].stage;
-		m_aPanelInfo[m_nPosY][m_nPosX].stage = stageDest;
+		dest->stage = stageNow;
+		now->stage = stageDest;
 
-		//位置を入れ替える
-		m_aPanelInfo[nPosY][nPosX].m_pPanel->SetPos(m_aPos[m_nPosY][m_nPosX]);
-		m_aPanelInfo[m_nPosY][m_nPosX].m_pPanel->SetPos(m_aPos[nPosY][nPosX]);
+		//テクスチャ情報を保存
+		CTexture::TEXTURE texNow = now->m_pPanel->GetTexture();		//現在選択しているパネル
+		CTexture::TEXTURE texDest = dest->m_pPanel->GetTexture();	//移動先のパネル(バツ)
+
+		//テクスチャ情報を入れ替える
+		dest->m_pPanel->SetTexture(texNow);
+		now->m_pPanel->SetTexture(texDest);
 
 		//選択されていない状態にする
 		m_bIsSelect = false;

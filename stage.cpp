@@ -292,6 +292,92 @@ void CStage::Change(const STAGE &stage)
 }
 
 //================================================
+//ドア情報の読み込みと取得
+//================================================
+CStage::DIRECTION* CStage::LoadAndGetInfo_Door(const STAGE &stage)
+{
+	//ファイルを開く
+	FILE* pFile = fopen(s_apFileName[stage], "r");
+
+	if (pFile == nullptr)
+	{//ファイルが開けなかった場合
+		assert(false);
+	}
+
+	/* ファイルが開けた場合 */
+
+	char aText[MAX_WORD] = {};	//テキスト格納用
+
+	CStage::DIRECTION aDir[CStage::MAX_DOOR];	//ドアの方向読み込み用
+
+	int nIdxDoor = 0;	//ドアの番号
+
+	while (strncmp(&aText[0], "SCRIPT", 6) != 0)
+	{//テキストの最初の行を読み込むまで繰り返す
+		fgets(aText, MAX_WORD, pFile);	//1行丸ごと読み込む
+	}
+
+	while (strcmp(&aText[0], "END_SCRIPT") != 0)
+	{//テキストの最終行を読み込むまで繰り返す
+		//文字を読み込む
+		fscanf(pFile, "%s", &aText[0]);
+
+		if (strncmp(&aText[0], "#-", 2) == 0)
+		{//ブロックコメント
+			continue;
+		}
+		else if (strncmp(&aText[0], "#", 1) == 0)
+		{//コメント
+			//1行全て読み込む
+			fgets(aText, MAX_WORD, pFile);
+			continue;
+		}
+
+		if (strcmp(&aText[0], "MODELSET") == 0)
+		{//モデルセット
+			if (strcmp(&aText[0], "DIR") == 0)
+			{//方向
+				//「＝」を読み込む
+				fscanf(pFile, "%s", &aText[0]);
+
+				int nDir = 0;	//方向読み込み用
+
+				//方向を読み込む
+				fscanf(pFile, "%d", &nDir);
+
+				switch (nDir)
+				{
+				case 0:	//左
+					aDir[nIdxDoor] = DIRECTION::DIR_LEFT;
+					break;
+
+				case 1:	//奥
+					aDir[nIdxDoor] = DIRECTION::DIR_BACK;
+					break;
+
+				case 2:	//右
+					aDir[nIdxDoor] = DIRECTION::DIR_RIGHT;
+					break;
+
+				case 3:	//手前
+					aDir[nIdxDoor] = DIRECTION::DIR_FRONT;
+					break;
+
+				default:	//その他
+					assert(false);
+					break;
+				}
+
+				//番号を進める
+				nIdxDoor++;
+			}
+		}
+	}
+
+	return &aDir[0];
+}
+
+//================================================
 //読み込み
 //================================================
 void CStage::Load(const char* pStage)

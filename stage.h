@@ -146,6 +146,12 @@ public: /* メンバ関数 */
 	*/
 	void Change(const STAGE &stage);
 
+	/*
+		ドア情報の読み込みと取得
+		const STAGE &stage ---> ステージの種類
+	*/
+	DIRECTION* LoadAndGetInfo_Door(const STAGE &stage);
+
 private:
 	/*
 		読み込み

@@ -52,8 +52,6 @@ public: /* メンバ関数 */
 
 	CStage::DIRECTION GetDir();	//方向の取得
 
-	CStage::STAGE GetStageConnect();	//繋がっているステージの取得
-
 private:
 	void SetLines();	//ラインの設定まとめ
 
@@ -61,8 +59,6 @@ private: /* メンバ変数 */
 	CLine* m_apLine[MAX_LINE];	//ラインのポインタ
 
 	D3DXMATRIX m_mtxWorld;	//ワールドマトリックス
-
-	CStage::STAGE m_stageConnect;	//繋がっているステージ
 
 	CStage::DIRECTION m_dir;	//方向
 };

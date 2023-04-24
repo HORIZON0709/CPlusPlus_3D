@@ -59,7 +59,6 @@ public: /* メンバ関数 */
 private:
 	void SelectPanel();		//パネルの選択
 	void MoveSelect();		//選択用パネルの移動
-	void SetPanelSize();	//パネルのサイズの設定
 	void SetSelectColor();	//選択用パネルの色の設定
 	void MovePanel();		//パネルの移動
 
