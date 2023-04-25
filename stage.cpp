@@ -654,7 +654,9 @@ void CStage::CreateFloarAndWalls()
 
 		//床の設定
 		m_pFloar->SetSize(D3DXVECTOR3(FLOAR_SIZE, 0.0f, FLOAR_SIZE));
-		m_pFloar->SetCol(D3DXCOLOR(0.0f, 1.0f, 0.0f, 0.5f));
+
+		//テクスチャの設定
+		m_pFloar->SetTexture(CTexture::TEXTURE::WallAndFloar);
 	}
 
 	int nCntCreate = 0;	//生成数カウント用
@@ -670,6 +672,9 @@ void CStage::CreateFloarAndWalls()
 
 		//壁の生成
 		m_apWall[i] = CObject3D::Create();
+
+		//テクスチャの設定
+		m_apWall[i]->SetTexture(CTexture::TEXTURE::WallAndFloar);
 
 		//カウントアップ
 		nCntCreate++;
@@ -712,9 +717,6 @@ void CStage::SetWall()
 	//向き
 	m_apWall[dir]->SetRot(D3DXVECTOR3(0.0f, 0.0f, -D3DX_PI * 0.5f));
 
-	//色
-	m_apWall[dir]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f));
-
 	//********** 奥 **********//
 
 	//生成する方向
@@ -733,9 +735,6 @@ void CStage::SetWall()
 	//向き
 	m_apWall[dir]->SetRot(D3DXVECTOR3(-D3DX_PI * 0.5f, 0.0f, 0.0f));
 
-	//色
-	m_apWall[dir]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f));
-
 	//********** 右 **********//
 
 	//生成する方向
@@ -753,9 +752,6 @@ void CStage::SetWall()
 
 	//向き
 	m_apWall[dir]->SetRot(D3DXVECTOR3(0.0f, 0.0f, D3DX_PI * 0.5f));
-
-	//色
-	m_apWall[dir]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f));
 
 	//********** 手前 **********//
 

@@ -37,6 +37,9 @@ const char* CTexture::s_FileName[] =
 
 	/* Number */
 	"data/TEXTURE/Number00.png",	//ナンバー画像
+
+	/* ゲーム中用素材 */
+	"data/TEXTURE/WallAndFloar.jpg",	//壁と床用
 };
 
 static_assert(sizeof(CTexture::s_FileName) / sizeof(CTexture::s_FileName[0]) == CTexture::MAX, "aho");

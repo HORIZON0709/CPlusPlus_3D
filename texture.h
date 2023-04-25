@@ -41,6 +41,9 @@ public: /* 定義 */
 		/* Number */
 		Number00,	//ナンバー画像
 
+		/* ゲーム中用素材 */
+		WallAndFloar,	//壁と床用
+
 		MAX
 	};
 
