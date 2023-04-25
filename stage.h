@@ -147,10 +147,16 @@ public: /* メンバ関数 */
 	void Change(const STAGE &stage);
 
 	/*
-		ドア情報の読み込みと取得
+		ドアの方向の読み込み
 		const STAGE &stage ---> ステージの種類
 	*/
-	DIRECTION* LoadAndGetInfo_Door(const STAGE &stage);
+	void LoadDoorDir(const STAGE &stage);
+
+	/*
+		ドアの方向を取得
+		int nIdx ---> 番号
+	*/
+	int GetDoorDir(int nIdx);
 
 private:
 	/*
@@ -177,6 +183,8 @@ private: /* メンバ変数 */
 
 	int m_nNumModel;	//モデル数
 	int m_nCntModelSet;	//セット済モデル数カウント用
+
+	int m_aDir[MAX_DOOR];	//ドアの方向(番号)
 };
 
 #endif

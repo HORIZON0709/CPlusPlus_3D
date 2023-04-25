@@ -17,6 +17,8 @@
 #include "door.h"
 #include "player.h"
 
+#include "debug_proc.h"
+
 #include <assert.h>
 
 //***************************
@@ -117,6 +119,11 @@ CStage::CStage() :
 	m_nNumModel(0),
 	m_nCntModelSet(0)
 {
+	//メンバ変数のクリア
+	for (int i = 0; i < MAX_DOOR; i++)
+	{
+		m_aDir[i] = 0;
+	}
 }
 
 //================================================
@@ -136,6 +143,11 @@ HRESULT CStage::Init(const STAGE &stage, const char* pStage)
 	m_stageNext = STAGE::NONE;
 	m_nNumModel = 0;
 	m_nCntModelSet = 0;
+
+	for (int i = 0; i < MAX_DOOR; i++)
+	{
+		m_aDir[i] = -1;
+	}
 
 	//床と壁の生成
 	CreateFloarAndWalls();
@@ -252,6 +264,10 @@ void CStage::Update()
 			m_pItem = nullptr;			//nullptrにする
 		}
 	}
+
+	//デバッグ表示
+	CDebugProc::Print("\n《 Stage 》\n");
+	CDebugProc::Print("現在のステージ:[%d]\n", m_stage);	//現在のステージ
 }
 
 //================================================
@@ -292,9 +308,9 @@ void CStage::Change(const STAGE &stage)
 }
 
 //================================================
-//ドア情報の読み込みと取得
+//ドアの方向の読み込み
 //================================================
-CStage::DIRECTION* CStage::LoadAndGetInfo_Door(const STAGE &stage)
+void CStage::LoadDoorDir(const STAGE &stage)
 {
 	//ファイルを開く
 	FILE* pFile = fopen(s_apFileName[stage], "r");
@@ -308,9 +324,7 @@ CStage::DIRECTION* CStage::LoadAndGetInfo_Door(const STAGE &stage)
 
 	char aText[MAX_WORD] = {};	//テキスト格納用
 
-	CStage::DIRECTION aDir[CStage::MAX_DOOR];	//ドアの方向読み込み用
-
-	int nIdxDoor = 0;	//ドアの番号
+	int nNumDoor = 0;	//ドアの数
 
 	while (strncmp(&aText[0], "SCRIPT", 6) != 0)
 	{//テキストの最初の行を読み込むまで繰り返す
@@ -335,46 +349,30 @@ CStage::DIRECTION* CStage::LoadAndGetInfo_Door(const STAGE &stage)
 
 		if (strcmp(&aText[0], "MODELSET") == 0)
 		{//モデルセット
+			//文字を読み込む
+			fscanf(pFile, "%s", &aText[0]);
+
 			if (strcmp(&aText[0], "DIR") == 0)
 			{//方向
 				//「＝」を読み込む
 				fscanf(pFile, "%s", &aText[0]);
 
-				int nDir = 0;	//方向読み込み用
-
 				//方向を読み込む
-				fscanf(pFile, "%d", &nDir);
+				fscanf(pFile, "%d", &m_aDir[nNumDoor]);
 
-				switch (nDir)
-				{
-				case 0:	//左
-					aDir[nIdxDoor] = DIRECTION::DIR_LEFT;
-					break;
-
-				case 1:	//奥
-					aDir[nIdxDoor] = DIRECTION::DIR_BACK;
-					break;
-
-				case 2:	//右
-					aDir[nIdxDoor] = DIRECTION::DIR_RIGHT;
-					break;
-
-				case 3:	//手前
-					aDir[nIdxDoor] = DIRECTION::DIR_FRONT;
-					break;
-
-				default:	//その他
-					assert(false);
-					break;
-				}
-
-				//番号を進める
-				nIdxDoor++;
+				//ドアの数をカウントする
+				nNumDoor++;
 			}
 		}
 	}
+}
 
-	return &aDir[0];
+//================================================
+//ドアの方向を取得
+//================================================
+int CStage::GetDoorDir(int nIdx)
+{
+	return m_aDir[nIdx];
 }
 
 //================================================

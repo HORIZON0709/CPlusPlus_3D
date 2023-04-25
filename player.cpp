@@ -20,6 +20,7 @@
 #include "stage.h"
 #include "door.h"
 #include "score.h"
+#include "panel.h"
 
 #include "debug_proc.h"
 #include "utility.h"
@@ -604,6 +605,12 @@ void CPlayer::Collision()
 			sizeOwn,			//自身のサイズ
 			sizeTarget			//対象のサイズ
 		);
+
+		if (m_bCollDoor)
+		{//当たっていたら
+			//当たったドアの方向を取得
+			dirDoor = pDoor->GetDir();
+		}
 	}
 
 	//アイテム情報を取得
@@ -648,11 +655,127 @@ void CPlayer::StageChange()
 
 	/* ドアに当たった場合 */
 
+	//パネル情報取得用
+	CPanel::PANEL_INFO aInfo[CPanel::GRID_Y][CPanel::GRID_X] = {};
+
+	//現在のステージを取得
+	CStage* pStage = CGame::GetStage();
+
+	int nPosX = 0, nPosY = 0;	//パネルの位置番号
+
+	for (int Y = 0; Y < CPanel::GRID_Y; Y++)
+	{
+		for (int X = 0; X < CPanel::GRID_X; X++)
+		{
+			//パネル情報を取得
+			aInfo[Y][X] = CGame::GetPanel()->GetPanelInfo(Y, X);
+
+			if (aInfo[Y][X].stage == pStage->Get())
+			{//現在のステージと同じステージ情報を持つパネルの場合
+				//位置番号を保存
+				nPosX = X;	//X軸
+				nPosY = Y;	//Y軸
+			}
+		}
+	}
+
+	//移動先の番号用
+	int nDestX = nPosX;	//X軸
+	int nDestY = nPosY;	//Y軸
+
+	switch (dirDoor)
+	{//当たったドアの方向
+	case CStage::DIRECTION::DIR_LEFT:	//左側
+		nDestX--;	//今居るステージの左側のステージを調べる
+
+		if (nDestX < 0)
+		{//0未満(-1以下)になった場合
+			nDestX = 0;	//0に固定
+		}
+		break;
+
+	case CStage::DIRECTION::DIR_BACK:	//奥側
+		nDestY--;	//今居るステージの奥側のステージを調べる
+
+		if (nDestY < 0)
+		{//0未満(-1以下)になった場合
+			nDestY = 0;	//0に固定
+		}
+		break;
+
+	case CStage::DIRECTION::DIR_RIGHT:	//右側
+		nDestX++;	//今居るステージの右側のステージを調べる
+
+		if (nDestX >= CPanel::GRID_X)
+		{//2より大きく(3以上)になった場合
+			nDestX = (CPanel::GRID_X - 1);	//2に固定
+		}
+		break;
+
+	case CStage::DIRECTION::DIR_FRONT:	//手前側
+		nDestY++;	//今居るステージの手前側のステージを調べる
+
+		if (nDestY >= CPanel::GRID_Y)
+		{//2より大きく(3以上)になった場合
+			nDestY = (CPanel::GRID_Y - 1);	//2に固定
+		}
+		break;
+
+	case CStage::DIRECTION::DIR_NONE:
+	case CStage::DIRECTION::DIR_MAX:
+	default:	//その他
+		assert(false);
+		break;
+	}
+
+	if (aInfo[nDestY][nDestX].stage == CStage::STAGE::NONE)
+	{//ドアの先にステージが無い場合
+		return;
+	}
+
+	/* ドアの先にステージがある場合 */
+
+	//ドア先のステージの、ドアの方向のみを読み込む
+	pStage->LoadDoorDir(aInfo[nDestY][nDestX].stage);
+
+	CStage::DIRECTION aDir[CStage::MAX_DOOR] = {};	//ドア方向取得用
+
 	for (int i = 0; i < CStage::MAX_DOOR; i++)
 	{
-		CStage* stage = CGame::GetStage();
+		//読み込んだドアの方向を取得
+		aDir[i] = (CStage::DIRECTION)pStage->GetDoorDir(i);
+	}
 
-		CStage::DIRECTION* dir = stage->LoadAndGetInfo_Door(CStage::STAGE::NONE);
+	for (int i = 0; i < CStage::MAX_DOOR; i++)
+	{
+		if (aDir[i] == CStage::DIRECTION::DIR_NONE)
+		{//ドアが無い場合
+			continue;
+		}
+
+		/* ドアがある場合 */
+
+		//現在のステージのドア方向の条件式
+		bool bDir_Left = (pStage->m_apDoor[i]->GetDir() == CStage::DIRECTION::DIR_LEFT);	//左
+		bool bDir_Right = (pStage->m_apDoor[i]->GetDir() == CStage::DIRECTION::DIR_RIGHT);	//右
+		bool bDir_Back = (pStage->m_apDoor[i]->GetDir() == CStage::DIRECTION::DIR_BACK);	//奥
+		bool bDir_Front = (pStage->m_apDoor[i]->GetDir() == CStage::DIRECTION::DIR_FRONT);	//手前
+
+		//ドア先のステージのドア方向の条件式
+		bool bDest_Right = (aDir[i] == CStage::DIRECTION::DIR_RIGHT);
+		bool bDest_Left = (aDir[i] == CStage::DIRECTION::DIR_LEFT);
+		bool bDest_Front = (aDir[i] == CStage::DIRECTION::DIR_FRONT);
+		bool bDest_Back = (aDir[i] == CStage::DIRECTION::DIR_BACK);
+
+		if ((bDir_Left && bDest_Right) ||	//「左」から入って「右」から出られる
+			(bDir_Right && bDest_Left) ||	//「右」から入って「左」から出られる
+			(bDir_Back && bDest_Front) ||	//「奥」から入って「手前」から出られる
+			(bDir_Front && bDest_Back))		//「手前」から入って「奥」から出られる
+		{//ドアを通過してステージ移動出来る場合
+			//ステージを変更
+			pStage->Change(aInfo[nDestY][nDestX].stage);
+			return;
+		}
 	}
 }
 

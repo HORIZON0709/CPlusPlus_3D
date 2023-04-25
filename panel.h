@@ -24,14 +24,15 @@ class CObject2D;
 //***************************
 class CPanel
 {/* 基本クラス */
-private: /* 定数の定義 */
-	static const int MAX_PANEL = 9;	//パネルの最大数
+public: /* 定数の定義 */
 	static const int GRID_X = 3;	//マス目の数(X軸)
 	static const int GRID_Y = 3;	//マス目の数(Y軸)
+private:
+	static const int MAX_PANEL = 9;	//パネルの最大数
 
 	static const float PANEL_SIZE;	//パネルのサイズ
 
-private: /* 構造体の定義 */
+public: /* 構造体の定義 */
 	struct PANEL_INFO	//パネル情報
 	{
 		CObject2D* m_pPanel;	//パネルのポインタ
@@ -55,6 +56,13 @@ public: /* メンバ関数 */
 	void Draw();	//描画
 
 	bool GetIsPanel();	//パネル操作中かどうかを取得
+
+	/*
+		パネル情報の取得
+		int Y ---> 位置(X軸)
+		int X ---> 位置(Y軸)
+	*/
+	PANEL_INFO GetPanelInfo(int Y, int X);
 
 private:
 	void SelectPanel();		//パネルの選択

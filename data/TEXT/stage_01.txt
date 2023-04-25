@@ -1,6 +1,6 @@
 #==============================================================================
 #
-# model.txt
+# stage_01.txt
 # Author:Kishimoto Eiji
 #
 #==============================================================================
@@ -66,6 +66,12 @@ MODELSET
 	INDEX = 2
 	MODEL_TYPE = 3
 	DIR = 2
+END_MODELSET
+
+MODELSET
+	INDEX = 2
+	MODEL_TYPE = 3
+	DIR = 3
 END_MODELSET
 
 END_SCRIPT
