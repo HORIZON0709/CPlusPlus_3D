@@ -349,19 +349,22 @@ void CStage::LoadDoorDir(const STAGE &stage)
 
 		if (strcmp(&aText[0], "MODELSET") == 0)
 		{//モデルセット
-			//文字を読み込む
-			fscanf(pFile, "%s", &aText[0]);
-
-			if (strcmp(&aText[0], "DIR") == 0)
-			{//方向
-				//「＝」を読み込む
+			while (strcmp(&aText[0], "END_MODELSET") != 0)
+			{//モデルセットが終わるまで読み込み続ける
+				//文字を読み込む
 				fscanf(pFile, "%s", &aText[0]);
 
-				//方向を読み込む
-				fscanf(pFile, "%d", &m_aDir[nNumDoor]);
+				if (strcmp(&aText[0], "DIR") == 0)
+				{//方向
+					//「＝」を読み込む
+					fscanf(pFile, "%s", &aText[0]);
 
-				//ドアの数をカウントする
-				nNumDoor++;
+					//方向を読み込む
+					fscanf(pFile, "%d", &m_aDir[nNumDoor]);
+
+					//ドアの数をカウントする
+					nNumDoor++;
+				}
 			}
 		}
 	}

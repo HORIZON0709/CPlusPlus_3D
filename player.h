@@ -138,6 +138,7 @@ private: /* メンバ変数 */
 	bool m_bCollDoor;		//ドアとの当たり判定
 	bool m_bGetItem;		//アイテムを取得したかどうか
 	bool m_bFadeOut;		//フェードしたかどうか
+	bool m_bCanMove;		//移動できるかどうか
 };
 
 #endif

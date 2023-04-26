@@ -190,6 +190,7 @@ void CPanel::Uninit()
 		{
 			if (m_aPanelInfo[Y][X].m_pPanel != nullptr)
 			{//NULLチェック
+				m_aPanelInfo[Y][X].m_pPanel->SetDeathFlag();
 				m_aPanelInfo[Y][X].m_pPanel = nullptr;
 			}
 		}
@@ -197,11 +198,13 @@ void CPanel::Uninit()
 
 	if (m_pSelect != nullptr)
 	{//NULLチェック
+		m_pSelect->SetDeathFlag();
 		m_pSelect = nullptr;
 	}
 
 	if (m_pBg != nullptr)
 	{//NULLチェック
+		m_pBg->SetDeathFlag();
 		m_pBg = nullptr;
 	}
 }
@@ -246,7 +249,13 @@ void CPanel::Update()
 			{//現在のステージに該当するパネルを探す
 				//色を暗くする
 				m_aPanelInfo[Y][X].m_pPanel->SetCol(D3DXCOLOR(0.5f, 0.5f, 0.5f, 1.0f));
+				continue;
 			}
+
+			/* それ以外のパネル */
+
+			//色を元に戻す
+			m_aPanelInfo[Y][X].m_pPanel->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 		}
 	}
 

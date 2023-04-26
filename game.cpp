@@ -26,11 +26,6 @@
 #include <assert.h>
 #include <time.h>
 
-namespace
-{
-CStage::STAGE stage = CStage::STAGE::NONE;
-}
-
 //***************************
 //定数の定義
 //***************************
@@ -274,15 +269,6 @@ void CGame::Update()
 		m_pStage = m_pStage->Set();	//ステージ
 	}
 
-	if (CApplication::GetInputKeyboard()->GetTrigger(DIK_2))
-	{
-		stage = CStage::STAGE::Stage02;
-	}
-	else if (CApplication::GetInputKeyboard()->GetTrigger(DIK_3))
-	{
-		stage = CStage::STAGE::Stage03;
-	}
-
 	if (CApplication::GetInput()->GetKey()->Trigger(CInput::DECISION) ||
 		m_pScore->GetCurrentScore() == 3)
 	{//Enterキー押下 or アイテムを全て獲得した
@@ -300,19 +286,9 @@ void CGame::Update()
 
 	if (m_bFadeOut && (CApplication::GetFade()->GetState() == CFade::STATE::NONE))
 	{//暗転した & 現在フェードしていない
-		//Change(MODE::RESULT);	//モードの設定
-
-		if (m_pScore->GetCurrentScore() == 3)
-		{
-			Change(MODE::RESULT);	//モードの設定
-			return;
-		}
-		else
-		{
-			//ステージ切り替え
-			m_pStage->Change(stage);
-		}
-
+		//リザルトへ移行
+		Change(MODE::RESULT);
+		
 		//カウントリセット
 		m_nCntIntervalFade = 0;
 

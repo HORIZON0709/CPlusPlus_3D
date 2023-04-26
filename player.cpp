@@ -94,7 +94,8 @@ CPlayer::CPlayer() :CObject::CObject(CObject::PRIORITY::PRIO_MODEL),
 	m_bPressKey(false),
 	m_bCollGimmick(false),
 	m_bCollDoor(false),
-	m_bGetItem(false)
+	m_bGetItem(false),
+	m_bCanMove(false)
 {
 	//メンバ変数のクリア
 	memset(m_mtxWorld, 0, sizeof(m_mtxWorld));
@@ -166,6 +167,7 @@ HRESULT CPlayer::Init()
 	m_bCollGimmick = false;
 	m_bCollDoor = false;
 	m_bGetItem = false;
+	m_bCanMove = false;
 
 	for (int i = 0; i < MAX_LINE; i++)
 	{
@@ -211,8 +213,8 @@ void CPlayer::Update()
 	//スコア(アイテム取得数)をセット
 	CGame::GetScore()->SetScore(m_nGetItem);
 
-	if (!m_bFadeOut && m_bCollDoor)
-	{//暗転していない & ドアに当たった
+	if (!m_bFadeOut && m_bCollDoor && m_bCanMove)
+	{//暗転していない & ドアに当たった & 移動できる
 		//暗転
 		CApplication::GetFade()->Set(CFade::STATE::FADE_OUT);
 
@@ -240,6 +242,9 @@ void CPlayer::Update()
 			m_pos = CStage::POS_DOOR[CStage::DIRECTION::DIR_BACK];
 			break;
 		}
+
+		//移動した
+		m_bCanMove = false;
 
 		//明転した
 		m_bFadeOut = false;
@@ -610,6 +615,7 @@ void CPlayer::Collision()
 		{//当たっていたら
 			//当たったドアの方向を取得
 			dirDoor = pDoor->GetDir();
+			return;
 		}
 	}
 
@@ -755,22 +761,41 @@ void CPlayer::StageChange()
 
 		/* ドアがある場合 */
 
-		//現在のステージのドア方向の条件式
-		bool bDir_Left = (pStage->m_apDoor[i]->GetDir() == CStage::DIRECTION::DIR_LEFT);	//左
-		bool bDir_Right = (pStage->m_apDoor[i]->GetDir() == CStage::DIRECTION::DIR_RIGHT);	//右
-		bool bDir_Back = (pStage->m_apDoor[i]->GetDir() == CStage::DIRECTION::DIR_BACK);	//奥
-		bool bDir_Front = (pStage->m_apDoor[i]->GetDir() == CStage::DIRECTION::DIR_FRONT);	//手前
+		switch (dirDoor)
+		{//触れたドアの方向
+		case CStage::DIRECTION::DIR_LEFT:	//左側
+			if (aDir[i] == CStage::DIRECTION::DIR_RIGHT)
+			{//ドア先のステージに、対応する「右側」のドアがある場合
+				m_bCanMove = true;	//移動できる
+			}
+			break;
 
-		//ドア先のステージのドア方向の条件式
-		bool bDest_Right = (aDir[i] == CStage::DIRECTION::DIR_RIGHT);
-		bool bDest_Left = (aDir[i] == CStage::DIRECTION::DIR_LEFT);
-		bool bDest_Front = (aDir[i] == CStage::DIRECTION::DIR_FRONT);
-		bool bDest_Back = (aDir[i] == CStage::DIRECTION::DIR_BACK);
+		case CStage::DIRECTION::DIR_BACK:	//奥側
+			if (aDir[i] == CStage::DIRECTION::DIR_FRONT)
+			{//ドア先のステージに、対応する「手前側」のドアがある場合
+				m_bCanMove = true;	//移動できる
+			}
+			break;
 
-		if ((bDir_Left && bDest_Right) ||	//「左」から入って「右」から出られる
-			(bDir_Right && bDest_Left) ||	//「右」から入って「左」から出られる
-			(bDir_Back && bDest_Front) ||	//「奥」から入って「手前」から出られる
-			(bDir_Front && bDest_Back))		//「手前」から入って「奥」から出られる
+		case CStage::DIRECTION::DIR_RIGHT:	//右側
+			if (aDir[i] == CStage::DIRECTION::DIR_LEFT)
+			{//ドア先のステージに、対応する「左側」のドアがある場合
+				m_bCanMove = true;	//移動できる
+			}
+			break;
+
+		case CStage::DIRECTION::DIR_FRONT:	//手前側
+			if (aDir[i] == CStage::DIRECTION::DIR_BACK)
+			{//ドア先のステージに、対応する「奥側」のドアがある場合
+				m_bCanMove = true;	//移動できる
+			}
+			break;
+
+		default:
+			break;
+		}
+
+		if (m_bCanMove)
 		{//ドアを通過してステージ移動出来る場合
 			//ステージを変更
 			pStage->Change(aInfo[nDestY][nDestX].stage);
