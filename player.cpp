@@ -27,6 +27,9 @@
 
 #include <assert.h>
 
+//***************************
+//namespace
+//***************************
 namespace
 {
 CStage::DIRECTION dirDoor = CStage::DIRECTION::DIR_NONE;	//触れたドアの方向
@@ -94,6 +97,7 @@ CPlayer::CPlayer() :CObject::CObject(CObject::PRIORITY::PRIO_MODEL),
 	m_bPressKey(false),
 	m_bCollGimmick(false),
 	m_bCollDoor(false),
+	m_bCollPanelStand(false),
 	m_bGetItem(false),
 	m_bCanMove(false)
 {
@@ -166,6 +170,7 @@ HRESULT CPlayer::Init()
 	m_bPressKey = false;
 	m_bCollGimmick = false;
 	m_bCollDoor = false;
+	m_bCollPanelStand = false;
 	m_bGetItem = false;
 	m_bCanMove = false;
 
@@ -580,6 +585,29 @@ void CPlayer::Collision()
 			pGimmick->GetPos(),	//対象の位置
 			sizeOwn,			//自身のサイズ
 			sizeTarget			//対象のサイズ
+		);
+	}
+
+	/* パネルスタンド */
+
+	//パネル情報の取得
+	CPanel* pPanel = CGame::GetPanel();
+
+	if (pPanel != nullptr)
+	{//nullptrではない場合
+		//自身のサイズを算出
+		D3DXVECTOR3 sizeOwn = (m_vtxMax - m_vtxMin);
+
+		//対象のサイズを算出
+		D3DXVECTOR3 sizeTarget = (pPanel->GetPanelStand()->GetVtxMax() - pPanel->GetPanelStand()->GetVtxMin());
+
+		//当たり判定
+		m_bCollPanelStand = CollisionModel(
+			&m_pos,								//自身の現在の位置
+			m_posOld,							//自身の前回の位置
+			pPanel->GetPanelStand()->GetPos(),	//対象の位置
+			sizeOwn,							//自身のサイズ
+			sizeTarget							//対象のサイズ
 		);
 	}
 

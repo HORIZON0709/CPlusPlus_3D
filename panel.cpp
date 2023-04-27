@@ -10,6 +10,7 @@
 #include "panel.h"
 #include "application.h"
 #include "renderer.h"
+#include "objectX.h"
 #include "object2D.h"
 #include "input.h"
 #include "game.h"
@@ -23,6 +24,8 @@
 //定数の定義
 //***************************
 const float CPanel::PANEL_SIZE = 100.0f;	//パネルのサイズ
+
+const D3DXVECTOR3 CPanel::PANELSTAND_POS = D3DXVECTOR3(300.0f, 0.0f, 300.0f);	//パネルスタンドの位置
 
 //***************************
 //静的メンバ変数
@@ -54,6 +57,7 @@ CPanel* CPanel::Create()
 //コンストラクタ
 //================================================
 CPanel::CPanel() :
+	m_pPanelStand(nullptr),
 	m_pBg(nullptr),
 	m_pSelect(nullptr),
 	m_nPosX(0),
@@ -111,6 +115,14 @@ HRESULT CPanel::Init()
 			}
 		}
 	}
+
+	/* Xモデル */
+
+	//生成
+	m_pPanelStand = CObjectX::Create("data/MODEL/PanelStand.x");
+
+	//位置の設定
+	m_pPanelStand->SetPos(PANELSTAND_POS);
 
 	/* 背景 */
 
@@ -207,6 +219,12 @@ void CPanel::Uninit()
 		m_pBg->SetDeathFlag();
 		m_pBg = nullptr;
 	}
+
+	if (m_pPanelStand != nullptr)
+	{//NULLチェック
+		m_pPanelStand->SetDeathFlag();
+		m_pPanelStand = nullptr;
+	}
 }
 
 //================================================
@@ -291,6 +309,14 @@ bool CPanel::GetIsPanel()
 CPanel::PANEL_INFO CPanel::GetPanelInfo(int Y, int X)
 {
 	return m_aPanelInfo[Y][X];
+}
+
+//================================================
+//パネルスタンドの取得
+//================================================
+CObjectX* CPanel::GetPanelStand()
+{
+	return m_pPanelStand;
 }
 
 //================================================

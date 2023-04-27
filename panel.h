@@ -18,6 +18,7 @@
 //前方宣言
 //***************************
 class CObject2D;
+class CObjectX;
 
 //***************************
 //プレイヤークラスの定義
@@ -31,6 +32,8 @@ private:
 	static const int MAX_PANEL = 9;	//パネルの最大数
 
 	static const float PANEL_SIZE;	//パネルのサイズ
+
+	static const D3DXVECTOR3 PANELSTAND_POS;	//パネルスタンドの位置
 
 public: /* 構造体の定義 */
 	struct PANEL_INFO	//パネル情報
@@ -64,6 +67,8 @@ public: /* メンバ関数 */
 	*/
 	PANEL_INFO GetPanelInfo(int Y, int X);
 
+	CObjectX* GetPanelStand();	//パネルスタンドの取得
+
 private:
 	void SelectPanel();		//パネルの選択
 	void MoveSelect();		//選択用パネルの移動
@@ -71,6 +76,8 @@ private:
 	void MovePanel();		//パネルの移動
 
 private: /* メンバ変数 */
+	CObjectX* m_pPanelStand;	//パネルスタンドのポインタ
+
 	CObject2D* m_pBg;		//背景
 	CObject2D* m_pSelect;	//選択用パネル
 
