@@ -68,6 +68,7 @@ public: /* 定数の定義 */
 
 	static const int MAX_GIMMICK = 8;	//ギミックの最大数
 	static const int MAX_DOOR = 2;		//ドアの最大数
+	static const int MAX_COIN = 3;		//コインの最大数
 
 	static const float ROT_DOOR;	//ドアの向き
 

@@ -42,13 +42,13 @@ const float CStage::ROT_DOOR = 1.57f;	//ドアの向き
 
 const D3DXVECTOR3 CStage::POS_DOOR[CStage::DIRECTION::DIR_MAX] =
 {//ドアの位置
-	D3DXVECTOR3(-200.0f,0.0f,0.0f),	//左
-	D3DXVECTOR3(0.0f,0.0f,200.0f),	//奥
-	D3DXVECTOR3(200.0f,0.0f,0.0f),	//右
-	D3DXVECTOR3(0.0f,0.0f,-200.0f)	//手前
+	D3DXVECTOR3(-300.0f,0.0f,0.0f),	//左
+	D3DXVECTOR3(0.0f,0.0f,300.0f),	//奥
+	D3DXVECTOR3(300.0f,0.0f,0.0f),	//右
+	D3DXVECTOR3(0.0f,0.0f,-300.0f)	//手前
 };
 
-const float CStage::FLOAR_SIZE = 1000.0f;				//床のサイズ
+const float CStage::FLOAR_SIZE = 700.0f;				//床のサイズ
 const float CStage::WALL_WIDTH = FLOAR_SIZE;			//壁の幅
 const float CStage::WALL_HEIGHT = FLOAR_SIZE * 0.5f;	//壁の高さ
 
@@ -484,12 +484,28 @@ void CStage::Load(const char* pStage)
 			break;
 
 		case MODEL_TYPE::TYPE_ITEM:	//アイテム
+			for (int i = 0; i < MAX_COIN; i++)
+			{
+				//コインの獲得状況を取得
+				STAGE stageCoin = CGame::GetPlayer()->GetStageCoin(i);
+
+				if (stageCoin == m_stage)
+				{//現在のステージのコインを獲得済の場合
+					break;
+				}
+			}
+
+			/* 獲得していない場合 */
+
 			//生成
 			m_pItem = CItem::Create(&aFileName[nIndex][0]);
 			
 			//位置・向きの設定
 			m_pItem->SetPos(m_aModelSetInfo[i].pos);
 			m_pItem->SetRot(m_aModelSetInfo[i].rot);
+
+			//配置されたステージを設定
+			m_pItem->SetIsStage(m_stage);
 			break;
 
 		case MODEL_TYPE::TYPE_DOOR:	//ドア

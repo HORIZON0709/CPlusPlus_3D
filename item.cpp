@@ -49,6 +49,8 @@ CItem* CItem::Create(char* pFileName)
 //コンストラクタ
 //================================================
 CItem::CItem() :CObjectX::CObjectX(),
+	m_isStage(CStage::STAGE::NONE),
+	m_rot(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
 	m_rotDest(D3DXVECTOR3(0.0f, 0.0f, 0.0f))
 {
 	//メンバ変数のクリア
@@ -296,4 +298,12 @@ void CItem::SetLines()
 	m_apLine[nNum]->Set(pos, rot, start, end, col);
 
 	nNum++;	//次に進める
+}
+
+//================================================
+//どのステージにあるかを設定
+//================================================
+void CItem::SetIsStage(CStage::STAGE isStage)
+{
+	m_isStage = isStage;
 }

@@ -81,7 +81,7 @@ void CCamera::Update()
 	m_posR = CGame::GetPlayer()->GetPos();
 
 	//視点を指定の位置に固定する
-	m_posV = CGame::GetPlayer()->GetPos() + D3DXVECTOR3(0.0f, 100.0f, -300.0f);
+	m_posV = CGame::GetPlayer()->GetPos() + D3DXVECTOR3(0.0f, 200.0f, -300.0f);
 
 	CDebugProc::Print("\n《 Camera 》\n");
 	CDebugProc::Print("m_posV:[%f,%f,%f]\n", m_posV.x, m_posV.y, m_posV.z);

@@ -269,7 +269,7 @@ void CGame::Update()
 		m_pStage = m_pStage->Set();	//ステージ
 	}
 
-	if (m_pScore->GetCurrentScore() == 3)
+	if (m_pScore->GetCurrentScore() == CStage::MAX_COIN)
 	{//アイテムを全て獲得した
 		m_nCntIntervalFade++;	//カウントアップ
 	}

@@ -11,6 +11,7 @@
 //インクルード
 //***************************
 #include "objectX.h"
+#include "stage.h"
 
 //***************************
 //前方宣言
@@ -47,8 +48,16 @@ public: /* オーバーライド関数 */
 public: /* メンバ関数 */
 	void SetLines();	//ラインの設定まとめ
 
+	/*
+		どのステージにあるかを設定
+		CStage::STAGE isStage ---> 配置するステージ
+	*/
+	void SetIsStage(CStage::STAGE isStage);
+
 private: /* メンバ変数 */
 	CLine* m_apLine[MAX_LINE];	//ラインのポインタ
+
+	CStage::STAGE m_isStage;	//どのステージにあるか
 
 	D3DXMATRIX m_mtxWorld;	//ワールドマトリックス
 

@@ -17,7 +17,6 @@
 #include "line.h"
 #include "item.h"
 #include "fade.h"
-#include "stage.h"
 #include "door.h"
 #include "score.h"
 #include "panel.h"
@@ -102,8 +101,13 @@ CPlayer::CPlayer() :CObject::CObject(CObject::PRIORITY::PRIO_MODEL),
 	m_bCanMove(false)
 {
 	//メンバ変数のクリア
-	memset(m_mtxWorld, 0, sizeof(m_mtxWorld));
+	for (int i = 0; i < CStage::MAX_COIN; i++)
+	{
+		m_aStageCoin[i] = CStage::STAGE::NONE;
+	}
 
+	memset(m_mtxWorld, 0, sizeof(m_mtxWorld));
+	
 	for (int i = 0; i < NUM_VTX_3D; i++)
 	{
 		m_aPosVtx[i] = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -136,7 +140,13 @@ HRESULT CPlayer::Init()
 
 	//メンバ変数の初期化
 	m_pItem = nullptr;
-	m_pos = D3DXVECTOR3(-50.0f, 0.0f, 0.0f);
+
+	for (int i = 0; i < CStage::MAX_COIN; i++)
+	{
+		m_aStageCoin[i] = CStage::STAGE::NONE;
+	}
+
+	m_pos = D3DXVECTOR3(0.0f, 0.0f, -150.0f);
 	m_posOld = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_vec = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -365,6 +375,14 @@ D3DXVECTOR3 CPlayer::GetVtxMin()
 bool CPlayer::GetIsGetItem()
 {
 	return m_bGetItem;
+}
+
+//================================================
+//アイテムの獲得状況を取得
+//================================================
+CStage::STAGE CPlayer::GetStageCoin(int nIdx)
+{
+	return m_aStageCoin[nIdx];
 }
 
 //================================================
@@ -675,6 +693,9 @@ void CPlayer::Collision()
 
 	if (m_bGetItem)
 	{//アイテムを獲得した場合
+		//獲得したステージを記録
+		m_aStageCoin[m_nGetItem] = CGame::GetStage()->Get();
+
 		//アイテム獲得数を増やす
 		m_nGetItem++;
 	}

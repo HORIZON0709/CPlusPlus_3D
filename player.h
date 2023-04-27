@@ -11,6 +11,7 @@
 //インクルード
 //***************************
 #include "object.h"
+#include "stage.h"
 
 #include <stdio.h>
 
@@ -87,10 +88,16 @@ public: /* オーバーライド関数 */
 	void Draw() override;		//描画
 
 public: /* メンバ関数 */
-	D3DXVECTOR3 GetPos();		//位置を取得
-	D3DXVECTOR3 GetVtxMax();	//頂点の最大値を取得
-	D3DXVECTOR3 GetVtxMin();	//頂点の最小値を取得
-	bool GetIsGetItem();		//アイテムを取得したかどうかを取得
+	D3DXVECTOR3 GetPos();			//位置を取得
+	D3DXVECTOR3 GetVtxMax();		//頂点の最大値を取得
+	D3DXVECTOR3 GetVtxMin();		//頂点の最小値を取得
+	bool GetIsGetItem();			//アイテムを取得したかどうかを取得
+
+	/*
+		アイテムの獲得状況を取得
+		int nIdx ---> 番号
+	*/
+	CStage::STAGE GetStageCoin(int nIdx);
 
 private:
 	void Move();		//移動
@@ -110,6 +117,8 @@ private:
 private: /* メンバ変数 */
 	CModel* m_pModel;	//モデルのポインタ
 	CItem* m_pItem;		//アイテムのポインタ
+
+	CStage::STAGE m_aStageCoin[CStage::MAX_COIN];	//獲得したアイテムがあったステージ
 
 	D3DXMATRIX m_mtxWorld;	//ワールドマトリックス
 
