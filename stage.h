@@ -66,6 +66,7 @@ private:
 public: /* 定数の定義 */
 	static const char* s_apFileName[];	//ファイルパス
 
+	static const int MAX_MODEL = 16;	//モデルの最大数
 	static const int MAX_GIMMICK = 8;	//ギミックの最大数
 	static const int MAX_DOOR = 2;		//ドアの最大数
 	static const int MAX_COIN = 3;		//コインの最大数
@@ -78,8 +79,7 @@ private:
 	static const float WALL_WIDTH;	//壁の幅
 	static const float WALL_HEIGHT;	//壁の高さ
 
-	static const int MAX_MODEL = 16;	//モデルの最大数
-	static const int MAX_WORD;			//最大文字数
+	static const int MAX_WORD;	//最大文字数
 
 private: /* 構造体の定義 */
 	struct MODELSET_INFO	//モデル配置に必要な情報
@@ -99,6 +99,12 @@ public: /* 静的メンバ関数 */
 	static CStage* Create(const STAGE &stage);
 
 	/*
+		Xモデル情報の取得
+		int nIdx ---> インデックス数
+	*/
+	static CObjectX* GetObjectX(int nIdx);
+
+	/*
 		ギミック情報の取得
 		int nIdx ---> インデックス数
 	*/
@@ -113,7 +119,7 @@ public: /* 静的メンバ関数 */
 	static CDoor* GetDoor(int nIdx);
 
 public: /* 静的メンバ変数 */
-	static CObjectX* m_apModel[MAX_MODEL];		//モデルのポインタX
+	static CObjectX* m_apModel[MAX_MODEL];		//Xモデルのポインタ
 	static CGimmick* m_apGimmick[MAX_GIMMICK];	//ギミックのポインタ
 	static CItem* m_pItem;						//アイテムのポインタ
 	static CDoor* m_apDoor[MAX_DOOR];			//ドアのポインタ

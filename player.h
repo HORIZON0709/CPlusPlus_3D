@@ -144,6 +144,7 @@ private: /* メンバ変数 */
 	int m_nGetItem;		//アイテム取得数
 
 	bool m_bPressKey;		//キー押下中かどうか
+	bool m_bCollObjectX;	//Xモデルとの当たり判定
 	bool m_bCollGimmick;	//ギミックとの当たり判定
 	bool m_bCollDoor;		//ドアとの当たり判定
 	bool m_bCollPanelStand;	//パネルスタンドとの当たり判定

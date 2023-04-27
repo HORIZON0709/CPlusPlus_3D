@@ -17,6 +17,7 @@ NUM_MODEL = 2
 MODEL_FILENAME = data/MODEL/Block.x		#[0]ブロック
 MODEL_FILENAME = data/MODEL/Coin01.x	#[1]コイン
 MODEL_FILENAME = data/MODEL/Door.x		#[2]ドア
+MODEL_FILENAME = data/MODEL/Fence.x		#[3]柵
 
 #------------------------------------------------------------------------------
 #モデル配置情報
@@ -66,6 +67,16 @@ MODELSET
 	INDEX = 2
 	MODEL_TYPE = 3
 	DIR = 0
+END_MODELSET
+
+#------------------
+#柵
+#------------------
+MODELSET
+	INDEX = 3
+	MODEL_TYPE = 0
+	POS = 200.0 0.0 200.0
+	ROT = 0.0 0.0 0.0
 END_MODELSET
 
 END_SCRIPT

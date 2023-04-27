@@ -95,6 +95,7 @@ CPlayer::CPlayer() :CObject::CObject(CObject::PRIORITY::PRIO_MODEL),
 	m_nNumKey(0),
 	m_nGetItem(0),
 	m_bPressKey(false),
+	m_bCollObjectX(false),
 	m_bCollGimmick(false),
 	m_bCollDoor(false),
 	m_bCollPanelStand(false),
@@ -179,6 +180,7 @@ HRESULT CPlayer::Init()
 	m_nNumKey = 0;
 	m_nGetItem = 0;
 	m_bPressKey = false;
+	m_bCollObjectX = false;
 	m_bCollGimmick = false;
 	m_bCollDoor = false;
 	m_bCollPanelStand = false;
@@ -587,6 +589,35 @@ void CPlayer::Motion()
 //================================================
 void CPlayer::Collision()
 {
+	/* Xモデル */
+	for (int i = 0; i < CStage::MAX_MODEL; i++)
+	{
+		//対象のXモデル情報を取得
+		CObjectX* pObjX = CStage::GetObjectX(i);
+
+		if (pObjX == nullptr)
+		{//NULLチェック
+			continue;
+		}
+
+		/* nullptrではない場合 */
+
+		//自身のサイズを算出
+		D3DXVECTOR3 sizeOwn = (m_vtxMax - m_vtxMin);
+
+		//対象のサイズを算出
+		D3DXVECTOR3 sizeTarget = (pObjX->GetVtxMax() - pObjX->GetVtxMin());
+
+		//当たり判定
+		m_bCollObjectX = CollisionModel(
+			&m_pos,				//自身の現在の位置
+			m_posOld,			//自身の前回の位置
+			pObjX->GetPos(),	//対象の位置
+			sizeOwn,			//自身のサイズ
+			sizeTarget			//対象のサイズ
+		);
+	}
+
 	/* ギミック */
 	for (int i = 0; i < CStage::MAX_GIMMICK; i++)
 	{
