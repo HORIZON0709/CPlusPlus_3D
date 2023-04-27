@@ -19,9 +19,9 @@
 class CModel
 {/* 基本クラス */
 private: /* 定数の定義 */
-	static const int MAX_WORD;	//最大文字数
+	static const int MAX_WORD;			//最大文字数
 	static const int MAX_PARTS = 16;	//最大パーツ数
-	static const int NUM_PARTS = 2;		//パーツ数
+	static const int NUM_PARTS = 5;		//パーツ数
 
 	static const char* FILE_NAME;	//ファイル名
 

@@ -40,8 +40,9 @@ private: /* 列挙型の定義 */
 private: /* 定数の定義 */
 	static const float MOVE_SPEED;		//移動速度
 	static const float ROT_SMOOTHNESS;	//回転の滑らかさ
+	static const float LIMIT_POS;		//移動制限位置
 	
-	static const int MAX_PARTS = 2;		//最大パーツ数
+	static const int MAX_PARTS = 5;		//最大パーツ数
 	static const int NUM_KEYSET = 2;	//キーセット数
 	static const int MAX_LINE = 12;		//ラインの最大数
 	static const int NUM_VTX_3D = 8;	//立体の頂点数

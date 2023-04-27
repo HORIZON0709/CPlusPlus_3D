@@ -39,6 +39,7 @@ CStage::DIRECTION dirDoor = CStage::DIRECTION::DIR_NONE;	//触れたドアの方向
 //***************************
 const float CPlayer::MOVE_SPEED = 2.0f;		//移動速度
 const float CPlayer::ROT_SMOOTHNESS = 0.5f;	//回転の滑らかさ
+const float CPlayer::LIMIT_POS = 315.0f;	//移動制限位置
 
 const int CPlayer::MAX_WORD = 256;	//最大文字数
 
@@ -146,7 +147,7 @@ HRESULT CPlayer::Init()
 		m_aStageCoin[i] = CStage::STAGE::NONE;
 	}
 
-	m_pos = D3DXVECTOR3(0.0f, 0.0f, -150.0f);
+	m_pos = D3DXVECTOR3(0.0f, 5.0f, -150.0f);
 	m_posOld = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_vec = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -393,15 +394,6 @@ void CPlayer::Move()
 	//キーボード情報を取得
 	CInputKeyboard* pKeyboard = CApplication::GetInputKeyboard();
 
-	if (pKeyboard->GetPress(DIK_R))
-	{
-		m_pos.y += 0.5f;
-	}
-	else if (pKeyboard->GetPress(DIK_F))
-	{
-		m_pos.y -= 0.5f;
-	}
-
 	if (pKeyboard->GetPress(DIK_D))
 	{//Dキー押下中
 		if (pKeyboard->GetPress(DIK_W))
@@ -490,6 +482,24 @@ void CPlayer::Move()
 
 	//現在の位置に移動量を加算
 	m_pos += m_move;
+
+	if (m_pos.x < -LIMIT_POS)
+	{//移動制限位置(左側)を超えたら
+		m_pos.x = -LIMIT_POS;	//位置を戻す
+	}
+	else if (m_pos.x > LIMIT_POS)
+	{//移動制限位置(右側)を超えたら
+		m_pos.x = LIMIT_POS;	//位置を戻す
+	}
+
+	if (m_pos.z < -LIMIT_POS)
+	{//移動制限位置(奥側)を超えたら
+		m_pos.z = -LIMIT_POS;	//位置を戻す
+	}
+	else if (m_pos.z > LIMIT_POS)
+	{//移動制限位置(手前側)を超えたら
+		m_pos.z = LIMIT_POS;	//位置を戻す
+	}
 
 	//移動量を0にする
 	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
