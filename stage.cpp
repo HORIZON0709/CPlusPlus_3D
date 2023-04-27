@@ -187,7 +187,7 @@ void CStage::Uninit()
 		}
 	}
 
-	for (int i = 0; i < m_nNumModel; i++)
+	for (int i = 0; i < MAX_MODEL; i++)
 	{
 		if (m_apModel[i] != nullptr)
 		{//NULLチェック
@@ -226,7 +226,7 @@ void CStage::UninitAll()
 		}
 	}
 
-	for (int i = 0; i < m_nNumModel; i++)
+	for (int i = 0; i < MAX_MODEL; i++)
 	{
 		if (m_apModel[i] != nullptr)
 		{//NULLチェック

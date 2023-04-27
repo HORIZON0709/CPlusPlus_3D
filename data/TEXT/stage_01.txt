@@ -14,9 +14,9 @@ NUM_MODEL = 2
 #------------------------------------------------------------------------------
 # モデルファイル名
 #------------------------------------------------------------------------------
-MODEL_FILENAME = data/MODEL/Stage_Debug_Obstade.x		#[0]立方体
-MODEL_FILENAME = data/MODEL/Coin01.x					#[1]コイン
-MODEL_FILENAME = data/MODEL/Door.x						#[2]ドア
+MODEL_FILENAME = data/MODEL/Block.x		#[0]ブロック
+MODEL_FILENAME = data/MODEL/Coin01.x	#[1]コイン
+MODEL_FILENAME = data/MODEL/Door.x		#[2]ドア
 
 #------------------------------------------------------------------------------
 #モデル配置情報
@@ -27,15 +27,8 @@ MODEL_FILENAME = data/MODEL/Door.x						#[2]ドア
 #(3:ドア)
 #------------------------------------------------------------------------------
 #------------------
-#立方体
+#ブロック
 #------------------
-MODELSET
-	INDEX = 0
-	MODEL_TYPE = 1
-	POS = 50.0 50.0 0.0
-	ROT = 0.0 0.0 0.0
-END_MODELSET
-
 MODELSET
 	INDEX = 0
 	MODEL_TYPE = 1

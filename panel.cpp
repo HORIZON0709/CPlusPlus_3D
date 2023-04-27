@@ -62,7 +62,8 @@ CPanel::CPanel() :
 	m_pSelect(nullptr),
 	m_nPosX(0),
 	m_nPosY(0),
-	m_bPanel(false),
+	m_bCollPlayer(false),
+	m_bIsPanel(false),
 	m_bIsSelect(false)
 {
 	//メンバ変数のクリア
@@ -84,7 +85,8 @@ HRESULT CPanel::Init()
 	//メンバ変数の初期化
 	m_nPosX = 0;
 	m_nPosY = 0;
-	m_bPanel = false;
+	m_bCollPlayer = false;
+	m_bIsPanel = false;
 	m_bIsSelect = false;
 
 	float fWidth = (float)CRenderer::SCREEN_WIDTH;		//画面の横幅
@@ -116,7 +118,7 @@ HRESULT CPanel::Init()
 		}
 	}
 
-	/* Xモデル */
+	/* パネルスタンド */
 
 	//生成
 	m_pPanelStand = CObjectX::Create("data/MODEL/PanelStand.x");
@@ -232,19 +234,20 @@ void CPanel::Uninit()
 //================================================
 void CPanel::Update()
 {
-	if (CApplication::GetInputKeyboard()->GetTrigger(DIK_F3))
-	{//F3キー
-		//表示:非表示の切り替え
-		m_bPanel = m_bPanel ? false : true;
+	if (m_bCollPlayer &&
+		CApplication::GetInputKeyboard()->GetTrigger(DIK_E))
+	{//「プレイヤーが当たっている」かつ「Eキーを押した」場合
+		//操作中：非操作の切り替え
+		m_bIsPanel = m_bIsPanel ? false : true;
 	}
 
 	/* 描画する */
 
 	//背景
-	m_pBg->SetIsDraw(m_bPanel);
+	m_pBg->SetIsDraw(m_bIsPanel);
 
 	//選択用パネル
-	m_pSelect->SetIsDraw(m_bPanel);
+	m_pSelect->SetIsDraw(m_bIsPanel);
 
 	for (int Y = 0; Y < GRID_Y; Y++)
 	{
@@ -258,7 +261,7 @@ void CPanel::Update()
 			/* nullptrではない場合 */
 
 			//パネル
-			m_aPanelInfo[Y][X].m_pPanel->SetIsDraw(m_bPanel);
+			m_aPanelInfo[Y][X].m_pPanel->SetIsDraw(m_bIsPanel);
 
 			//現在のステージを取得
 			CStage::STAGE stage = CGame::GetStage()->Get();
@@ -277,7 +280,7 @@ void CPanel::Update()
 		}
 	}
 
-	if (!m_bPanel)
+	if (!m_bIsPanel)
 	{//パネル操作をしていない場合
 		return;
 	}
@@ -300,7 +303,7 @@ void CPanel::Draw()
 //================================================
 bool CPanel::GetIsPanel()
 {
-	return m_bPanel;
+	return m_bIsPanel;
 }
 
 //================================================
@@ -317,6 +320,14 @@ CPanel::PANEL_INFO CPanel::GetPanelInfo(int Y, int X)
 CObjectX* CPanel::GetPanelStand()
 {
 	return m_pPanelStand;
+}
+
+//================================================
+//プレイヤーが当たっているかどうかを設定
+//================================================
+void CPanel::SetCollPlayer(bool bCollPlayer)
+{
+	m_bCollPlayer = bCollPlayer;
 }
 
 //================================================

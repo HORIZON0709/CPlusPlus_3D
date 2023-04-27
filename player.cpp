@@ -38,7 +38,7 @@ CStage::DIRECTION dirDoor = CStage::DIRECTION::DIR_NONE;	//触れたドアの方向
 //***************************
 //定数の定義
 //***************************
-const float CPlayer::MOVE_SPEED = 1.5f;		//移動速度
+const float CPlayer::MOVE_SPEED = 2.0f;		//移動速度
 const float CPlayer::ROT_SMOOTHNESS = 0.5f;	//回転の滑らかさ
 
 const int CPlayer::MAX_WORD = 256;	//最大文字数
@@ -609,6 +609,9 @@ void CPlayer::Collision()
 			sizeOwn,							//自身のサイズ
 			sizeTarget							//対象のサイズ
 		);
+
+		//当たったかどうかを送る
+		pPanel->SetCollPlayer(m_bCollPanelStand);
 	}
 
 	/* ドア */

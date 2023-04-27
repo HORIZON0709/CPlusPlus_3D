@@ -69,6 +69,12 @@ public: /* メンバ関数 */
 
 	CObjectX* GetPanelStand();	//パネルスタンドの取得
 
+	/*
+		プレイヤーが当たっているかどうかを設定
+		bool bCollPlayer ---> プレイヤーが当たっているかどうか
+	*/
+	void SetCollPlayer(bool bCollPlayer);
+
 private:
 	void SelectPanel();		//パネルの選択
 	void MoveSelect();		//選択用パネルの移動
@@ -86,7 +92,8 @@ private: /* メンバ変数 */
 	int m_nPosX;	//位置(X軸)
 	int m_nPosY;	//位置(Y軸)
 
-	bool m_bPanel;		//パネル操作中かどうか
+	bool m_bCollPlayer;	//プレイヤーが当たっているかどうか
+	bool m_bIsPanel;	//パネル操作中かどうか
 	bool m_bIsSelect;	//選択中かどうか
 };
 

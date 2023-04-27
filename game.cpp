@@ -150,7 +150,7 @@ HRESULT CGame::Init()
 
 	if (m_pStage == nullptr)
 	{//NULLチェック
-		m_pStage = CStage::Create(CStage::STAGE::Stage01);	//生成
+		m_pStage = CStage::Create(CStage::STAGE::Stage08);	//生成
 	}
 
 	/* パネル */
@@ -176,7 +176,7 @@ HRESULT CGame::Init()
 	return S_OK;
 }
 
-//================================================\
+//================================================
 //終了
 //================================================
 void CGame::Uninit()
@@ -192,7 +192,7 @@ void CGame::Uninit()
 
 	/* パネル */
 
-	if (m_pPanel == nullptr)
+	if (m_pPanel != nullptr)
 	{
 		m_pPanel->Uninit();	//終了
 		delete m_pPanel;	//メモリの解放
@@ -269,10 +269,9 @@ void CGame::Update()
 		m_pStage = m_pStage->Set();	//ステージ
 	}
 
-	if (CApplication::GetInput()->GetKey()->Trigger(CInput::DECISION) ||
-		m_pScore->GetCurrentScore() == 3)
-	{//Enterキー押下 or アイテムを全て獲得した
-		m_nCntIntervalFade = FADE_INTERVAL_GAMEOVER + 1;	//カウントアップ
+	if (m_pScore->GetCurrentScore() == 3)
+	{//アイテムを全て獲得した
+		m_nCntIntervalFade++;	//カウントアップ
 	}
 
 	if (!m_bFadeOut && (m_nCntIntervalFade > FADE_INTERVAL_GAMEOVER))
