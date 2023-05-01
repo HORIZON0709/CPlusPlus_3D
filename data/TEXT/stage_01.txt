@@ -14,10 +14,12 @@ NUM_MODEL = 2
 #------------------------------------------------------------------------------
 # モデルファイル名
 #------------------------------------------------------------------------------
-MODEL_FILENAME = data/MODEL/Block.x		#[0]ブロック
-MODEL_FILENAME = data/MODEL/Coin01.x	#[1]コイン
-MODEL_FILENAME = data/MODEL/Door.x		#[2]ドア
-MODEL_FILENAME = data/MODEL/Fence.x		#[3]柵
+MODEL_FILENAME = data/MODEL/Block.x						#[0]ブロック
+MODEL_FILENAME = data/MODEL/Coin01.x					#[1]コイン
+MODEL_FILENAME = data/MODEL/Door.x						#[2]ドア
+MODEL_FILENAME = data/MODEL/Fence.x						#[3]柵
+MODEL_FILENAME = data/MODEL/BlockHorizontal_Long.x		#[4]横長ブロック
+MODEL_FILENAME = data/MODEL/BlockHorizontal_VeryLong.x	#[5]超横長ブロック
 
 #------------------------------------------------------------------------------
 #モデル配置情報
@@ -38,12 +40,45 @@ MODELSET
 END_MODELSET
 
 #------------------
+#超横長ブロック
+#------------------
+MODELSET
+	INDEX = 5
+	MODEL_TYPE = 0
+	POS = -100.0 0.0 50.0
+	ROT = 0.0 0.0 0.0
+END_MODELSET
+
+MODELSET
+	INDEX = 5
+	MODEL_TYPE = 0
+	POS = -200.0 0.0 50.0
+	ROT = 0.0 0.0 0.0
+END_MODELSET
+
+MODELSET
+	INDEX = 5
+	MODEL_TYPE = 0
+	POS = -100.0 0.0 250.0
+	ROT = 0.0 0.0 0.0
+END_MODELSET
+
+MODELSET
+	INDEX = 5
+	MODEL_TYPE = 0
+	POS = -200.0 0.0 250.0
+	ROT = 0.0 0.0 0.0
+END_MODELSET
+
+
+
+#------------------
 #アイテム
 #------------------
 MODELSET
 	INDEX = 1
 	MODEL_TYPE = 2
-	POS = 100.0 0.0 0.0
+	POS = -150.0 0.0 150.0
 	ROT = 0.0 0.0 0.0
 END_MODELSET
 

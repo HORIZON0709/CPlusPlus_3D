@@ -37,7 +37,7 @@ CStage::DIRECTION dirDoor = CStage::DIRECTION::DIR_NONE;	//触れたドアの方向
 //***************************
 //定数の定義
 //***************************
-const float CPlayer::MOVE_SPEED = 2.0f;		//移動速度
+const float CPlayer::MOVE_SPEED = 2.5f;		//移動速度
 const float CPlayer::ROT_SMOOTHNESS = 0.5f;	//回転の滑らかさ
 const float CPlayer::LIMIT_POS = 315.0f;	//移動制限位置
 
