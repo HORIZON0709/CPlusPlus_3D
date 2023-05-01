@@ -242,24 +242,33 @@ void CPlayer::Update()
 
 	if (m_bFadeOut && (CApplication::GetFade()->GetState() == CFade::STATE::NONE))
 	{//暗転した & 現在フェードしていない
+		D3DXVECTOR3 posDoor = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	//ドアの位置
+
 		switch (dirDoor)
 		{
 		case CStage::DIRECTION::DIR_LEFT:	//左
-			m_pos = CStage::POS_DOOR[CStage::DIRECTION::DIR_RIGHT];
+			posDoor = CStage::POS_DOOR[CStage::DIRECTION::DIR_RIGHT];
+			posDoor.x -= 50.0f;
 			break;
 
 		case CStage::DIRECTION::DIR_BACK:	//奥
-			m_pos = CStage::POS_DOOR[CStage::DIRECTION::DIR_FRONT];
+			posDoor = CStage::POS_DOOR[CStage::DIRECTION::DIR_FRONT];
+			posDoor.z += 50.0f;
 			break;
 
 		case CStage::DIRECTION::DIR_RIGHT:	//右
-			m_pos = CStage::POS_DOOR[CStage::DIRECTION::DIR_LEFT];
+			posDoor = CStage::POS_DOOR[CStage::DIRECTION::DIR_LEFT];
+			posDoor.x += 50.0f;
 			break;
 
 		case CStage::DIRECTION::DIR_FRONT:	//手前
-			m_pos = CStage::POS_DOOR[CStage::DIRECTION::DIR_BACK];
+			posDoor = CStage::POS_DOOR[CStage::DIRECTION::DIR_BACK];
+			posDoor.z -= 50.0f;
 			break;
 		}
+
+		//位置を設定
+		m_pos = posDoor;
 
 		//移動した
 		m_bCanMove = false;
@@ -589,6 +598,13 @@ void CPlayer::Motion()
 //================================================
 void CPlayer::Collision()
 {
+	if (CApplication::GetFade()->GetState() != CFade::STATE::NONE)
+	{//フェード中の場合
+		return;
+	}
+
+	/* フェードしていない場合 */
+
 	/* Xモデル */
 	for (int i = 0; i < CStage::MAX_MODEL; i++)
 	{

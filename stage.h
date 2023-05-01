@@ -66,7 +66,7 @@ private:
 public: /* 定数の定義 */
 	static const char* s_apFileName[];	//ファイルパス
 
-	static const int MAX_MODEL = 16;	//モデルの最大数
+	static const int MAX_MODEL = 24;	//モデルの最大数
 	static const int MAX_GIMMICK = 8;	//ギミックの最大数
 	static const int MAX_DOOR = 2;		//ドアの最大数
 	static const int MAX_COIN = 3;		//コインの最大数

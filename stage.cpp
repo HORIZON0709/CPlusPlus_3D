@@ -273,9 +273,11 @@ void CStage::Update()
 		}
 	}
 
+#ifdef _DEBUG
 	//デバッグ表示
 	CDebugProc::Print("\n《 Stage 》\n");
 	CDebugProc::Print("現在のステージ:[%d]\n", m_stage);	//現在のステージ
+#endif // _DEBUG
 }
 
 //================================================
@@ -799,5 +801,5 @@ void CStage::SetWall()
 	m_apWall[dir]->SetRot(D3DXVECTOR3(-D3DX_PI * 0.5f, 0.0f, 0.0f));
 
 	//色
-	m_apWall[dir]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f));
+	m_apWall[dir]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.3f));
 }
