@@ -150,7 +150,7 @@ HRESULT CGame::Init()
 
 	if (m_pStage == nullptr)
 	{//NULLチェック
-		m_pStage = CStage::Create(CStage::STAGE::Stage05);	//生成
+		m_pStage = CStage::Create(CStage::STAGE::Stage08);	//生成
 	}
 
 	/* パネル */

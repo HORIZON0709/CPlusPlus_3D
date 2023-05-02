@@ -10,17 +10,25 @@
 #include "result.h"
 
 #include "application.h"
+#include "renderer.h"
 #include "fade.h"
 #include "input.h"
-#include "object2D.h"
 #include "bg.h"
+#include "object2D.h"
 
 #include <assert.h>
 
 //***************************
+//定数の定義
+//***************************
+const float CResult::GAMECLEAR_WIDTH = 500.0f;	//ゲームクリアの幅
+const float CResult::GAMECLEAR_HEIGHT = 200.0f;	//ゲームクリアの高さ
+
+//***************************
 //静的メンバ変数
 //***************************
-CBg* CResult::m_pBg = nullptr;	//背景
+CBg* CResult::m_pBg = nullptr;				//背景
+CObject2D* CResult::m_pGameClear = nullptr;	//ゲームクリア
 
 //================================================
 //コンストラクタ
@@ -55,6 +63,29 @@ HRESULT CResult::Init()
 
 	//テクスチャ座標の設定
 	m_pBg->SetTexUV(1, 0);
+
+	/* ゲームクリア */
+
+	//生成
+	m_pGameClear = CObject2D::Create();
+
+	D3DXVECTOR3 pos = D3DXVECTOR3(	//位置設定用
+		CRenderer::SCREEN_WIDTH * 0.5f,
+		CRenderer::SCREEN_HEIGHT * 0.3f,
+		0.0f);
+
+	//位置を設定
+	m_pGameClear->SetPos(pos);
+
+	//サイズを設定
+	D3DXVECTOR2 size = D3DXVECTOR2(GAMECLEAR_WIDTH, GAMECLEAR_HEIGHT);
+	m_pGameClear->SetSize(size);
+
+	//テクスチャの設定
+	m_pGameClear->SetTexture(CTexture::GameClear);
+
+	//テクスチャ座標の設定
+	m_pGameClear->SetTexUV(1, 0);
 
 	//明転
 	CApplication::GetFade()->Set(CFade::STATE::FADE_IN);

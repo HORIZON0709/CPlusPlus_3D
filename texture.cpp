@@ -49,6 +49,9 @@ const char* CTexture::s_FileName[] =
 
 	/* PressEnter */
 	"data/TEXTURE/PressEnter.png",	//PressEnter
+
+	/* ゲームクリア */
+	"data/TEXTURE/GameClear.png",	//ゲームクリア
 };
 
 static_assert(sizeof(CTexture::s_FileName) / sizeof(CTexture::s_FileName[0]) == CTexture::MAX, "aho");

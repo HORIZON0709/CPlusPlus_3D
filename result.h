@@ -18,12 +18,17 @@
 //前方宣言
 //***************************
 class CBg;
+class CObject2D;
 
 //***************************
 //リザルトクラスの定義
 //***************************
 class CResult : public CMode
 {/* CModeの派生クラス */
+private: /* 定数の定義 */
+	static const float GAMECLEAR_WIDTH;		//ゲームクリアの幅
+	static const float GAMECLEAR_HEIGHT;	//ゲームクリアの高さ
+
 public: /* コンストラクタ・デストラクタ */
 	CResult();
 	~CResult() override;
@@ -35,7 +40,8 @@ public: /* オーバーライド関数 */
 	void Draw() override;		//描画
 
 private: /* 静的メンバ変数 */
-	static CBg* m_pBg;	//背景
+	static CBg* m_pBg;				//背景
+	static CObject2D* m_pGameClear;	//ゲームクリア
 
 private: /* メンバ変数 */
 	bool m_bFadeOut;	//暗転したかどうか

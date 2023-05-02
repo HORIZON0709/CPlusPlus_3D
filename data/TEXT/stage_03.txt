@@ -113,12 +113,12 @@ END_MODELSET
 #------------------
 #çÚ
 #------------------
-MODELSET
-	INDEX = 3
-	MODEL_TYPE = 0
-	POS = 200.0 0.0 200.0
-	ROT = 0.0 0.0 0.0
-END_MODELSET
+#MODELSET
+#	INDEX = 3
+#	MODEL_TYPE = 0
+#	POS = 200.0 0.0 200.0
+#	ROT = 0.0 0.0 0.0
+#END_MODELSET
 
 
 END_SCRIPT

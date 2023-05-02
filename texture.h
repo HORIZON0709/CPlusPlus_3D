@@ -53,6 +53,9 @@ public: /* 定義 */
 		/* PressEnter */
 		PressEnter,	//PressEnter
 
+		/* ゲームクリア */
+		GameClear,	//ゲームクリア
+
 		MAX
 	};
 
