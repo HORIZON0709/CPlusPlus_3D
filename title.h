@@ -29,6 +29,9 @@ private: /* 定数の定義 */
 	static const float LOGO_WIDTH;	//ロゴの幅
 	static const float LOGO_HEIGHT;	//ロゴの高さ
 
+	static const float PRESSENTER_WIDTH;	//PressEnterの幅
+	static const float PRESSENTER_HEIGHT;	//PressEnterの高さ
+
 public: /* コンストラクタ・デストラクタ */
 	CTitle();
 	~CTitle() override;
@@ -40,8 +43,9 @@ public: /* オーバーライド関数 */
 	void Draw() override;		//描画
 
 private: /* 静的メンバ変数 */
-	static CBg* m_pBg;			//背景
-	static CObject2D* m_pLogo;	//タイトルロゴ
+	static CBg* m_pBg;					//背景
+	static CObject2D* m_pLogo;			//タイトルロゴ
+	static CObject2D* m_pPressEnter;	//PressEnter
 
 private: /* メンバ変数 */
 	bool m_bFadeOut;	//暗転したかどうか

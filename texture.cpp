@@ -20,7 +20,7 @@
 //==================================================
 const char* CTexture::s_FileName[] =
 {// テクスチャのパス
-	/* 背景 */
+	/* 仮背景 */
 	"data/TEXTURE/Bg_Title_Tentative.png",	//仮背景：タイトル
 	"data/TEXTURE/Bg_Result_Tentative.png",	//仮背景：リザルト
 
@@ -40,6 +40,15 @@ const char* CTexture::s_FileName[] =
 
 	/* ゲーム中用素材 */
 	"data/TEXTURE/WallAndFloar.jpg",	//壁と床用
+
+	/* 背景 */
+	"data/TEXTURE/Bg_Title.jpg",	//タイトル背景
+
+	/* タイトルロゴ */
+	"data/TEXTURE/TitleLogo.png",	//タイトルロゴ
+
+	/* PressEnter */
+	"data/TEXTURE/PressEnter.png",	//PressEnter
 };
 
 static_assert(sizeof(CTexture::s_FileName) / sizeof(CTexture::s_FileName[0]) == CTexture::MAX, "aho");
