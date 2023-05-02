@@ -43,6 +43,8 @@ public: /* 定義 */
 
 		/* ゲーム中用素材 */
 		WallAndFloar,	//壁と床用
+		GameUI_Purpose,	//目的
+		GameUI_Coin,	//獲得コイン数
 
 		/* 背景 */
 		Bg_Title,	//タイトル背景

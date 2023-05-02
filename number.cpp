@@ -14,10 +14,10 @@
 //***************************
 //定数の定義
 //***************************
-const float CNumber::POS_X = 1000.0f;		//位置( X )
-const float CNumber::POS_Y = 100.0f;		//位置( Y )
-const float CNumber::NUMBER_WIDTH = 30.0f;	//横幅
-const float CNumber::NUMBER_HEIGHT = 50.0f;	//縦幅
+const float CNumber::POS_X = 980.0f;			//位置( X )
+const float CNumber::POS_Y = 570.0f;			//位置( Y )
+const float CNumber::NUMBER_WIDTH = 60.0f;		//横幅
+const float CNumber::NUMBER_HEIGHT = 100.0f;	//縦幅
 
 //================================================
 //生成

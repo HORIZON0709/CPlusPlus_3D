@@ -13,8 +13,6 @@
 #include "fade.h"
 #include "input.h"
 
-#include "object2D.h"
-
 #include "camera.h"
 #include "light.h"
 #include "player.h"
@@ -22,6 +20,7 @@
 #include "stage.h"
 #include "panel.h"
 #include "score.h"
+#include "object2D.h"
 
 #include <assert.h>
 #include <time.h>
@@ -33,6 +32,11 @@ const int CGame::INTERVAL_STRAIGHT = 120;		//直線敵の生成間隔
 const int CGame::FADE_INTERVAL_GAMEOVER = 60;	//フェードまでの間隔(ゲームオーバー時)
 const int CGame::FADE_INTERVAL_GAMECLEAR = 180;	//フェードまでの間隔(ゲームクリア時)
 
+const float CGame::UI_PURPOSE_WIDTH = 400.0f;	//UI(目的)の幅
+const float CGame::UI_PURPOSE_HEIGHT = 200.0f;	//UI(目的)の高さ
+const float CGame::UI_COIN_WIDTH = 600.0f;		//UI(獲得コイン数)の幅
+const float CGame::UI_COIN_HEIGHT = 100.0f;		//UI(獲得コイン数)の高さ
+
 //***************************
 //静的メンバ変数
 //***************************
@@ -42,6 +46,8 @@ CPlayer* CGame::m_pPlayer = nullptr;	//プレイヤー
 CStage* CGame::m_pStage = nullptr;		//ステージ
 CPanel* CGame::m_pPanel = nullptr;		//パネル
 CScore* CGame::m_pScore = nullptr;		//スコア
+
+CObject2D* CGame::m_apUI[UI_TYPE::MAX] = {};	//UI
 
 //================================================
 //カメラ情報を取得
@@ -165,6 +171,68 @@ HRESULT CGame::Init()
 	if (m_pScore == nullptr)
 	{//NULLチェック
 		m_pScore = CScore::Create();	//生成
+	}
+
+	/* UI */
+
+	for (int i = 0; i < UI_TYPE::MAX; i++)
+	{
+		if (m_apUI[i] != nullptr)
+		{//NULLチェック
+			m_apUI[i] = nullptr;
+		}
+
+		/* nullptrの場合 */
+
+		//生成
+		m_apUI[i] = CObject2D::Create();
+
+		//各情報設定用
+		D3DXVECTOR3 pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	//位置
+		D3DXVECTOR2 size = D3DXVECTOR2(0.0f, 0.0f);			//サイズ
+		CTexture::TEXTURE tex = CTexture::TEXTURE::NONE;	//テクスチャ
+
+		switch ((UI_TYPE)i)
+		{//UIタイプ別の設定
+		case UI_TYPE::PURPOSE:	//目的
+			//位置
+			pos = D3DXVECTOR3(
+				CRenderer::SCREEN_WIDTH * 0.17f,
+				CRenderer::SCREEN_HEIGHT * 0.15f,
+				0.0f
+			);
+			
+			//サイズ
+			size = D3DXVECTOR2(UI_PURPOSE_WIDTH, UI_PURPOSE_HEIGHT);
+
+			//テクスチャ
+			tex = CTexture::TEXTURE::GameUI_Purpose;
+			break;
+
+		case UI_TYPE::COIN:	//獲得コイン数
+			//位置
+			pos = D3DXVECTOR3(
+				CRenderer::SCREEN_WIDTH * 0.75f,
+				CRenderer::SCREEN_HEIGHT * 0.8f,
+				0.0f
+			);
+			
+			//サイズ
+			size = D3DXVECTOR2(UI_COIN_WIDTH, UI_COIN_HEIGHT);
+
+			//テクスチャ
+			tex = CTexture::TEXTURE::GameUI_Coin;
+			break;
+
+		default:
+			assert(false);
+			break;
+		}
+
+		//各情報の設定
+		m_apUI[i]->SetPos(pos);		//位置
+		m_apUI[i]->SetSize(size);	//サイズ
+		m_apUI[i]->SetTexture(tex);	//テクスチャ
 	}
 
 	//明転した

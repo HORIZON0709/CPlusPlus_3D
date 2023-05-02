@@ -40,6 +40,8 @@ const char* CTexture::s_FileName[] =
 
 	/* ゲーム中用素材 */
 	"data/TEXTURE/WallAndFloar.jpg",	//壁と床用
+	"data/TEXTURE/GameUI_Purpose.png",	//目的
+	"data/TEXTURE/GameUI_Coin.png",		//獲得コイン数
 
 	/* 背景 */
 	"data/TEXTURE/Bg_Title.jpg",	//タイトル背景
