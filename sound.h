@@ -27,12 +27,6 @@ public: /* 列挙型の定義 */
 		LABEL_BGM_Result,		//リザルト
 		LABEL_SE_Enter,			//決定
 		LABEL_SE_Select,		//選択
-		LABEL_SE_Bullet,		//弾
-		LABEL_SE_Bom,			//ボム
-		LABEL_SE_Explosion,		//エフェクト
-		LABEL_SE_Start,			//ゲーム開始
-		LABEL_SE_GameOver,		//ゲームオーバー
-		LABEL_SE_GameClear,		//ゲームクリア
 		LABEL_MAX,
 	};
 

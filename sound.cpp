@@ -22,12 +22,6 @@ const CSound::SParam CSound::PARAM[] =
 	{ "data/BGM/Result.wav", -1 },	//リザルト
 	{ "data/SE/Enter.wav", 0 },		//決定
 	{ "data/SE/Select.wav", 0 },	//選択
-	{ "data/SE/Bullet.wav", 0 },	//弾
-	{ "data/SE/Bom.wav", 0 },		//ボム
-	{ "data/SE/Explosion.wav", 0 },	//爆発
-	{ "data/SE/Start.wav", 0 },		//ゲーム開始
-	{ "data/SE/GameOver.wav", 0 },	//ゲームオーバー
-	{ "data/SE/GameClear.wav", 0 },	//ゲームクリア
 };
 
 static_assert(sizeof(CSound::PARAM) / sizeof(CSound::PARAM[0]) == CSound::LABEL_MAX, "aho");
