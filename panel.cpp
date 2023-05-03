@@ -14,6 +14,7 @@
 #include "object2D.h"
 #include "input.h"
 #include "game.h"
+#include "sound.h"
 
 #include "debug_proc.h"
 #include "utility.h"
@@ -198,6 +199,10 @@ HRESULT CPanel::Init()
 //================================================
 void CPanel::Uninit()
 {
+	/* サウンド */
+
+	CApplication::GetSound()->Stop();
+
 	for (int Y = 0; Y < GRID_Y; Y++)
 	{
 		for (int X = 0; X < GRID_X; X++)
@@ -239,6 +244,9 @@ void CPanel::Update()
 	{//「プレイヤーが当たっている」かつ「Eキーを押した」場合
 		//操作中：非操作の切り替え
 		m_bIsPanel = m_bIsPanel ? false : true;
+
+		//SEを鳴らす
+		CApplication::GetSound()->Play(CSound::LABEL_SE_Enter);
 	}
 
 	/* 描画する */
@@ -339,6 +347,9 @@ void CPanel::SelectPanel()
 	{//Enterキー
 		//選択：非選択の切り替え
 		m_bIsSelect = m_bIsSelect ? false : true;
+
+		//SEを鳴らす
+		CApplication::GetSound()->Play(CSound::LABEL_SE_Enter);
 	}
 
 	//選択用パネルの移動
@@ -371,6 +382,9 @@ void CPanel::MoveSelect()
 		{//0未満(-1以下)になった場合
 			m_nPosY = 0;	//0に固定
 		}
+
+		//SEを鳴らす
+		CApplication::GetSound()->Play(CSound::LABEL_SE_Select);
 	}
 	else if (CApplication::GetInputKeyboard()->GetTrigger(DIK_S))
 	{//Sキー押下
@@ -380,6 +394,9 @@ void CPanel::MoveSelect()
 		{//2より大きく(3以上)になった場合
 			m_nPosY = GRID_Y - 1;	//2に固定
 		}
+
+		//SEを鳴らす
+		CApplication::GetSound()->Play(CSound::LABEL_SE_Select);
 	}
 
 	if (CApplication::GetInputKeyboard()->GetTrigger(DIK_A))
@@ -390,6 +407,9 @@ void CPanel::MoveSelect()
 		{//0未満(-1以下)になった場合
 			m_nPosX = 0;	//0に固定
 		}
+
+		//SEを鳴らす
+		CApplication::GetSound()->Play(CSound::LABEL_SE_Select);
 	}
 	else if (CApplication::GetInputKeyboard()->GetTrigger(DIK_D))
 	{//Dキー押下
@@ -399,6 +419,9 @@ void CPanel::MoveSelect()
 		{//2より大きく(3以上)になった場合
 			m_nPosX = GRID_X - 1;	//2に固定
 		}
+
+		//SEを鳴らす
+		CApplication::GetSound()->Play(CSound::LABEL_SE_Select);
 	}
 
 	//選択用パネルの位置の設定
@@ -461,6 +484,9 @@ void CPanel::MovePanel()
 		{//0未満(-1以下)になった場合
 			m_nPosY = 0;	//0に固定
 		}
+
+		//SEを鳴らす
+		CApplication::GetSound()->Play(CSound::LABEL_SE_Select);
 	}
 	else if (CApplication::GetInputKeyboard()->GetTrigger(DIK_S))
 	{//Sキー押下
@@ -470,6 +496,9 @@ void CPanel::MovePanel()
 		{//2より大きく(3以上)になった場合
 			m_nPosY = GRID_Y - 1;	//2に固定
 		}
+
+		//SEを鳴らす
+		CApplication::GetSound()->Play(CSound::LABEL_SE_Select);
 	}
 
 	if (CApplication::GetInputKeyboard()->GetTrigger(DIK_A))
@@ -480,6 +509,9 @@ void CPanel::MovePanel()
 		{//0未満(-1以下)になった場合
 			m_nPosX = 0;	//0に固定
 		}
+
+		//SEを鳴らす
+		CApplication::GetSound()->Play(CSound::LABEL_SE_Select);
 	}
 	else if (CApplication::GetInputKeyboard()->GetTrigger(DIK_D))
 	{//Dキー押下
@@ -489,6 +521,9 @@ void CPanel::MovePanel()
 		{//2より大きく(3以上)になった場合
 			m_nPosX = GRID_X - 1;	//2に固定
 		}
+
+		//SEを鳴らす
+		CApplication::GetSound()->Play(CSound::LABEL_SE_Select);
 	}
 
 	bool bCanMove = false;	//移動できるかどうか

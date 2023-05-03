@@ -8,11 +8,12 @@
 //インクルード
 //***************************
 #include "result.h"
-
 #include "application.h"
 #include "renderer.h"
 #include "fade.h"
 #include "input.h"
+#include "sound.h"
+
 #include "bg.h"
 #include "object2D.h"
 
@@ -87,6 +88,9 @@ HRESULT CResult::Init()
 	//テクスチャ座標の設定
 	m_pGameClear->SetTexUV(1, 0);
 
+	//BGM開始
+	CApplication::GetSound()->Play(CSound::LABEL_BGM_Result);
+
 	//明転
 	CApplication::GetFade()->Set(CFade::STATE::FADE_IN);
 
@@ -98,6 +102,10 @@ HRESULT CResult::Init()
 //================================================
 void CResult::Uninit()
 {
+	/* サウンド */
+
+	CApplication::GetSound()->Stop(CSound::LABEL_BGM_Result);
+
 	/* オブジェクト */
 
 	CObject2D::ReleaseAll();	//全ての解放(2D)

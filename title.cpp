@@ -12,6 +12,7 @@
 #include "renderer.h"
 #include "input.h"
 #include "fade.h"
+#include "sound.h"
 
 #include "object2D.h"
 #include "bg.h"
@@ -117,6 +118,9 @@ HRESULT CTitle::Init()
 		m_pPressEnter->SetTexUV(1, 0);
 	}
 
+	//BGM開始
+	CApplication::GetSound()->Play(CSound::LABEL_BGM_Title);
+
 	//明転
 	CApplication::GetFade()->Set(CFade::STATE::FADE_IN);
 
@@ -128,6 +132,10 @@ HRESULT CTitle::Init()
 //================================================
 void CTitle::Uninit()
 {
+	/* サウンド */
+
+	CApplication::GetSound()->Stop(CSound::LABEL_BGM_Title);
+
 	/* オブジェクト */
 
 	CObject2D::ReleaseAll();	//全ての解放(2D)
@@ -158,6 +166,9 @@ void CTitle::Update()
 
 	if (pInput->Trigger(CInput::STANDARD_KEY::DECISION))
 	{//決定キ―
+		//SEを鳴らす
+		CApplication::GetSound()->Play(CSound::LABEL_SE_Enter);
+
 		CApplication::GetFade()->Set(CFade::STATE::FADE_OUT);	//暗転
 		m_bFadeOut = true;	//暗転した
 	}

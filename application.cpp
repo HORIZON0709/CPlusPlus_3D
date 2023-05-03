@@ -153,13 +153,6 @@ HRESULT CApplication::Init(HWND hWnd, BOOL bWindow, HINSTANCE hInstance)
 		m_pFade = CFade::Create();	//生成
 	}
 
-	/* モード */
-
-	if (m_pMode == nullptr)
-	{//NULLチェック
-		m_pMode = CMode::Create(CMode::MODE::TITLE);	//生成
-	}
-
 	/* サウンド */
 
 	if (m_pSound == nullptr)
@@ -172,6 +165,13 @@ HRESULT CApplication::Init(HWND hWnd, BOOL bWindow, HINSTANCE hInstance)
 		return E_FAIL;
 	}
 
+	/* モード */
+
+	if (m_pMode == nullptr)
+	{//NULLチェック
+		m_pMode = CMode::Create(CMode::MODE::TITLE);	//生成
+	}
+
 	return S_OK;
 }
 
@@ -180,6 +180,15 @@ HRESULT CApplication::Init(HWND hWnd, BOOL bWindow, HINSTANCE hInstance)
 //================================================
 void CApplication::Uninit()
 {
+	/* モード */
+
+	if (m_pMode != nullptr)
+	{//NULLチェック
+		m_pMode->Uninit();	//終了
+		delete m_pMode;		//メモリの解放
+		m_pMode = nullptr;	//nullptrにする
+	}
+
 	/* サウンド */
 
 	if (m_pSound != nullptr)
@@ -198,14 +207,6 @@ void CApplication::Uninit()
 		m_pFade = nullptr;	//nullptrにする
 	}
 
-	/* モード */
-
-	if (m_pMode != nullptr)
-	{//NULLチェック
-		m_pMode->Uninit();	//終了
-		delete m_pMode;		//メモリの解放
-		m_pMode = nullptr;	//nullptrにする
-	}
 	/* レンダラー */
 
 	if (m_pRenderer != nullptr)

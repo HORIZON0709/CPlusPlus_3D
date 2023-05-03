@@ -12,6 +12,7 @@
 #include "renderer.h"
 #include "fade.h"
 #include "input.h"
+#include "sound.h"
 
 #include "camera.h"
 #include "light.h"
@@ -235,6 +236,9 @@ HRESULT CGame::Init()
 		m_apUI[i]->SetTexture(tex);	//テクスチャ
 	}
 
+	//BGM開始
+	CApplication::GetSound()->Play(CSound::LABEL_BGM_Game);
+
 	//明転した
 	m_bFadeOut = false;
 
@@ -249,6 +253,10 @@ HRESULT CGame::Init()
 //================================================
 void CGame::Uninit()
 {
+	/* サウンド */
+
+	CApplication::GetSound()->Stop(CSound::LABEL_BGM_Game);
+
 	/* オブジェクト */
 
 	CObject2D::ReleaseAll();	//全ての解放(2D)
