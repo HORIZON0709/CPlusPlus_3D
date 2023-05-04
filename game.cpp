@@ -214,7 +214,7 @@ HRESULT CGame::Init()
 			//ˆÊ’u
 			pos = D3DXVECTOR3(
 				CRenderer::SCREEN_WIDTH * 0.75f,
-				CRenderer::SCREEN_HEIGHT * 0.8f,
+				CRenderer::SCREEN_HEIGHT * 0.9f,
 				0.0f
 			);
 			

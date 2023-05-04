@@ -22,8 +22,8 @@
 //***************************
 //定数の定義
 //***************************
-const float CResult::GAMECLEAR_WIDTH = 500.0f;	//ゲームクリアの幅
-const float CResult::GAMECLEAR_HEIGHT = 200.0f;	//ゲームクリアの高さ
+const float CResult::GAMECLEAR_WIDTH = 800.0f;	//ゲームクリアの幅
+const float CResult::GAMECLEAR_HEIGHT = 300.0f;	//ゲームクリアの高さ
 
 //***************************
 //静的メンバ変数
@@ -60,7 +60,7 @@ HRESULT CResult::Init()
 	m_pBg = CBg::Create();
 
 	//テクスチャの設定
-	m_pBg->SetTexture(CTexture::Bg_Result_Tentative);
+	m_pBg->SetTexture(CTexture::Bg_Result);
 
 	//テクスチャ座標の設定
 	m_pBg->SetTexUV(1, 0);
@@ -72,7 +72,7 @@ HRESULT CResult::Init()
 
 	D3DXVECTOR3 pos = D3DXVECTOR3(	//位置設定用
 		CRenderer::SCREEN_WIDTH * 0.5f,
-		CRenderer::SCREEN_HEIGHT * 0.3f,
+		CRenderer::SCREEN_HEIGHT * 0.5f,
 		0.0f);
 
 	//位置を設定

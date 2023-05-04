@@ -48,6 +48,7 @@ public: /* 定義 */
 
 		/* 背景 */
 		Bg_Title,	//タイトル背景
+		Bg_Result,	//リザルト背景
 
 		/* タイトルロゴ */
 		TitleLogo,	//タイトルロゴ
