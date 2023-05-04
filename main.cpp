@@ -29,7 +29,7 @@ namespace
 //ウインドウのクラス名
 LPCTSTR CLASS_NAME = _T("AppClass");
 //ウインドウのキャプション名
-LPCTSTR WINDOW_NAME = _T("C++ STG");
+LPCTSTR WINDOW_NAME = _T("8Labyrinths");
 }
 
 //*****************************************************************************
