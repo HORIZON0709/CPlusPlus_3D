@@ -332,6 +332,11 @@ void CStage::LoadDoorDir(const STAGE &stage)
 
 	/* ファイルが開けた場合 */
 
+	for (int i = 0; i < MAX_DOOR; i++)
+	{
+		m_aDir[i] = -1;
+	}
+
 	char aText[MAX_WORD] = {};	//テキスト格納用
 
 	int nNumDoor = 0;	//ドアの数
