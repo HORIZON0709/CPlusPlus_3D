@@ -95,7 +95,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
 		pApplication = new CApplication;	//ƒƒ‚ƒŠ‚Ì“®“IŠm•Û
 	}
 
-	if (FAILED(pApplication->Init(hWnd, TRUE, hInstance)))
+	if (FAILED(pApplication->Init(hWnd, FALSE, hInstance)))
 	{//‰Šú‰»ˆ—‚ª¸”s‚µ‚½ê‡
 		return E_FAIL;
 	}
